@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 
@@ -163,19 +161,41 @@ namespace TR.BIDSSMemLib
     /// <summary>ドア状態情報</summary>
     public enum DoorInfo { Open,Close,RightOpen,LeftOpen }
 
+    /// <summary> ElapDが更新された際に呼ばれるイベント </summary>
+    public event EventHandler ElapDChanged;
     /// <summary>毎フレームごとのデータ(本家/open共通)</summary>
-    public ElapD ElapData { get; private set; }
-    /// <summary>毎フレームごとのデータ(open専用)</summary>
-    public OElapD OElapData { get; private set; }
-    /// <summary>ハンドルに関する情報</summary>
-    public HandleD HandleInfo { get; private set; }
-    /// <summary>ドア状態情報</summary>
-    public DoorInfo Door { get; private set; }
+    public ElapD ElapData { get { return __ElapD; } private set { __ElapD = value; ElapDChanged?.Invoke(value, new EventArgs()); } }
+    private ElapD __ElapD = new ElapD();
 
-    /// <summary>各種操作情報</summary>
-    public ControlD ControlData { get; set; }
+    /// <summary> OElapDが更新された際に呼ばれるイベント </summary>
+    public event EventHandler OElapDChanged;
+    /// <summary>毎フレームごとのデータ(open専用)</summary>
+    public OElapD OElapData { get { return __OElapD; } private set { __OElapD = value; OElapDChanged?.Invoke(value, new EventArgs()); } }
+    private OElapD __OElapD = new OElapD();
+
+    /// <summary> HandleDが更新された際に呼ばれるイベント </summary>
+    public event EventHandler HandleDChanged;
+    /// <summary>ハンドルに関する情報</summary>
+    public HandleD HandleInfo { get { return __HandleD; } private set { __HandleD = value; HandleDChanged?.Invoke(value, new EventArgs()); } }
+    private HandleD __HandleD = new HandleD();
+
+    /// <summary> DoorInfoが更新された際に呼ばれるイベント </summary>
+    public event EventHandler DoorInfoChanged;
     /// <summary>ドア状態情報</summary>
-    public StaD Stations { get; private set; }
+    public DoorInfo Door { get { return __DoorInfo; } private set { __DoorInfo = value; DoorInfoChanged?.Invoke(value, new EventArgs()); } }
+    private DoorInfo __DoorInfo = new DoorInfo();
+
+    /// <summary> ControlDが更新された際に呼ばれるイベント </summary>
+    public event EventHandler ControlDChanged;
+    /// <summary>各種操作情報</summary>
+    public ControlD ControlData { get { return __ControlD; } set { __ControlD = value; ControlDChanged?.Invoke(value, new EventArgs()); } }
+    private ControlD __ControlD = new ControlD();
+
+    /// <summary> StaDが更新された際に呼ばれるイベント </summary>
+    public event EventHandler StaDChanged;
+    /// <summary>ドア状態情報</summary>
+    public StaD Stations { get { return __StaD; } private set { __StaD = value; StaDChanged?.Invoke(value, new EventArgs()); } }
+    private StaD __StaD = new StaD();
 
     private bool IsMother { get; }
     private MemoryMappedFile MMFE { get; } = null;
