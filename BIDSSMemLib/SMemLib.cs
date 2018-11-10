@@ -10,12 +10,12 @@ namespace TR.BIDSSMemLib
   public class SMemLib:IDisposable
   {
     /// <summary>毎フレームごとに取得できるデータ(本家/open共通)</summary>
-    public class ElapD
+    public struct ElapD
     {
       /// <summary>情報が有効かどうか</summary>
-      public bool IsEnabled { get; internal set; } = false;
+      public bool IsEnabled { get; internal set; }
       /// <summary>クラスバージョン</summary>
-      public readonly int Ver = 100;
+      public readonly int Ver;
       /// <summary>列車位置[m]</summary>
       public double Location { get; internal set; }
       /// <summary>列車速度[km/h]</summary>
@@ -47,12 +47,12 @@ namespace TR.BIDSSMemLib
     }
 
     /// <summary>毎フレームごとに取得できるデータ(open専用)</summary>
-    public class OElapD
+    public struct OElapD
     {
       /// <summary>情報が有効かどうか</summary>
-      public bool IsEnabled { get; internal set; } = false;
+      public bool IsEnabled { get; internal set; }
       /// <summary>クラスバージョン</summary>
-      public readonly int Ver = 100;
+      public readonly int Ver;
       /// <summary>現在のカーブ半径[m]</summary>
       public double Radius { get; internal set; }
       /// <summary>現在のカントの大きさ[mm]</summary>
@@ -64,10 +64,10 @@ namespace TR.BIDSSMemLib
       /// <summary>先行列車に関する情報</summary>
       public PreTrainD PreTrain { get; internal set; }
 
-      public class PreTrainD
+      public struct PreTrainD
       {
         /// <summary>情報が有効かどうか</summary>
-        public bool IsEnabled { get; internal set; } = false;
+        public bool IsEnabled { get; internal set; }
         /// <summary>先行列車の尻尾の位置[m]</summary>
         public double Location { get; internal set; }
         /// <summary>先行列車の尻尾までの距離[m]</summary>
@@ -77,14 +77,13 @@ namespace TR.BIDSSMemLib
       }
     }
 
-
     /// <summary>ハンドルに関する情報</summary>
-    public class HandleD
+    public struct HandleD
     {
       /// <summary>クラスバージョン</summary>
-      public readonly int Ver = 100;
+      public readonly int Ver;
       /// <summary>情報が有効かどうか</summary>
-      public bool IsEnabled { get; internal set; } = false;
+      public bool IsEnabled { get; internal set; }
       /// <summary>レバーサー位置</summary>
       public sbyte Reverser { get; internal set; }
       /// <summary>Pノッチ位置</summary>
@@ -98,16 +97,17 @@ namespace TR.BIDSSMemLib
     }
 
     /// <summary>駅に関するデータ</summary>
-    public class StaD
+    public struct StaD
     {
       /// <summary>データサイズ</summary>
       public int Size => Marshal.SizeOf(StaList);
       public List<StationData> StaList { get; internal set; }
       /// <summary>駅に関するデータ</summary>
-      public class StationData
+      public struct StationData
       {
-        /// <summary>駅名</summary>
-        public string Name;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 64)]
+        /// <summary>駅名(64Byteまで)</summary>
+        public char[] Name;
         /// <summary>到着予定時刻[ms]</summary>
         public int ArrTime;
         /// <summary>発車予定時刻[ms]</summary>
@@ -135,12 +135,12 @@ namespace TR.BIDSSMemLib
     }
 
     /// <summary>操作情報</summary>
-    public class ControlD
+    public struct ControlD
     {
       /// <summary>クラスバージョン</summary>
-      public readonly int Ver = 100;
+      public readonly int Ver;
       /// <summary>情報が有効かどうか</summary>
-      public bool IsEnabled { get; internal set; } = false;
+      public bool IsEnabled { get; internal set; }
       /// <summary>レバーサー位置</summary>
       public sbyte Reverser { get; set; }
       /// <summary>Pノッチ位置</summary>
@@ -172,13 +172,18 @@ namespace TR.BIDSSMemLib
     /// <summary>ドア状態情報</summary>
     public DoorInfo Door { get; private set; }
 
+    /// <summary>各種操作情報</summary>
+    public ControlD ControlData { get; set; }
+    /// <summary>ドア状態情報</summary>
     public StaD Stations { get; private set; }
+
     private bool IsMother { get; }
-    MemoryMappedFile MMFE;
-    MemoryMappedFile MMFO;
-    MemoryMappedFile MMFS;
-    MemoryMappedFile MMFH;
-    MemoryMappedFile MMFD;
+    private MemoryMappedFile MMFE { get; } = null;
+    private MemoryMappedFile MMFO { get; } = null;
+    private MemoryMappedFile MMFS { get; } = null;
+    private MemoryMappedFile MMFH { get; } = null;
+    private MemoryMappedFile MMFD { get; } = null;
+    private MemoryMappedFile MMFC { get; } = null;
     /// <summary>
     /// SharedMemoryを初期化する。
     /// </summary>
@@ -193,6 +198,7 @@ namespace TR.BIDSSMemLib
         if (!IsMother) MMFS = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryS", sizeof(int));
         MMFH = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryH", Marshal.SizeOf(HandleInfo));
         MMFD = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryD", Marshal.SizeOf(Door));
+        MMFC = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryC", Marshal.SizeOf(ControlData));
       }
       catch (Exception) { throw; }
       if (!IsMother)
@@ -213,39 +219,150 @@ namespace TR.BIDSSMemLib
     /// </summary>
     public void Dispose()
     {
-
       MMFE?.Dispose();
       MMFO?.Dispose();
       MMFS?.Dispose();
       MMFH?.Dispose();
       MMFD?.Dispose();
+      MMFC?.Dispose();
     }
+    private ElapD EpD = new ElapD();
+    private OElapD OEpD = new OElapD();
+    private HandleD HeD = new HandleD();
+    private DoorInfo DD = new DoorInfo();
+    private ControlD ClD = new ControlD();
+    private StaD SnD = new StaD();
 
+    /// <summary>
+    /// 共有メモリからデータを読み込む
+    /// </summary>
     public void Read()
     {
-
+      ElapData = Equals(Read(out EpD, false), ElapData) ? ElapData : EpD;
+      OElapData = Equals(Read(out OEpD, false), OElapData) ? OElapData : OEpD;
+      HandleInfo = Equals(Read(out HeD, false), HandleInfo) ? HandleInfo : HeD;
+      Door = Equals(Read(out DD, false), Door) ? Door : DD;
+      ControlData = Equals(Read(out ClD, false), ControlData) ? ControlData : ClD;
+      Stations = Equals(Read(out SnD, false), Stations) ? Stations : SnD;
     }
-    public void BeginRead(int RefleshTime = 100)
+
+    public object Read<T>(bool DoWrite = true) where T : struct
+    {
+      T v = default;
+      if (v is ElapD e) return Read(out e, DoWrite);
+      if (v is OElapD o) return Read(out o, DoWrite);
+      if (v is HandleD h) return Read(out h, DoWrite);
+      if (v is DoorInfo d) return Read(out d, DoWrite);
+      if (v is ControlD c) return Read(out c, DoWrite);
+      if (v is StaD s) return Read(out s, DoWrite);
+
+      throw new InvalidOperationException("指定された型は使用できません。");
+    }
+
+    /// <summary>
+    /// 共有メモリからデータを読み込む
+    /// </summary>
+    /// <param name="D">読み込んだデータを書き込む変数</param>
+    /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    public ElapD Read(out ElapD D, bool DoWrite = true) { D = new ElapD(); using (var m = MMFE?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(ElapData, D)) ElapData = D; return D; }
+    /// <summary>
+    /// 共有メモリからデータを読み込む
+    /// </summary>
+    /// <param name="D">読み込んだデータを書き込む変数</param>
+    /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    public OElapD Read(out OElapD D, bool DoWrite = true) { D = new OElapD(); using (var m = MMFO?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(OElapData, D)) OElapData = D; return D; }
+    /// <summary>
+    /// 共有メモリからデータを読み込む
+    /// </summary>
+    /// <param name="D">読み込んだデータを書き込む変数</param>
+    /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    public HandleD Read(out HandleD D, bool DoWrite = true) { D = new HandleD(); using (var m = MMFH?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(HandleInfo, D)) HandleInfo = D; return D; }
+    /// <summary>
+    /// 共有メモリからデータを読み込む
+    /// </summary>
+    /// <param name="D">読み込んだデータを書き込む変数</param>
+    /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    public DoorInfo Read(out DoorInfo D, bool DoWrite = true) { D = new DoorInfo(); using (var m = MMFD?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite) Door = D; return D; }
+    /// <summary>
+    /// 共有メモリからデータを読み込む
+    /// </summary>
+    /// <param name="D">読み込んだデータを書き込む変数</param>
+    /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    public ControlD Read(out ControlD D, bool DoWrite = true) { D = new ControlD(); using (var m = MMFC?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite) ControlData = D; return D; }
+    /// <summary>
+    /// 共有メモリからデータを読み込む
+    /// </summary>
+    /// <param name="D">読み込んだデータを書き込む変数</param>
+    /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    public StaD Read(out StaD D, bool DoWrite = true) { D = new StaD(); using (var m = MMFS?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite) Stations = D; return D; }
+
+    /// <summary>
+    /// ElapD構造体の情報を共有メモリに書き込む
+    /// </summary>
+    /// <param name="D">書き込む構造体</param>
+    public void Write(in ElapD D) => Write(D, 0);
+    /// <summary>
+    /// OElapD構造体の情報を共有メモリに書き込む
+    /// </summary>
+    /// <param name="D">書き込む構造体</param>
+    public void Write(in OElapD D) => Write(D, 1);
+    /// <summary>
+    /// HandleD構造体の情報を共有メモリに書き込む
+    /// </summary>
+    /// <param name="D">書き込む構造体</param>
+    public void Write(in HandleD D) => Write(D, 2);
+    /// <summary>
+    /// DoorInfoを共有メモリに書き込む
+    /// </summary>
+    /// <param name="D">書き込む構造体</param>
+    public void Write(in DoorInfo D) => Write(D, 3);
+    /// <summary>
+    /// StaD構造体の情報を共有メモリに書き込む
+    /// </summary>
+    /// <param name="D">書き込む構造体</param>
+    public void Write(in StaD D) => Write(D, 4);
+    /// <summary>
+    /// ControlD構造体の情報を共有メモリに書き込む
+    /// </summary>
+    /// <param name="D">書き込む構造体</param>
+    public void Write(in ControlD D) => Write(D, 10);
+
+    private void Write(in object D,byte num)
     {
 
-    }
-    public void EndRead()
-    {
-
-    }
-    public void Write(object Obj)
-    {
       if (IsMother)
       {
-        if (Obj.GetType() == ElapData.GetType()) return;
-        if (Obj.GetType() == OElapData.GetType()) return;
-        if (Obj.GetType() == HandleInfo.GetType()) return;
-        if (Obj.GetType() == Door.GetType()) return;
-        if (Obj.GetType() == Stations.GetType()) return;
+        switch (num)
+        {
+          case 0://ElapData
+            if (true) { ElapD e = (ElapD)D; ElapData = e; using (var m = MMFE?.CreateViewAccessor()) { m.Write(0, ref e); } }
+            break;
+          case 1://OElapData
+            if (true) { OElapD e = (OElapD)D; OElapData = e; using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref e); } }
+            break;
+          case 2://HandleInfo
+            if (true) { HandleD e = (HandleD)D; HandleInfo = e; using (var m = MMFH?.CreateViewAccessor()) { m.Write(0, ref e); } }
+            break;
+          case 3://DoorInfo
+            if (true) { DoorInfo e = (DoorInfo)D; Door = e; using (var m = MMFD?.CreateViewAccessor()) { m.Write(0, ref e); } }
+            break;
+          case 4:
+            if (true) { StaD e = (StaD)D; Stations = e; using (var m = MMFS?.CreateViewAccessor()) { m.Write(0, ref e); } }
+            break;
+          default:
+            throw new TypeAccessException("MotherはHandleInfoに書き込みをすることができません。");
+        }
       }
       else
       {
-        if (Obj.GetType() == HandleInfo.GetType()) return;
+        if (num == 10)
+        {
+          if (true) { ControlD e = (ControlD)D; ControlData = e; using (var m = MMFC?.CreateViewAccessor()) { m.Write(0, ref e); } }
+        }
+        else
+        {
+          throw new TypeAccessException("ChildはHandleInfo以外に書き込みをすることはできません。");
+        }
       }
     }
   }
