@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace TR.BIDSSMemLib
 {
-  public class SMemLib:IDisposable
+  public class SMemLib : IDisposable
   {
     /// <summary>車両のスペック(互換性確保)</summary>
     public struct Spec
@@ -233,6 +233,76 @@ namespace TR.BIDSSMemLib
 
     /// <summary>ドア状態情報</summary>
     public enum DoorInfo { Open,Close,RightOpen,LeftOpen }
+
+    public class Data
+    {
+      /// <summary>車両情報が変化した際のイベントデータを格納</summary>
+      public class SpecDataChangedEventArgs : EventArgs
+      {
+        /// <summary>ATS確認に必要な段数</summary>
+        public int ATSCheck = 0;
+        /// <summary>常用最大位置</summary>
+        public int MaxServiceBrake = 0;
+        /// <summary>力行段数</summary>
+        public int MaxPower = 0;
+        /// <summary>抑速(発電)段数</summary>
+        public int MaxSuppression = 0;
+        /// <summary>制動段数</summary>
+        public int MaxBrake = 0;
+        /// <summary>単弁段数</summary>
+        public int MaxSelfBrake = 0;
+        /// <summary>編成両数</summary>
+        public int Cars = 0;
+        /// <summary>台車がM台車かどうか(</summary>
+        public bool[] IsMotorBogie;
+        /// <summary>パンタグラフ種類(台車の位置と連動)</summary>
+        public PantographType[] PantographTypes;
+
+        public enum PantographType
+        {
+          None,OuterTrolley,InnerTrolley,Diamond,Cross,OuterJointSingleArm,InnerJointSingleArm
+        }
+      }
+      /// <summary>速度が変化した際のイベントデータを格納</summary>
+      public class SpeedChangedEventArgs : EventArgs
+      {
+        /// <summary>現在速度[km/h]</summary>
+        public double Speed = 0;
+        /// <summary>1つ前のイベントの際の速度[km/h]</summary>
+        public double OldSpeed = 0;
+        /// <summary>加速度[km/h/s]</summary>
+        public double Acceleration = 0;
+      }
+      /// <summary>圧力が変化した際のイベントデータを格納</summary>
+      public class PressureChangedEventArgs : EventArgs
+      {
+        /// <summary>BC圧[kPa]</summary>
+        public double BC = 0;
+        /// <summary>MR圧[kPa]</summary>
+        public double MR = 0;
+        /// <summary>BP圧[kPa]</summary>
+        public double BP = 0;
+        /// <summary>ER圧[kPa]</summary>
+        public double ER = 0;
+        /// <summary>SAP圧[kPa]</summary>
+        public double SAP = 0;
+      }
+      /// <summary>電気状態が変化した際のイベントデータを格納</summary>
+      public class ElectrialStateChangedEventArgs
+      {
+        /// <summary>周波数[Hz]</summary>
+        public byte Frequency = 0;
+        /// <summary>架線電圧[V]</summary>
+        public double OverheadWireVoltage = 0;
+        /// <summary>バッテリー電圧[V]</summary>
+        public double BatteryVoltage = 0;
+        /// <summary>架線電圧[V]</summary>
+        public double SIVVoltage = 0;
+        /// <summary>電流[A]</summary>
+        public double Current = 0;
+      }
+    }
+
 
 
     /// <summary> BIDSSMemDataが更新された際に呼ばれるイベント </summary>
