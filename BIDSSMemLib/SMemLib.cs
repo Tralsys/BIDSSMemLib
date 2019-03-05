@@ -7,6 +7,10 @@ namespace TR.BIDSSMemLib
 {
   public partial class SMemLib : IDisposable
   {
+    static private readonly uint BSMDsize = (uint)Marshal.SizeOf(typeof(BIDSSharedMemoryData));
+
+
+
     /// <summary>BIDSSharedMemoryのデータ(互換性確保)</summary>
     public BIDSSharedMemoryData BIDSSMemData { get { return __BIDSSMemData; } private set { __BIDSSMemData = value; BIDSSMemChanged?.Invoke(value, new EventArgs()); } }
     private BIDSSharedMemoryData __BIDSSMemData = new BIDSSharedMemoryData();
