@@ -108,12 +108,14 @@ namespace TR.BIDSSMemLib
     /// <summary> HandleDが更新された際に呼ばれるイベント </summary>
     public event EventHandler HandleDChanged;
     /// <summary> StaDが更新された際に呼ばれるイベント </summary>
-    public event EventHandler StaDChanged;
+    //public event EventHandler StaDChanged;
 
     /// <summary> Panelが更新された際に呼ばれるイベント </summary>
     public event EventHandler PanelDChanged;
     /// <summary> Soundが更新された際に呼ばれるイベント </summary>
     public event EventHandler SoundDChanged;
 
+    /// <summary> 固定情報が更新された際に呼ばれるイベント </summary>
+    public event EventHandler ConstDChanged;
   }
 }

@@ -78,6 +78,20 @@ namespace TR.BIDSSMemLib
     public int[] Sound;
   };
 
+  /// <summary>固定数値データ</summary>
+  public struct ConstantD
+  {
+    public ushort SenderVersion;
+    public ushort SenderInfo;
+    public ushort BrakeHandleCount;
+    public ushort PowerHandleCount;
+    public ushort ATSCheckBNum;
+    public ushort B67NotchNum;
+    public ushort Cars;
+    public ushort SelfBCount;
+
+  }
+
   /// <summary>毎フレームごとに取得できるデータ(本家/open共通)</summary>
   public struct ElapD
   {
@@ -104,7 +118,7 @@ namespace TR.BIDSSMemLib
     /// <summary>(未実装)架線電圧[V]</summary>
     public double Voltage { get; set; }
     /// <summary>0時からの経過時間[ms]</summary>
-    public int Time { get; set; }
+    public uint Time { get; set; }
     /// <summary>現在時刻[時]</summary>
     public byte TimeHH { get { return (byte)TimeSpan.FromMilliseconds(Time).Hours; } }
     /// <summary>現在時刻[分]</summary>
@@ -114,7 +128,7 @@ namespace TR.BIDSSMemLib
     /// <summary>現在時刻[ミリ秒]</summary>
     public short TimeMS { get { return (short)TimeSpan.FromMilliseconds(Time).Milliseconds; } }
     public int SignalNum { get; set; }
-    public ushort DoorState { get; set; }
+    public uint DoorState { get; set; }
   }
 
   /// <summary>毎フレームごとに取得できるデータ(open専用)</summary>

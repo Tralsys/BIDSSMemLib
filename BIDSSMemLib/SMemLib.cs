@@ -27,9 +27,9 @@ namespace TR.BIDSSMemLib
     public HandleD HandleInfo { get { return __HandleD; } private set { __HandleD = value; HandleDChanged?.Invoke(value, new EventArgs()); } }
     private HandleD __HandleD = new HandleD();
 
-    /// <summary>ドア状態情報</summary>
-    public StaD Stations { get { return __StaD; } private set { __StaD = value; StaDChanged?.Invoke(value, new EventArgs()); } }
-    private StaD __StaD = new StaD();
+    /// <summary>駅情報</summary>
+    /*public StaD Stations { get { return __StaD; } private set { __StaD = value; StaDChanged?.Invoke(value, new EventArgs()); } }
+    private StaD __StaD = new StaD();*/
 
     /// <summary>Panel配列情報</summary>
     public PanelD Panels { get { return __PanelD; } private set { __PanelD = value; PanelDChanged?.Invoke(value, new EventArgs()); } }
@@ -39,44 +39,60 @@ namespace TR.BIDSSMemLib
     public SoundD Sounds { get { return __SoundD; } private set { __SoundD = value; SoundDChanged?.Invoke(value, new EventArgs()); } }
     private SoundD __SoundD = new SoundD();
 
+
+    public ConstantD ConstData { get { return __ConstD; } private set { __ConstD = value; ConstDChanged?.Invoke(value, new EventArgs()); } }
+    private ConstantD __ConstD = new ConstantD();
+
     private bool IsMother { get; }
     private MemoryMappedFile MMFB { get; } = null;
     private MemoryMappedFile MMFE { get; } = null;
     private MemoryMappedFile MMFO { get; } = null;
-    private MemoryMappedFile MMFS { get; set; } = null;
+    //private MemoryMappedFile MMFS { get; set; } = null;
     private MemoryMappedFile MMFH { get; } = null;
     private MemoryMappedFile MMFPn { get; set; } = null;
     private MemoryMappedFile MMFSn { get; set; } = null;
+    private MemoryMappedFile MMFCn { get; set; } = null;
 
     /// <summary>SharedMemoryを初期化する。</summary>
     /// <param name="IsThisMother">書き込む側かどうか</param>
-    public SMemLib(bool IsThisMother = false)
+    /// <param name="ModeNum">モード番号</param>
+    public SMemLib(bool IsThisMother = false, byte ModeNum = 0)
     {
       IsMother = IsThisMother;
+      if (ModeNum >= 4) throw new ArgumentOutOfRangeException("ModeNumは3以下である必要があります。本ライブラリでReqモードはサポートされません。");
       try
       {
-        if (!IsMother)
+        if (ModeNum == 1) { MMFB = MemoryMappedFile.CreateOrOpen("BIDSSharedMemory", BSMDsize); return; }
+        if (ModeNum <= 3)
         {
-          using (var sz = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryS", sizeof(int))?.CreateViewAccessor(0, sizeof(int)))
-          {
-            var size = sz?.ReadInt32(0);
-            if (size != null && size > 0) MMFS = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryS", (int)size);
-          }
+          MMFE = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryE", Marshal.SizeOf(ElapData));
+          MMFO = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryO", Marshal.SizeOf(OElapData));
+          MMFH = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryH", Marshal.SizeOf(HandleInfo));
+          MMFCn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryCn", Marshal.SizeOf(ConstData));
+        }
+        if (ModeNum <= 2)
+        {
           using (var sz = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", sizeof(int))?.CreateViewAccessor(0, sizeof(int)))
           {
             var size = sz?.ReadInt32(0);
             if (size != null && size > 0) MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", (int)size);
           }
+        }
+        if (ModeNum == 0)
+        {
+          /*using (var sz = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryS", sizeof(int))?.CreateViewAccessor(0, sizeof(int)))
+          {
+            var size = sz?.ReadInt32(0);
+            if (size != null && size > 0) MMFS = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryS", (int)size);
+          }*/
+          //Stationは未サポート
           using (var sz = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", sizeof(int))?.CreateViewAccessor(0, sizeof(int)))
           {
             var size = sz?.ReadInt32(0);
-            if (size != null && size > 0) MMFS = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (int)size);
+            if (size != null && size > 0) MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (int)size);
           }
         }
-        MMFB = MemoryMappedFile.CreateOrOpen("BIDSSharedMemory", BSMDsize);
-        MMFE = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryE", Marshal.SizeOf(ElapData));
-        MMFO = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryO", Marshal.SizeOf(OElapData));
-        MMFH = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryH", Marshal.SizeOf(HandleInfo));
+
       }
       catch (Exception) { throw; }
     }
@@ -86,7 +102,7 @@ namespace TR.BIDSSMemLib
       MMFB?.Dispose();
       MMFE?.Dispose();
       MMFO?.Dispose();
-      MMFS?.Dispose();
+      //MMFS?.Dispose();
       MMFH?.Dispose();
       MMFPn?.Dispose();
       MMFSn?.Dispose();
@@ -98,7 +114,7 @@ namespace TR.BIDSSMemLib
       Read<ElapD>();
       Read<OElapD>();
       Read<HandleD>();
-      Read<StaD>();
+      //Read<StaD>();
       Read<PanelD>();
       Read<SoundD>();
     }
@@ -111,9 +127,10 @@ namespace TR.BIDSSMemLib
       if (v is ElapD e) return Read(out e, DoWrite);
       if (v is OElapD o) return Read(out o, DoWrite);
       if (v is HandleD h) return Read(out h, DoWrite);
-      if (v is StaD s) return Read(out s, DoWrite);
-      if (v is PanelD) return Read(out s, DoWrite);
-      if (v is SoundD) return Read(out s, DoWrite);
+      //if (v is StaD s) return Read(out s, DoWrite);
+      if (v is PanelD pn) return Read(out pn, DoWrite);
+      if (v is SoundD sn) return Read(out sn, DoWrite);
+      if (v is ConstantD cn) return Read(out cn, DoWrite);
       throw new InvalidOperationException("指定された型は使用できません。");
     }
 
@@ -136,7 +153,7 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
-    public StaD Read(out StaD D, bool DoWrite = true) { D = new StaD(); using (var m = MMFS?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite) Stations = D; return D; }
+    //public StaD Read(out StaD D, bool DoWrite = true) { D = new StaD(); using (var m = MMFS?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite) Stations = D; return D; }
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
@@ -145,6 +162,10 @@ namespace TR.BIDSSMemLib
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
     public SoundD Read(out SoundD D, bool DoWrite = true) { D = new SoundD(); using (var m = MMFPn?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(Sounds, D)) Sounds = D; return D; }
+    /// <summary>共有メモリからデータを読み込む</summary>
+    /// <param name="D">読み込んだデータを書き込む変数</param>
+    /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    public ConstantD Read(out ConstantD D, bool DoWrite = true) { D = new ConstantD(); using (var m = MMFCn?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(ConstData, D)) ConstData = D; return D; }
 
 
     /// <summary>(互換性確保)BIDSSharedMemoryData構造体の情報を共有メモリに書き込む</summary>
@@ -161,13 +182,17 @@ namespace TR.BIDSSMemLib
     public void Write(in HandleD D) => Write(D, 2);
     /// <summary>StaD構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
-    public void Write(in StaD D) => Write(D, 4);
+    //public void Write(in StaD D) => Write(D, 4);
     /// <summary>Panel構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
     public void Write(in PanelD D) => Write(D, 6);
     /// <summary>Sound構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
-    public void Write(in SoundD D) => Write(D, 6);
+    public void Write(in SoundD D) => Write(D, 7);
+    /// <summary>ConstantD構造体の情報を共有メモリに書き込む</summary>
+    /// <param name="D">書き込む構造体</param>
+    public void Write(in ConstantD D) => Write(D, 3);
+
 
     private void Write(in object D,byte num)
     {
@@ -182,7 +207,10 @@ namespace TR.BIDSSMemLib
         case 2://HandleInfo
           if (!Equals((HandleD)D, HandleInfo)) { var e = (HandleD)D; HandleInfo = e; using (var m = MMFH?.CreateViewAccessor()) { m.Write(0, ref e); } }
           break;
-        case 4://Stations
+        case 3://ConstantData
+          if (!Equals((ConstantD)D, HandleInfo)) { var e = (ConstantD)D; ConstData = e; using (var m = MMFCn?.CreateViewAccessor()) { m.Write(0, ref e); } }
+          break;
+        /*case 4://Stations
           if (!Equals((StaD)D, Stations))
           {
             var e = (StaD)D;
@@ -194,7 +222,7 @@ namespace TR.BIDSSMemLib
             Stations = e;
             using (var m = MMFS?.CreateViewAccessor()) { m.Write(0, ref e); }
           }
-          break;
+          break;*/
         case 5:
           if (!Equals((BIDSSharedMemoryData)D, BIDSSMemData)) { var e = (BIDSSharedMemoryData)D; using (var m = MMFB?.CreateViewAccessor()) { m.Write(0, ref e); } }
           break;
