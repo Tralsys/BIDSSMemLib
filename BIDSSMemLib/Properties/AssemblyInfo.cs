@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BIDSSMemLib")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright © Tetsu Otter 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
