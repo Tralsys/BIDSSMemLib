@@ -7,7 +7,7 @@ using System.Text;
 namespace TR.BIDSSMemLib
 {
   //structをまとめ
-  /// <summary>車両のスペック(互換性確保)</summary>
+  /// <summary>車両のスペック</summary>
   public struct Spec
   {
     /// <summary>ブレーキ段数</summary>
@@ -21,7 +21,7 @@ namespace TR.BIDSSMemLib
     /// <summary>編成車両数</summary>
     public int C;
   };
-  /// <summary>車両の状態(互換性確保)</summary>
+  /// <summary>車両の状態</summary>
   public struct State
   {
     /// <summary>列車位置[m]</summary>
@@ -43,7 +43,7 @@ namespace TR.BIDSSMemLib
     /// <summary>電流[A]</summary>
     public float I;
   };
-  /// <summary>車両のハンドル位置(互換性確保)</summary>
+  /// <summary>車両のハンドル位置</summary>
   public struct Hand
   {
     /// <summary>ブレーキハンドル位置</summary>
@@ -55,7 +55,7 @@ namespace TR.BIDSSMemLib
     /// <summary>定速制御状態</summary>
     public int C;
   };
-  /// <summary>BIDSSharedMemoryのデータ構造体(互換性確保)</summary>
+  /// <summary>BIDSSharedMemoryのデータ構造体</summary>
   public struct BIDSSharedMemoryData
   {
     /// <summary>SharedMemoryが有効かどうか</summary>
@@ -78,61 +78,9 @@ namespace TR.BIDSSMemLib
     public int[] Sound;
   };
 
-  /// <summary>固定数値データ</summary>
-  public struct ConstantD
-  {
-    public ushort SenderVersion;
-    public ushort SenderInfo;
-    public ushort BrakeHandleCount;
-    public ushort PowerHandleCount;
-    public ushort ATSCheckBNum;
-    public ushort B67NotchNum;
-    public ushort Cars;
-    public ushort SelfBCount;
 
-  }
-
-  /// <summary>毎フレームごとに取得できるデータ(本家/open共通)</summary>
-  public struct ElapD
-  {
-    /// <summary>情報が有効かどうか</summary>
-    public bool IsEnabled { get; set; }
-    /// <summary>クラスバージョン</summary>
-    public readonly int Ver;
-    /// <summary>列車位置[m]</summary>
-    public double Location { get; set; }
-    /// <summary>列車速度[km/h]</summary>
-    public double Speed { get; set; }
-    /// <summary>BC圧力[kPa]</summary>
-    public double BCPres { get; set; }
-    /// <summary>MR圧力[kPa]</summary>
-    public double MRPres { get; set; }
-    /// <summary>ER圧力[kPa]</summary>
-    public double ERPres { get; set; }
-    /// <summary>BP圧力[kPa]</summary>
-    public double BPPres { get; set; }
-    /// <summary>SAP圧力[kPa]</summary>
-    public double SAPPres { get; set; }
-    /// <summary>電流[A]</summary>
-    public double Current { get; set; }
-    /// <summary>(未実装)架線電圧[V]</summary>
-    public double Voltage { get; set; }
-    /// <summary>0時からの経過時間[ms]</summary>
-    public uint Time { get; set; }
-    /// <summary>現在時刻[時]</summary>
-    public byte TimeHH { get { return (byte)TimeSpan.FromMilliseconds(Time).Hours; } }
-    /// <summary>現在時刻[分]</summary>
-    public byte TimeMM { get { return (byte)TimeSpan.FromMilliseconds(Time).Minutes; } }
-    /// <summary>現在時刻[秒]</summary>
-    public byte TimeSS { get { return (byte)TimeSpan.FromMilliseconds(Time).Seconds; } }
-    /// <summary>現在時刻[ミリ秒]</summary>
-    public short TimeMS { get { return (short)TimeSpan.FromMilliseconds(Time).Milliseconds; } }
-    public int SignalNum { get; set; }
-    public uint DoorState { get; set; }
-  }
-
-  /// <summary>毎フレームごとに取得できるデータ(open専用)</summary>
-  public struct OElapD
+  /// <summary>OpenBVEのみで取得できるデータ(open専用)</summary>
+  public struct OpenD
   {
     /// <summary>情報が有効かどうか</summary>
     public bool IsEnabled { get; set; }
@@ -148,6 +96,10 @@ namespace TR.BIDSSMemLib
     public ushort ElapTime { get; set; }
     /// <summary>先行列車に関する情報</summary>
     public PreTrainD PreTrain { get; set; }
+    /// <summary>自弁可動域段数</summary>
+    public int SelfBCount { get; set; }
+    /// <summary>自弁ハンドル位置</summary>
+    public int SelfBPosition { get; set; }
 
     public struct PreTrainD
     {
@@ -160,25 +112,6 @@ namespace TR.BIDSSMemLib
       /// <summary>先行列車の速度[km/h]</summary>
       public double Speed { get; set; }
     }
-  }
-
-  /// <summary>ハンドルに関する情報</summary>
-  public struct HandleD
-  {
-    /// <summary>クラスバージョン</summary>
-    public readonly int Ver;
-    /// <summary>情報が有効かどうか</summary>
-    public bool IsEnabled { get; set; }
-    /// <summary>レバーサー位置</summary>
-    public sbyte Reverser { get; set; }
-    /// <summary>Pノッチ位置</summary>
-    public short PNotch { get; set; }
-    /// <summary>Bノッチ位置</summary>
-    public ushort BNotch { get; set; }
-    /// <summary>単弁位置</summary>
-    public ushort LocoBNotch { get; set; }
-    /// <summary>定速制御の有効状態</summary>
-    public bool ConstSP { get; set; }
   }
 
   /// <summary>駅に関するデータ</summary>

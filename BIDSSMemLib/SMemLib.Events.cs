@@ -5,6 +5,13 @@ using System.Text;
 
 namespace TR.BIDSSMemLib
 {
+  internal static class UsefulFunc
+  {
+    static internal double MStoHH(this ref int ms) => ((double)ms) / 1000 / 60 / 60;
+    static internal double MtoKM(this ref double m) => m / 1000;
+    static internal double MtoKM(this ref float m) => m / 1000;
+  }
+
   public partial class SMemLib
   {
 	//イベントクラスとイベントを列挙
@@ -89,24 +96,99 @@ namespace TR.BIDSSMemLib
 
 
       /// <summary>車両情報が変化した際に発火</summary>
-      public event EventHandler<SpecDataChangedEventArgs> SpecChanged;
+      public static event EventHandler<SpecDataChangedEventArgs> SpecChanged;
       /// <summary>速度情報が変化した際に発火</summary>
-      public event EventHandler<SpeedChangedEventArgs> SpeedChanged;
+      public static event EventHandler<SpeedChangedEventArgs> SpeedChanged;
       /// <summary>列車位置情報が変化した際に発火</summary>
-      public event EventHandler<LocationChangedEventArgs> LocationChanged;
+      public static event EventHandler<LocationChangedEventArgs> LocationChanged;
       /// <summary>圧力情報が変化した際に発火</summary>
-      public event EventHandler<PressureChangedEventArgs> PressChanged;
+      public static event EventHandler<PressureChangedEventArgs> PressChanged;
       /// <summary>電源情報が変化した際に発火</summary>
-      public event EventHandler<ElectrialStateChangedEventArgs> ElectricalStateChanged;
+      public static event EventHandler<ElectrialStateChangedEventArgs> ElectricalStateChanged;
+
+      private static double OldOldT = 0;
+      private static double OldOldZ = 0;
+
+      static internal void OnBSMDChanged(object sender, BSMDChangedEArgs e)
+      {
+        if (!Equals(e.OldData.SpecData, e.NewData.SpecData)) SpecChanged?.Invoke(e.NewData.SpecData, new SpecDataChangedEventArgs()
+        {
+          ATSCheck = e.NewData.SpecData.A,
+          Cars = e.NewData.SpecData.C,
+          MaxBrake = e.NewData.SpecData.B,
+          MaxPower = e.NewData.SpecData.P,
+          MaxServiceBrake = e.NewData.SpecData.J
+        });
+        if (!Equals(e.NewData.StateData, e.OldData.StateData))
+        {
+          State n = e.NewData.StateData;
+          State o = e.OldData.StateData;
+          if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) PressChanged?.Invoke(n, new PressureChangedEventArgs()
+          {
+            BC = n.BC,
+            BP = n.BP,
+            ER = n.ER,
+            MR = n.MR,
+            SAP = n.SAP
+          });
+
+          if (n.Z != o.Z)
+          {
+            double a = 0;
+            double odt, ndt, odz, ndz, ot, nt, ov, nv;
+            double oldT = o.T.MStoHH();
+            double newT = n.T.MStoHH();
+            double oldZ = o.Z.MtoKM();
+            double newZ = n.Z.MtoKM();
+            if (n.T != o.T && OldOldT != o.T)
+            {
+              odt = oldT - OldOldT;
+              ndt = newT - oldT;
+              odz = oldZ - OldOldZ;
+              ndz = newZ - oldZ;
+              ov = odz / odt;
+              nv = ndz / ndt;
+              ot = OldOldT + (odt / 2);
+              nt = oldT + (ndt / 2);
+              if (ot != nt) a = (nv - ov) / (nt - ot);
+            }
+            LocationChanged?.Invoke(n.Z, new LocationChangedEventArgs() { Acceleration = a, Location = n.Z, OldLocation = o.Z });
+
+            OldOldT = oldT;
+            OldOldZ = oldZ;
+          }
+          if (n.V != o.V)
+          {
+            double a = 0;
+            if (n.T != o.T) a = (n.V.MtoKM() - o.V.MtoKM()) / (n.T.MStoHH() - o.T.MStoHH());
+            SpeedChanged?.Invoke(n.V, new SpeedChangedEventArgs() { Acceleration = a, OldSpeed = o.V, Speed = n.V });
+          }
+          if (n.I != o.I) ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I });
+        }
+      }
+      
+      static internal void OnOpenDChanged(object sender, OpenDChangedEArgs e)
+      {
+
+      }
     }
+
+    public class BSMDChangedEArgs : EventArgs
+    {
+      public BIDSSharedMemoryData OldData;
+      public BIDSSharedMemoryData NewData;
+    }
+    public class OpenDChangedEArgs : EventArgs
+    {
+      public OpenD OldData;
+      public OpenD NewData;
+    }
+
+
     /// <summary> BIDSSMemDataが更新された際に呼ばれるイベント </summary>
-    public event EventHandler BIDSSMemChanged;
-    /// <summary> ElapDが更新された際に呼ばれるイベント </summary>
-    public event EventHandler ElapDChanged;
-    /// <summary> OElapDが更新された際に呼ばれるイベント </summary>
-    public event EventHandler OElapDChanged;
-    /// <summary> HandleDが更新された際に呼ばれるイベント </summary>
-    public event EventHandler HandleDChanged;
+    public event EventHandler<BSMDChangedEArgs> BIDSSMemChanged;
+    /// <summary> OpenDが更新された際に呼ばれるイベント </summary>
+    public event EventHandler<OpenDChangedEArgs> OpenDChanged;
     /// <summary> StaDが更新された際に呼ばれるイベント </summary>
     //public event EventHandler StaDChanged;
 
@@ -115,7 +197,6 @@ namespace TR.BIDSSMemLib
     /// <summary> Soundが更新された際に呼ばれるイベント </summary>
     public event EventHandler SoundDChanged;
 
-    /// <summary> 固定情報が更新された際に呼ばれるイベント </summary>
-    public event EventHandler ConstDChanged;
+
   }
 }
