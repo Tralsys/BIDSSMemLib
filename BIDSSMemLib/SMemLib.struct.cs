@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace TR.BIDSSMemLib
 {
   //structをまとめ
   /// <summary>車両のスペック</summary>
+  [StructLayout(LayoutKind.Sequential)]
   public struct Spec
   {
     /// <summary>ブレーキ段数</summary>
@@ -19,6 +21,7 @@ namespace TR.BIDSSMemLib
     public int C;
   };
   /// <summary>車両の状態</summary>
+  [StructLayout(LayoutKind.Sequential)]
   public struct State
   {
     /// <summary>列車位置[m]</summary>
@@ -41,6 +44,7 @@ namespace TR.BIDSSMemLib
     public float I;
   };
   /// <summary>車両のハンドル位置</summary>
+  [StructLayout(LayoutKind.Sequential)]
   public struct Hand
   {
     /// <summary>ブレーキハンドル位置</summary>
@@ -53,6 +57,7 @@ namespace TR.BIDSSMemLib
     public int C;
   };
   /// <summary>BIDSSharedMemoryのデータ構造体</summary>
+  [StructLayout(LayoutKind.Sequential)]
   public struct BIDSSharedMemoryData
   {
     /// <summary>SharedMemoryが有効かどうか</summary>
@@ -67,16 +72,11 @@ namespace TR.BIDSSMemLib
     public Hand HandleData;
     /// <summary>ドアが閉まっているかどうか</summary>
     public bool IsDoorClosed;
-    /// <summary>Panelの表示番号配列</summary>
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-    public int[] Panel;
-    /// <summary>Soundの値配列</summary>
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 256)]
-    public int[] Sound;
   };
 
 
   /// <summary>OpenBVEのみで取得できるデータ(open専用)</summary>
+  [StructLayout(LayoutKind.Sequential)]
   public struct OpenD
   {
     /// <summary>情報が有効かどうか</summary>
@@ -98,6 +98,7 @@ namespace TR.BIDSSMemLib
     /// <summary>自弁ハンドル位置</summary>
     public int SelfBPosition { get; set; }
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct PreTrainD
     {
       /// <summary>情報が有効かどうか</summary>
@@ -112,12 +113,14 @@ namespace TR.BIDSSMemLib
   }
 
   /// <summary>駅に関するデータ</summary>
+  [StructLayout(LayoutKind.Sequential)]
   public struct StaD
   {
     /// <summary>データサイズ</summary>
     public int Size => Marshal.SizeOf(StaList);
     public List<StationData> StaList { get; set; }
     /// <summary>駅に関するデータ</summary>
+    [StructLayout(LayoutKind.Sequential)]
     public struct StationData
     {
       /// <summary>駅名番号</summary>
@@ -148,11 +151,13 @@ namespace TR.BIDSSMemLib
     }
   }
 
+  [StructLayout(LayoutKind.Sequential)]
   public struct PanelD
   {
     public int Size => Marshal.SizeOf(Panels);
     public int[] Panels { get; set; }
   }
+  [StructLayout(LayoutKind.Sequential)]
   public struct SoundD
   {
     public int Size => Marshal.SizeOf(Sounds);

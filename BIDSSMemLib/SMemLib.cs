@@ -2,6 +2,7 @@
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
 
+
 namespace TR.BIDSSMemLib
 {
   public partial class SMemLib : IDisposable
@@ -113,7 +114,7 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
-    public BIDSSharedMemoryData Read(out BIDSSharedMemoryData D,bool DoWrite = true) { D = new BIDSSharedMemoryData(); using (var m = MMFB?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(BIDSSMemData, D)) BIDSSMemData = D; return D; }
+    public BIDSSharedMemoryData Read(out BIDSSharedMemoryData D,bool DoWrite = true) { D = new BIDSSharedMemoryData(); if ((bool)MMFB?.CreateViewAccessor().CanRead) { using (var m = MMFB?.CreateViewAccessor()) { try { m?.Read(0, out D);/*Error*/} catch (Exception e ){ Console.WriteLine(e); } } if (DoWrite && !Equals(BIDSSMemData, D)) BIDSSMemData = D; } return D; }
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
@@ -156,7 +157,7 @@ namespace TR.BIDSSMemLib
         case 0://ElapData
           break;
         case 1://OpenData
-          if (!Equals((OpenD)D, OpenData)) { var e = (OpenD)D; OpenData = e; using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref e); } }
+          if (!Equals((OpenD)D, OpenData)) { var e = OpenData = (OpenD)D; using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref e); } }
           break;
         case 2://HandleInfo
           break;
@@ -176,7 +177,7 @@ namespace TR.BIDSSMemLib
           }
           break;*/
         case 5:
-          if (!Equals((BIDSSharedMemoryData)D, BIDSSMemData)) { var e = (BIDSSharedMemoryData)D; using (var m = MMFB?.CreateViewAccessor()) { m.Write(0, ref e); } }
+          if (!Equals((BIDSSharedMemoryData)D, BIDSSMemData)) { var f = BIDSSMemData = (BIDSSharedMemoryData)D; using (var m = MMFB?.CreateViewAccessor()) { m?.Write(0, ref f); } }
           break;
 
         case 6://Panel

@@ -108,6 +108,9 @@ namespace TR.BIDSSMemLib
 
       static internal void OnBSMDChanged(object sender, BSMDChangedEArgs e)
       {
+        BIDSSharedMemoryData bsmddef = default;
+
+        if (Equals(bsmddef, (BIDSSharedMemoryData)sender)) return;
         if (!Equals(e.OldData.SpecData, e.NewData.SpecData)) SpecChanged?.Invoke(e.NewData.SpecData, new SpecDataChangedEventArgs()
         {
           ATSCheck = e.NewData.SpecData.A,
@@ -183,16 +186,16 @@ namespace TR.BIDSSMemLib
 
 
     /// <summary> BIDSSMemDataが更新された際に呼ばれるイベント </summary>
-    public event EventHandler<BSMDChangedEArgs> BIDSSMemChanged;
+    public static event EventHandler<BSMDChangedEArgs> BIDSSMemChanged;
     /// <summary> OpenDが更新された際に呼ばれるイベント </summary>
-    public event EventHandler<OpenDChangedEArgs> OpenDChanged;
+    public static event EventHandler<OpenDChangedEArgs> OpenDChanged;
     /// <summary> StaDが更新された際に呼ばれるイベント </summary>
     //public event EventHandler StaDChanged;
 
     /// <summary> Panelが更新された際に呼ばれるイベント </summary>
-    public event EventHandler PanelDChanged;
+    public static event EventHandler PanelDChanged;
     /// <summary> Soundが更新された際に呼ばれるイベント </summary>
-    public event EventHandler SoundDChanged;
+    public static event EventHandler SoundDChanged;
 
 
   }
