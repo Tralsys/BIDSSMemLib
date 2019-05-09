@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if x86
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -175,6 +176,7 @@ namespace TR.BIDSSMemLib
     {
       BSMD.StateData = st;
       BSMD.HandleData = Handle;
+      BSMD.IsDoorClosed = DoorClosed;
       SML.Write(in BSMD);
       return Handle;
     }
@@ -238,3 +240,4 @@ namespace TR.BIDSSMemLib
 
   }
 }
+#endif

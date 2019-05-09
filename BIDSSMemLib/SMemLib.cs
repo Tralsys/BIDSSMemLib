@@ -43,6 +43,8 @@ namespace TR.BIDSSMemLib
     public SMemLib(bool IsThisMother = false, byte ModeNum = 0)
     {
       IsMother = IsThisMother;
+      BIDSSMemChanged += Events.OnBSMDChanged;
+      //OpenDChanged += Events.OnOpenDChanged;
       if (ModeNum >= 4) throw new ArgumentOutOfRangeException("ModeNumは3以下である必要があります。本ライブラリでReqモードはサポートされません。");
       try
       {
@@ -56,7 +58,7 @@ namespace TR.BIDSSMemLib
           using (var sz = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", sizeof(int))?.CreateViewAccessor(0, sizeof(int)))
           {
             var size = sz?.ReadInt32(0);
-            if (size != null && size > 0) MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", (int)size);
+            if (size != null && size > 0) MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", (int)size + sizeof(int));
           }
         }
         if (ModeNum == 0)
@@ -70,14 +72,12 @@ namespace TR.BIDSSMemLib
           using (var sz = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", sizeof(int))?.CreateViewAccessor(0, sizeof(int)))
           {
             var size = sz?.ReadInt32(0);
-            if (size != null && size > 0) MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (int)size);
+            if (size != null && size > 0) MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (int)size + sizeof(int));
           }
         }
 
       }
       catch (Exception) { throw; }
-      BIDSSMemChanged += Events.OnBSMDChanged;
-      OpenDChanged += Events.OnOpenDChanged;
     }
 
     /// <summary>SharedMemoryを解放する</summary>
@@ -126,11 +126,20 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
-    public PanelD Read(out PanelD D, bool DoWrite = true) { D = new PanelD(); using (var m = MMFPn?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(Panels, D)) Panels = D; return D; }
+    public PanelD Read(out PanelD D, bool DoWrite = true)
+    {
+      D = new PanelD();
+      using (var m = MMFPn?.CreateViewAccessor())
+      {
+        if (m != null) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0) / sizeof(int));
+      }
+      if (DoWrite && !Equals(Panels, D)) Panels = D;
+      return D;
+    }
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
-    public SoundD Read(out SoundD D, bool DoWrite = true) { D = new SoundD(); using (var m = MMFPn?.CreateViewAccessor()) { m.Read(0, out D); } if (DoWrite && !Equals(Sounds, D)) Sounds = D; return D; }
+    public SoundD Read(out SoundD D, bool DoWrite = true) { D = new SoundD(); using (var m = MMFPn?.CreateViewAccessor()) { if (m != null) m.ReadArray(sizeof(int), D.Sounds, 0, m.ReadInt32(0) / sizeof(int)); } if (DoWrite && !Equals(Sounds, D)) Sounds = D; return D; }
 
 
     /// <summary>BIDSSharedMemoryData構造体の情報を共有メモリに書き込む</summary>
@@ -190,7 +199,15 @@ namespace TR.BIDSSMemLib
               MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", e.Size);
             }
             Panels = e;
-            using (var m = MMFPn?.CreateViewAccessor()) { m.Write(0, ref e); }
+            using (var m = MMFPn?.CreateViewAccessor())
+            {
+              if (m != null && m.CanWrite)
+              {
+                int size = e.Size;
+                m.Write(0, ref size);
+                m.WriteArray(sizeof(int), e.Panels, 0, size / sizeof(int));
+              }
+            }
           }
           break;
         case 7://Sound
@@ -203,11 +220,19 @@ namespace TR.BIDSSMemLib
               MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", e.Size);
             }
             Sounds = e;
-            using (var m = MMFSn?.CreateViewAccessor()) { m.Write(0, ref e); }
+            using (var m = MMFSn?.CreateViewAccessor())
+            {
+              if (m != null && m.CanWrite)
+              {
+                int size = e.Size;
+                m.Write(0, ref size);
+                m.WriteArray(sizeof(int), e.Sounds, 0, size / sizeof(int));
+              }
+            }
           }
           break;
         default:
-          throw new NotImplementedException("Your operation number is Not Implemented.  Please use 0 ~ 7");
+          throw new NotImplementedException("Your operation number is Not Implemented.  Please use 1, 5 ~ 7");
       }
     }
   }
