@@ -90,8 +90,7 @@
     <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
     <DllExportNamespace>TR.BIDSSMemLib</DllExportNamespace>
     <DllExportDDNSCecil>true</DllExportDDNSCecil>
-    <DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
-    <DllExportPlatform>Auto</DllExportPlatform>
+    <PlatformTarget>x86</PlatformTarget>
     <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
     <DllExportGenExpLib>false</DllExportGenExpLib>
     <DllExportOurILAsm>false</DllExportOurILAsm>

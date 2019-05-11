@@ -8,7 +8,7 @@ namespace TR.BIDSSMemLib
     static internal double MtoKM(this ref double m) => m / 1000;
     static internal double MtoKM(this ref float m) => m / 1000;
   }
-
+#if !bve5 || !obve
   public partial class SMemLib
   {
 	//イベントクラスとイベントを列挙
@@ -199,4 +199,5 @@ namespace TR.BIDSSMemLib
 
 
   }
+#endif
 }

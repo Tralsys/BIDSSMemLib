@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !bve5 || !obve
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -84,6 +85,7 @@ namespace TR.BIDSSMemLib
           else throw new InvalidOperationException("共有メモリが有効化されていません。MMFSnにはNULLが設定されています。");
           break;
       }
+      if (ModeNum <= 0) Parallel.For(0, 8, (i) => ReadStart(i, Interval));
     }
 
     //AutoRead Methods
@@ -179,7 +181,8 @@ namespace TR.BIDSSMemLib
           SDRead = null;
           break;
       }
-      if (ModeNum < 0) Parallel.For(0, 8, (int i) => ReadStop(i));
+      if (ModeNum <= 0) Parallel.For(0, 8, (int i) => ReadStop(i));
     }
   }
 }
+#endif

@@ -74,7 +74,7 @@ namespace TR.BIDSSMemLib
     public bool IsDoorClosed;
   };
 
-
+#if !bve5
   /// <summary>OpenBVEのみで取得できるデータ(open専用)</summary>
   [StructLayout(LayoutKind.Sequential)]
   public struct OpenD
@@ -151,6 +151,7 @@ namespace TR.BIDSSMemLib
     }
   }
 
+#endif
   [StructLayout(LayoutKind.Sequential)]
   public struct PanelD
   {
