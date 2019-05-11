@@ -2,7 +2,7 @@
 
 namespace TR.BIDSSMemLib
 {
-  internal static class UsefulFunc
+  internal static partial class UsefulFunc
   {
     static internal double MStoHH(this ref int ms) => ((double)ms) / 1000 / 60 / 60;
     static internal double MtoKM(this ref double m) => m / 1000;

@@ -7,6 +7,7 @@ namespace TR.BIDSSMemLib
 {
   public partial class SMemLib : IDisposable
   {
+    public const string VersionNum = "202";
     static private readonly uint BSMDsize = (uint)Marshal.SizeOf(typeof(BIDSSharedMemoryData));
     /// <summary>BIDSSharedMemoryのデータ(互換性確保)</summary>
     public BIDSSharedMemoryData BIDSSMemData
@@ -14,7 +15,8 @@ namespace TR.BIDSSMemLib
       get { return __BIDSSMemData; }
       private set
       {
-#if !bve5 || !obve
+#if bve5 || obve
+#else
         BIDSSMemChanged?.Invoke(value, new BSMDChangedEArgs()
         {
           NewData = value,
@@ -25,14 +27,16 @@ namespace TR.BIDSSMemLib
       }
     }
     private BIDSSharedMemoryData __BIDSSMemData = new BIDSSharedMemoryData();
-#if !bve5
+#if bve5
+#else
     /// <summary>OpenBVEでのみ得られるデータ(open専用)</summary>
     public OpenD OpenData
     {
       get { return __OpenD; }
       private set
       {
-#if !bve5 || !obve
+#if bve5 || obve
+#else
         OpenDChanged?.Invoke(value, new OpenDChangedEArgs()
         {
           NewData = value,
@@ -66,7 +70,8 @@ namespace TR.BIDSSMemLib
       private set
       {
         __PanelD = value;
-#if !bve5 || !obve
+#if bve5 || obve
+#else
         PanelDChanged?.Invoke(value, new EventArgs());
 #endif
       }
@@ -80,17 +85,20 @@ namespace TR.BIDSSMemLib
       private set
       {
         __SoundD = value;
-#if !bve5 || obve
+#if bve5 || obve
+#else
         SoundDChanged?.Invoke(value, new EventArgs());
 #endif
       }
     }
     private SoundD __SoundD = new SoundD();
-#if !reader
+#if reader
+#else
     private bool IsMother { get; }
 #endif
     private MemoryMappedFile MMFB { get; } = null;
-#if !obve
+#if bve5
+#else
     private MemoryMappedFile MMFO { get; } = null;
     //private MemoryMappedFile MMFS { get; set; } = null;
 #endif
@@ -98,24 +106,25 @@ namespace TR.BIDSSMemLib
     private MemoryMappedFile MMFSn { get; set; } = null;
 
 
-#if !reader
+#if reader
+    /// <summary>SharedMemoryを初期化する。</summary>
+    /// <param name="ModeNum">モード番号</param>
+    public SMemLib(byte ModeNum = 0)
+    {
+#else
     /// <summary>SharedMemoryを初期化する。</summary>
     /// <param name="IsThisMother">書き込む側かどうか</param>
     /// <param name="ModeNum">モード番号</param>
     public SMemLib(bool IsThisMother = false, byte ModeNum = 0)
     {
       IsMother = IsThisMother;
-#else
-    /// <summary>SharedMemoryを初期化する。</summary>
-    /// <param name="ModeNum">モード番号</param>
-    public SMemLib(byte ModeNum = 0)
-    {
 #endif
-#if !bve5 || !obve
+#if bve5 || obve
+#else
       BIDSSMemChanged += Events.OnBSMDChanged;
       //OpenDChanged += Events.OnOpenDChanged;
 #endif
-      if (ModeNum >= 4) throw new ArgumentOutOfRangeException("ModeNumは3以下である必要があります。本ライブラリでReqモードはサポートされません。");
+        if (ModeNum >= 4) throw new ArgumentOutOfRangeException("ModeNumは3以下である必要があります。本ライブラリでReqモードはサポートされません。");
       try
       {
         //0 : Full Mode (BSMD, Open, Panel, Sound)
@@ -127,7 +136,8 @@ namespace TR.BIDSSMemLib
         if (ModeNum <= 3)
         {
           MMFB = MemoryMappedFile.CreateOrOpen("BIDSSharedMemory", BSMDsize);
-#if !bve5
+#if bve5
+#else
           MMFO = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryO", Marshal.SizeOf(OpenData));
 #endif
         }
@@ -143,7 +153,8 @@ namespace TR.BIDSSMemLib
         }
         if (ModeNum == 0)
         {
-#if !bve5
+#if bve5
+#else
           /*using (var sz = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryS", sizeof(int))?.CreateViewAccessor(0, sizeof(int)))
           {
             var size = sz?.ReadInt32(0);
@@ -168,7 +179,8 @@ namespace TR.BIDSSMemLib
     public void Dispose()
     {
       MMFB?.Dispose();
-#if !bve5
+#if bve5
+#else
       MMFO?.Dispose();
       //MMFS?.Dispose();
 #endif
@@ -179,7 +191,8 @@ namespace TR.BIDSSMemLib
     public void Read()
     {
       Read<BIDSSharedMemoryData>();
-#if !bve5
+#if bve5
+#else
       Read<OpenD>();
       //Read<StaD>();
 #endif
@@ -192,7 +205,8 @@ namespace TR.BIDSSMemLib
     {
       T v = default;
       if (v is BIDSSharedMemoryData b) return Read(out b, DoWrite);
-#if !bve5
+#if bve5
+#else
       if (v is OpenD o) return Read(out o, DoWrite);
       //if (v is StaD s) return Read(out s, DoWrite);
 #endif
@@ -217,7 +231,8 @@ namespace TR.BIDSSMemLib
       }
       return D;
     }
-#if !bve5
+#if bve5
+#else
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
@@ -302,11 +317,13 @@ namespace TR.BIDSSMemLib
       return D;
     }
 
-#if !reader
+#if reader
+#else
     /// <summary>BIDSSharedMemoryData構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
     public void Write(in BIDSSharedMemoryData D) => Write(D, 5);
-#if !bve5
+#if bve5
+#else
     /// <summary>OpenD構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
     public void Write(in OpenD D) => Write(D, 1);
@@ -323,10 +340,11 @@ namespace TR.BIDSSMemLib
 
     private void Write(in object D,byte num)
     {
+      if (!IsMother) throw new NotSupportedException("You are using this library as \"READER\", but your operation is WRITING THINGS OPERATION.\nPlease check your program.");
       switch (num)
       {
-        if (!IsMother) throw new NotSupportedException("You are using this library as \"READER\", but your operation is WRITING THINGS OPERATION.\nPlease check your program.");
-#if !bve5
+#if bve5
+#else
         case 1://OpenData
           if (!Equals((OpenD)D, OpenData)) { var e = OpenData = (OpenD)D; using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref e); } }
           break;

@@ -181,7 +181,7 @@ namespace TR.BIDSSMemLib
           SDRead = null;
           break;
       }
-      if (ModeNum <= 0) Parallel.For(0, 8, (int i) => ReadStop(i));
+      if (ModeNum <= 0) Parallel.For(1, 8, (int i) => ReadStop(i));
     }
   }
 }

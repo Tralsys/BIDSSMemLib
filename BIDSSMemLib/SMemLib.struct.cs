@@ -90,7 +90,7 @@ namespace TR.BIDSSMemLib
     /// <summary>現在の軌間[mm]</summary>
     public double Pitch { get; set; }
     /// <summary>1フレーム当たりの時間[ms]</summary>
-    public ushort ElapTime { get; set; }
+    public double ElapTime { get; set; }
     /// <summary>先行列車に関する情報</summary>
     public PreTrainD PreTrain { get; set; }
     /// <summary>自弁可動域段数</summary>

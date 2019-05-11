@@ -140,7 +140,7 @@ namespace TR.BIDSSMemLib
 #endif
       SML = new SMemLib(true, 0);
       BSMD.IsEnabled = true;
-      BSMD.VersionNum = 202;
+      BSMD.VersionNum = int.Parse(SMemLib.VersionNum);
       SML.Write(in BSMD);
       if (!Equals(BSMD, SML.Read<BIDSSharedMemoryData>(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
     }
