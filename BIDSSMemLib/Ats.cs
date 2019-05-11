@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if x86
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -118,7 +119,7 @@ namespace TR.BIDSSMemLib
   {
     private const int Version = 0x00020000;
     public const CallingConvention CalCnv = CallingConvention.StdCall;
-
+    const int MaxIndex = 256;
     /// <summary>Is the Door Closed TF</summary>
     public static bool DoorClosed { get; set; } = false;
     /// <summary>Current State of Handles</summary>
@@ -127,6 +128,8 @@ namespace TR.BIDSSMemLib
     public static bool[] IsKeyDown { get; set; } = new bool[16];
 
     static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
+    static PanelD PD = new PanelD();
+    static SoundD SD = new SoundD();
     static SMemLib SML = null;
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
@@ -135,7 +138,7 @@ namespace TR.BIDSSMemLib
 #if DEBUG
       MessageBox.Show("BIDSSMemLib Debug Build");
 #endif
-      SML = new SMemLib(true, 1);
+      SML = new SMemLib(true, 0);
       BSMD.IsEnabled = true;
       BSMD.VersionNum = 202;
       SML.Write(in BSMD);
@@ -147,7 +150,12 @@ namespace TR.BIDSSMemLib
     public static void Dispose()
     {
       BSMD = new BIDSSharedMemoryData();
+      PD = new PanelD();
+      SD = new SoundD();
       SML.Write(in BSMD);
+      SML.Write(in PD);
+      SML.Write(in SD);
+      SML.Dispose();
     }
 
     /// <summary>Called when the version number is needed</summary>
@@ -171,11 +179,16 @@ namespace TR.BIDSSMemLib
     /// <param name="Sa">Sound (Pointer of int[256])</param>
     /// <returns></returns>
     [DllExport(CallingConvention = CalCnv)]
-    static unsafe public Hand Elapse(State st, int* Pa, int* Sa)
+    static public Hand Elapse(State st, IntPtr Pa, IntPtr Sa)
     {
       BSMD.StateData = st;
       BSMD.HandleData = Handle;
+      BSMD.IsDoorClosed = DoorClosed;
       SML.Write(in BSMD);
+      Marshal.Copy(Pa, PD.Panels, 0, MaxIndex);
+      Marshal.Copy(Sa, SD.Sounds, 0, MaxIndex);
+      SML.Write(in PD);
+      SML.Write(in SD);
       return Handle;
     }
 
@@ -238,3 +251,4 @@ namespace TR.BIDSSMemLib
 
   }
 }
+#endif

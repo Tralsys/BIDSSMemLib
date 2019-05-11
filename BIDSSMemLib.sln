@@ -7,20 +7,52 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib", "BIDSSMemLib\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BIDSSMemLib.Standard", "BIDSSMemLib.Standard\BIDSSMemLib.Standard.csproj", "{07A49765-69AC-4BE3-A580-3D6F2B3011BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSDataChecker", "BIDSDataChecker\BIDSDataChecker.csproj", "{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|ATSPI = Debug|ATSPI
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|ATSPI = Release|ATSPI
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Debug|ATSPI.ActiveCfg = Debug|x86
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Debug|ATSPI.Build.0 = Debug|x86
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Debug|x86.Build.0 = Debug|Any CPU
 		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Release|ATSPI.ActiveCfg = Release|x86
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Release|ATSPI.Build.0 = Release|x86
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Release|x86.ActiveCfg = Release|Any CPU
+		{D73ADFE9-DA66-454F-873A-B45D2B741A22}.Release|x86.Build.0 = Release|Any CPU
 		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Debug|ATSPI.ActiveCfg = Debug|Any CPU
+		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Debug|x86.Build.0 = Debug|Any CPU
 		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Release|ATSPI.ActiveCfg = Release|Any CPU
+		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Release|x86.Build.0 = Release|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Debug|ATSPI.ActiveCfg = Debug|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Debug|ATSPI.Build.0 = Debug|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Release|ATSPI.ActiveCfg = Release|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Release|ATSPI.Build.0 = Release|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB114A5A-6850-4CFE-9A0C-84D39CDDE43E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

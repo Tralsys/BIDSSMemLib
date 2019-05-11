@@ -1,0 +1,20 @@
+﻿<Window x:Class="BIDSDataChecker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        Title="BIDS Readed Data Checker v202" Height="500" Width="900">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/><!--BSMD-->
+      <RowDefinition Height="*"/><!--OpenD-->
+      <RowDefinition Height="2*"/><!--Panel-->
+      <RowDefinition Height="2*"/><!--Sound-->
+    </Grid.RowDefinitions>
+    <Grid Grid.Row="0">
+      <StackPanel x:Name="BSMDStackPanel"/>
+    </Grid>
+  </Grid>
+</Window>
