@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib", "BIDSSMemLib\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BIDSSMemLib.Standard", "BIDSSMemLib.Standard\BIDSSMemLib.Standard.csproj", "{07A49765-69AC-4BE3-A580-3D6F2B3011BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.reader", "BIDSSMemLib.reader\BIDSSMemLib.reader.csproj", "{64158FB0-F424-49A9-A900-416FC3DD3D0C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07A49765-69AC-4BE3-A580-3D6F2B3011BF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64158FB0-F424-49A9-A900-416FC3DD3D0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64158FB0-F424-49A9-A900-416FC3DD3D0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64158FB0-F424-49A9-A900-416FC3DD3D0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64158FB0-F424-49A9-A900-416FC3DD3D0C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
