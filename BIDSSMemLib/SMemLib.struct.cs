@@ -154,13 +154,13 @@ namespace TR.BIDSSMemLib
   [StructLayout(LayoutKind.Sequential)]
   public struct PanelD
   {
-    public int Size => Marshal.SizeOf(Panels);
+    public int Length => Panels.Length;
     public int[] Panels { get; set; }
   }
   [StructLayout(LayoutKind.Sequential)]
   public struct SoundD
   {
-    public int Size => Marshal.SizeOf(Sounds);
+    public int Length => Sounds.Length;
     public int[] Sounds { get; set; }
   }
 }

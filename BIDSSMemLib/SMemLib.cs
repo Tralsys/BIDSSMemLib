@@ -48,9 +48,15 @@ namespace TR.BIDSSMemLib
       if (ModeNum >= 4) throw new ArgumentOutOfRangeException("ModeNumは3以下である必要があります。本ライブラリでReqモードはサポートされません。");
       try
       {
+        //0 : Full Mode (BSMD, Open, Panel, Sound)
+        //1 : v200 Mode (BSMD)
+        //2 : Lite+ Mode (BSMD, Open, Panel)
+        //3 : Lite Mode (BSMD, Open)
+        //4 : Req(Not Supported)
         if (ModeNum == 1) { MMFB = MemoryMappedFile.CreateOrOpen("BIDSSharedMemory", BSMDsize); return; }
         if (ModeNum <= 3)
         {
+          MMFB = MemoryMappedFile.CreateOrOpen("BIDSSharedMemory", BSMDsize);
           MMFO = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryO", Marshal.SizeOf(OpenData));
         }
         if (ModeNum <= 2)
@@ -129,9 +135,21 @@ namespace TR.BIDSSMemLib
     public PanelD Read(out PanelD D, bool DoWrite = true)
     {
       D = new PanelD();
+      bool IsReOpenNeeded = false;
+      int Length = 0;
       using (var m = MMFPn?.CreateViewAccessor())
       {
-        if (m != null) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0) / sizeof(int));
+        Length = m.ReadInt32(0);
+        IsReOpenNeeded = (Length+1) * sizeof(int) > m.Capacity;
+      }
+      if (IsReOpenNeeded)
+      {
+        MMFPn?.Dispose();
+        MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", (Length + 1) * sizeof(int));
+      }
+      using(var m = MMFPn?.CreateViewAccessor())
+      {
+        if (m != null) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0));
       }
       if (DoWrite && !Equals(Panels, D)) Panels = D;
       return D;
@@ -139,7 +157,31 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
-    public SoundD Read(out SoundD D, bool DoWrite = true) { D = new SoundD(); using (var m = MMFPn?.CreateViewAccessor()) { if (m != null) m.ReadArray(sizeof(int), D.Sounds, 0, m.ReadInt32(0) / sizeof(int)); } if (DoWrite && !Equals(Sounds, D)) Sounds = D; return D; }
+    public SoundD Read(out SoundD D, bool DoWrite = true)
+    {
+      D = new SoundD();
+      bool IsReOpenNeeded = false;
+      int Length = 0;
+      using (var m = MMFSn?.CreateViewAccessor())
+      {
+        if (m != null) {
+          Length = m.ReadInt32(0);
+          IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
+          if (!IsReOpenNeeded) m.ReadArray(sizeof(int), D.Sounds, 0, m.ReadInt32(0));
+        }
+      }
+      if (IsReOpenNeeded)
+      {
+        MMFSn?.Dispose();
+        MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (Length + 1) * sizeof(int));
+        using (var m = MMFSn?.CreateViewAccessor())
+        {
+          if (m != null) m.ReadArray(sizeof(int), D.Sounds, 0, m.ReadInt32(0));
+        }
+      }
+      if (DoWrite && !Equals(Sounds, D)) Sounds = D;
+      return D;
+    }
 
 
     /// <summary>BIDSSharedMemoryData構造体の情報を共有メモリに書き込む</summary>
@@ -163,16 +205,16 @@ namespace TR.BIDSSMemLib
     {
       switch (num)
       {
-        case 0://ElapData
+        case 0://ElapData => Deleted
           break;
         case 1://OpenData
           if (!Equals((OpenD)D, OpenData)) { var e = OpenData = (OpenD)D; using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref e); } }
           break;
-        case 2://HandleInfo
+        case 2://HandleInfo => Deleted
           break;
-        case 3://ConstantData
+        case 3://ConstantData => Deleted
           break;
-        /*case 4://Stations
+        /*case 4://Stations => Disabled
           if (!Equals((StaD)D, Stations))
           {
             var e = (StaD)D;
@@ -185,7 +227,7 @@ namespace TR.BIDSSMemLib
             using (var m = MMFS?.CreateViewAccessor()) { m.Write(0, ref e); }
           }
           break;*/
-        case 5:
+        case 5://BSMD
           if (!Equals((BIDSSharedMemoryData)D, BIDSSMemData)) { var f = BIDSSMemData = (BIDSSharedMemoryData)D; using (var m = MMFB?.CreateViewAccessor()) { m?.Write(0, ref f); } }
           break;
 
@@ -193,19 +235,19 @@ namespace TR.BIDSSMemLib
           if (!Equals((PanelD)D, Panels))
           {
             var e = (PanelD)D;
-            if (!Equals(Panels.Size, e.Size))
+            if (!Equals(Panels.Length, e.Length))
             {
               MMFPn?.Dispose();
-              MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", e.Size);
+              MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", e.Length * sizeof(int));
             }
             Panels = e;
             using (var m = MMFPn?.CreateViewAccessor())
             {
               if (m != null && m.CanWrite)
               {
-                int size = e.Size;
+                int size = e.Length * sizeof(int);
                 m.Write(0, ref size);
-                m.WriteArray(sizeof(int), e.Panels, 0, size / sizeof(int));
+                m.WriteArray(sizeof(int), e.Panels, 0, e.Length);
               }
             }
           }
@@ -214,19 +256,19 @@ namespace TR.BIDSSMemLib
           if (!Equals((SoundD)D, Sounds))
           {
             var e = (SoundD)D;
-            if (!Equals(Sounds.Size, e.Size))
+            if (!Equals(Sounds.Length, e.Length))
             {
               MMFSn?.Dispose();
-              MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", e.Size);
+              MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", e.Length * sizeof(int));
             }
             Sounds = e;
             using (var m = MMFSn?.CreateViewAccessor())
             {
               if (m != null && m.CanWrite)
               {
-                int size = e.Size;
+                int size = e.Length * sizeof(int);
                 m.Write(0, ref size);
-                m.WriteArray(sizeof(int), e.Sounds, 0, size / sizeof(int));
+                m.WriteArray(sizeof(int), e.Sounds, 0, e.Length);
               }
             }
           }
