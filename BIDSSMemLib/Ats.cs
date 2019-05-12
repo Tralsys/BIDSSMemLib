@@ -128,8 +128,8 @@ namespace TR.BIDSSMemLib
     public static bool[] IsKeyDown { get; set; } = new bool[16];
 
     static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
-    static PanelD PD = new PanelD();
-    static SoundD SD = new SoundD();
+    static PanelD PD = new PanelD() { Panels = new int[MaxIndex] };
+    static SoundD SD = new SoundD() { Sounds = new int[MaxIndex] };
     static SMemLib SML = null;
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
@@ -150,8 +150,8 @@ namespace TR.BIDSSMemLib
     public static void Dispose()
     {
       BSMD = new BIDSSharedMemoryData();
-      PD = new PanelD();
-      SD = new SoundD();
+      PD = new PanelD() { Panels = new int[MaxIndex] };
+      SD = new SoundD() { Sounds = new int[MaxIndex] };
       SML.Write(in BSMD);
       SML.Write(in PD);
       SML.Write(in SD);

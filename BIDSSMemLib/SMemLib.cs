@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO.MemoryMappedFiles;
 using System.Runtime.InteropServices;
-
+using System.Threading.Tasks;
 
 namespace TR.BIDSSMemLib
 {
@@ -269,12 +269,21 @@ namespace TR.BIDSSMemLib
       D = new PanelD();
       bool IsReOpenNeeded = false;
       int Length = 0;
-      using (var m = MMFPn?.CreateViewAccessor(0, sizeof(int)))
+      using (var m = MMFPn?.CreateViewAccessor())
       {
-        Length = m.ReadInt32(0);
-        IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
-        D.Panels = new int[Length];
-        if (!IsReOpenNeeded) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0));
+        if (m != null)
+        {
+          Length = m.ReadInt32(0);
+          IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
+          D.Panels = new int[Length];
+          if (Length <= 0) return D;
+          if (!IsReOpenNeeded)
+          {
+            int[] p = D.Panels;
+            m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
+            D.Panels = p;
+          }
+        }
       }
       if (IsReOpenNeeded)
       {
@@ -283,7 +292,12 @@ namespace TR.BIDSSMemLib
         MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", size);
         using (var m = MMFPn?.CreateViewAccessor(0, size))
         {
-          if (m != null) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0));
+          if (m != null)
+          {
+            int[] p = D.Panels;
+            m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
+            D.Panels = p;
+          }
         }
       }
       if (DoWrite && !Equals(Panels, D)) Panels = D;
@@ -303,7 +317,13 @@ namespace TR.BIDSSMemLib
           Length = m.ReadInt32(0);
           IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
           D.Sounds = new int[Length];
-          if (!IsReOpenNeeded) m.ReadArray(sizeof(int), D.Sounds, 0, m.ReadInt32(0));
+          if (Length <= 0) return D;
+          if (!IsReOpenNeeded)
+          {
+            int[] s = D.Sounds;
+            m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
+            D.Sounds = s;
+          }
         }
       }
       if (IsReOpenNeeded)
@@ -313,7 +333,12 @@ namespace TR.BIDSSMemLib
         MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", size);
         using (var m = MMFSn?.CreateViewAccessor(0, size))
         {
-          if (m != null) m.ReadArray(sizeof(int), D.Sounds, 0, m.ReadInt32(0));
+          if (m != null)
+          {
+            int[] s = D.Sounds;
+            m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
+            D.Sounds = s;
+          }
         }
       }
       if (DoWrite && !Equals(Sounds, D)) Sounds = D;
@@ -349,7 +374,7 @@ namespace TR.BIDSSMemLib
 #if bve5
 #else
         case 1://OpenData
-          if (!Equals((OpenD)D, OpenData)) { var e = OpenData = (OpenD)D; using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref e); } }
+          if (!Equals((OpenD)D, OpenData)) { var oe = OpenData = (OpenD)D; using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref oe); } }
           break;
         /*case 4://Stations => Disabled
           if (!Equals((StaD)D, Stations))
@@ -370,46 +395,74 @@ namespace TR.BIDSSMemLib
           break;
 
         case 6://Panel
-          if (!Equals((PanelD)D, Panels))
+          var pd = (PanelD)D;
+          bool IsPReOpenNeeded = false;
+          if (pd.Panels == null) pd.Panels = new int[0];
+          using (var m = MMFPn?.CreateViewAccessor())
           {
-            var e = (PanelD)D;
-            if (!Equals(Panels.Length, e.Length))
+            if (m != null)
             {
-              MMFPn?.Dispose();
-              MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", e.Length * sizeof(int));
+              IsPReOpenNeeded = m.Capacity < (pd.Length + 1) * sizeof(int);
+              if (!IsPReOpenNeeded && m.CanWrite)
+              {
+                int Length = pd.Length;
+                m.Write(0, ref Length);
+                int[] p = pd.Panels;
+                m.WriteArray(sizeof(int), p, 0, p.Length);
+              }
             }
-            Panels = e;
+          }
+          if (IsPReOpenNeeded)
+          {
+            MMFPn?.Dispose();
+            MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", (pd.Length + 1) * sizeof(int));
             using (var m = MMFPn?.CreateViewAccessor())
             {
               if (m != null && m.CanWrite)
               {
-                int size = e.Length * sizeof(int);
-                m.Write(0, ref size);
-                m.WriteArray(sizeof(int), e.Panels, 0, e.Length);
+                int Length = pd.Length;
+                m.Write(0, ref Length);
+                int[] p = pd.Panels;
+                m.WriteArray(sizeof(int), p, 0, p.Length);
               }
             }
           }
+          Panels = pd;
           break;
         case 7://Sound
-          if (!Equals((SoundD)D, Sounds))
+          bool IsSReOpenNeeded = false;
+          var e = (SoundD)D;
+          if (e.Sounds == null) e.Sounds = new int[0];
+          using (var m = MMFSn?.CreateViewAccessor())
           {
-            var e = (SoundD)D;
-            if (!Equals(Sounds.Length, e.Length))
+            if (m != null)
             {
-              MMFSn?.Dispose();
-              MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", e.Length * sizeof(int));
+              IsSReOpenNeeded = m.Capacity < (e.Length + 1) * sizeof(int);
+              if (!IsSReOpenNeeded && m.CanWrite)
+              {
+                int Length = e.Length;
+                m.Write(0, ref Length);
+                int[] s = e.Sounds;
+                m.WriteArray(sizeof(int), s, 0, s.Length);
+              }
             }
-            Sounds = e;
+          }
+          if (IsSReOpenNeeded)
+          {
+            MMFSn?.Dispose();
+            MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (e.Length + 1) * sizeof(int));
             using (var m = MMFSn?.CreateViewAccessor())
             {
               if (m != null && m.CanWrite)
               {
-                int size = e.Length * sizeof(int);
-                m.Write(0, ref size);
-                m.WriteArray(sizeof(int), e.Sounds, 0, e.Length);
+                int Length = e.Length;
+                m.Write(0, ref Length);
+                int[] s = e.Sounds;
+                m.WriteArray(sizeof(int), s, 0, s.Length);
               }
             }
           }
+          Sounds = e;
           break;
         default:
           throw new NotImplementedException("Your operation number is Not Implemented.");
