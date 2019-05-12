@@ -94,5 +94,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BIDSSMemLib.reader\BIDSSMemLib.reader.csproj">
+      <Project>{64158fb0-f424-49a9-a900-416fc3dd3d0c}</Project>
+      <Name>BIDSSMemLib.reader</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

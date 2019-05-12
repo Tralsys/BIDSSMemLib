@@ -183,7 +183,11 @@ namespace TR.BIDSSMemLib
       public OpenD OldData;
       public OpenD NewData;
     }
-
+    public class ArrayDChangedEArgs : EventArgs
+    {
+      public int[] NewArray;
+      public int[] OldArray;
+    }
 
     /// <summary> BIDSSMemDataが更新された際に呼ばれるイベント </summary>
     public static event EventHandler<BSMDChangedEArgs> BIDSSMemChanged;
@@ -193,9 +197,9 @@ namespace TR.BIDSSMemLib
     //public event EventHandler StaDChanged;
 
     /// <summary> Panelが更新された際に呼ばれるイベント </summary>
-    public static event EventHandler PanelDChanged;
+    public static event EventHandler<ArrayDChangedEArgs> PanelDChanged;
     /// <summary> Soundが更新された際に呼ばれるイベント </summary>
-    public static event EventHandler SoundDChanged;
+    public static event EventHandler<ArrayDChangedEArgs> SoundDChanged;
 
 
   }

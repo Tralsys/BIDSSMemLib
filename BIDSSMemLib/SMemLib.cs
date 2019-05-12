@@ -69,11 +69,11 @@ namespace TR.BIDSSMemLib
       get { return __PanelD; }
       private set
       {
-        __PanelD = value;
 #if bve5 || obve
 #else
-        PanelDChanged?.Invoke(value, new EventArgs());
+        PanelDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = __PanelD.Panels, NewArray = value.Panels });
 #endif
+        __PanelD = value;
       }
     }
     private PanelD __PanelD = new PanelD();
@@ -84,11 +84,11 @@ namespace TR.BIDSSMemLib
       get { return __SoundD; }
       private set
       {
-        __SoundD = value;
 #if bve5 || obve
 #else
-        SoundDChanged?.Invoke(value, new EventArgs());
+        SoundDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = __SoundD.Sounds, NewArray = value.Sounds });
 #endif
+        __SoundD = value;
       }
     }
     private SoundD __SoundD = new SoundD();
@@ -273,16 +273,18 @@ namespace TR.BIDSSMemLib
       {
         Length = m.ReadInt32(0);
         IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
+        D.Panels = new int[Length];
+        if (!IsReOpenNeeded) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0));
       }
-      var size = (Length + 1) * sizeof(int);
       if (IsReOpenNeeded)
       {
         MMFPn?.Dispose();
+        var size = (Length + 1) * sizeof(int);
         MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", size);
-      }
-      using (var m = MMFPn?.CreateViewAccessor(0, size))
-      {
-        if (m != null) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0));
+        using (var m = MMFPn?.CreateViewAccessor(0, size))
+        {
+          if (m != null) m.ReadArray(sizeof(int), D.Panels, 0, m.ReadInt32(0));
+        }
       }
       if (DoWrite && !Equals(Panels, D)) Panels = D;
       return D;
@@ -300,13 +302,14 @@ namespace TR.BIDSSMemLib
         if (m != null) {
           Length = m.ReadInt32(0);
           IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
+          D.Sounds = new int[Length];
           if (!IsReOpenNeeded) m.ReadArray(sizeof(int), D.Sounds, 0, m.ReadInt32(0));
         }
       }
-      var size = (Length + 1) * sizeof(int);
       if (IsReOpenNeeded)
       {
         MMFSn?.Dispose();
+        var size = (Length + 1) * sizeof(int);
         MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", size);
         using (var m = MMFSn?.CreateViewAccessor(0, size))
         {

@@ -20,7 +20,7 @@ namespace TR.BIDSSMemLib
     /// <summary>AutoReadを開始します。実行中である場合、Exceptionをthrowします。</summary>
     /// <param name="ModeNum">自動読み取りを開始する情報種類</param>
     /// <param name="Interval">読み取り頻度[ms]</param>
-    public void ReadStart(int ModeNum, int Interval = 50)
+    public void ReadStart(int ModeNum = 0, int Interval = 50)
     {
       switch (ModeNum)
       {
@@ -85,7 +85,7 @@ namespace TR.BIDSSMemLib
           else throw new InvalidOperationException("共有メモリが有効化されていません。MMFSnにはNULLが設定されています。");
           break;
       }
-      if (ModeNum <= 0) Parallel.For(0, 8, (i) => ReadStart(i, Interval));
+      if (ModeNum <= 0) Parallel.For(1, 8, (i) => ReadStart(i, Interval));
     }
 
     //AutoRead Methods
@@ -128,7 +128,7 @@ namespace TR.BIDSSMemLib
 
     /// <summary>AutoReadを終了します。実行中でなくともエラーは返しません。TimeOut:1000ms</summary>
     /// <param name="ModeNum">終了させる情報種類</param>
-    public void ReadStop(int ModeNum)
+    public void ReadStop(int ModeNum = 0)
     {
       switch (ModeNum)
       {
