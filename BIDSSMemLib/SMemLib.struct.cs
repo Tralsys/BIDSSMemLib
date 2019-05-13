@@ -87,7 +87,7 @@ namespace TR.BIDSSMemLib
     public double Radius { get; set; }
     /// <summary>現在のカントの大きさ[mm]</summary>
     public double Cant { get; set; }
-    /// <summary>現在の軌間[mm]</summary>
+    /// <summary>現在の勾配[‰]</summary>
     public double Pitch { get; set; }
     /// <summary>1フレーム当たりの時間[ms]</summary>
     public double ElapTime { get; set; }
