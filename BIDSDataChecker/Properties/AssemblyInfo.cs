@@ -8,11 +8,11 @@ using System.Windows;
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
 [assembly: AssemblyTitle("BIDSDataChecker")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Read and Show the driving data from BIDS Shared Memory")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BIDSDataChecker")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCompany("Tech Otter")]
+[assembly: AssemblyProduct("BIDS Project")]
+[assembly: AssemblyCopyright("Copyright © Tetsu Otter 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

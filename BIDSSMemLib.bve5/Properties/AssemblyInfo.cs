@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // 制御されます。アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
-[assembly: AssemblyTitle("BIDSSMemLib.bve5")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("BIDS Shared Memory Library for BVE5")]
+[assembly: AssemblyDescription("Write the driving data to Shared Memory")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("BIDSSMemLib.bve5")]
-[assembly: AssemblyCopyright("Copyright ©  2019")]
+[assembly: AssemblyCompany("Tech Otter")]
+[assembly: AssemblyProduct("BIDS Project")]
+[assembly: AssemblyCopyright("Copyright © Tetsu Otter 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

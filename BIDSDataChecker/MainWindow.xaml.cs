@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using TR.BIDSSMemLib;
 namespace BIDSDataChecker
@@ -47,14 +39,14 @@ namespace BIDSDataChecker
         TextBlock TBP = new TextBlock();
         Grid.SetRow(TBP, i / 16);
         Grid.SetColumn(TBP, i % 16);
-        TBP.Inlines.Add(i.ToString("x") + ":");
+        TBP.Inlines.Add(i.ToString() + ":");
         PRun[i] = new Run() { Text = "0" };
         TBP.Inlines.Add(PRun[i]);
         PanelGrid.Children.Add(TBP);
         TextBlock TBS = new TextBlock();
         Grid.SetRow(TBS, i / 16);
         Grid.SetColumn(TBS, i % 16);
-        TBS.Inlines.Add(i.ToString("x") + ":");
+        TBS.Inlines.Add(i.ToString() + ":");
         SRun[i] = new Run() { Text = "0" };
         TBS.Inlines.Add(SRun[i]);
         SoundGrid.Children.Add(TBS);
@@ -63,7 +55,7 @@ namespace BIDSDataChecker
 
     private void PDT_Tick(object sender, EventArgs e)
     {
-      PanelD PDNew = SML.Panels;
+      PanelD PDNew = (PanelD)SML?.Read<PanelD>(false);
       for (int i = 0; i < 256; i++)
       {
         MakeRun(ref PRun[i], PDOld.Length > i ? PDOld.Panels[i] : 0, PDNew.Length > i ? PDNew.Panels[i] : 0);
@@ -72,7 +64,7 @@ namespace BIDSDataChecker
     }
     private void SDT_Tick(object sender, EventArgs e)
     {
-      SoundD SDNew = SML.Sounds;
+      SoundD SDNew = (SoundD)SML?.Read<SoundD>(false);
       for (int i = 0; i < 256; i++)
       {
         MakeRun(ref SRun[i], SDOld.Length > i ? SDOld.Sounds[i] : 0, SDNew.Length > i ? SDNew.Sounds[i] : 0);
@@ -115,9 +107,9 @@ namespace BIDSDataChecker
     SoundD SDOld = new SoundD() { Sounds = new int[0] };
     private void DT_Tick(object sender, EventArgs e)
     {
-      BIDSSharedMemoryData BSMDNew = SML.BIDSSMemData;
-      OpenD ODNew = SML.OpenData;
-      MakeRun(ref BSMDIsEnabled, BSMDOld.IsEnabled, BSMDNew.IsEnabled);
+      BIDSSharedMemoryData BSMDNew = (BIDSSharedMemoryData)SML?.Read<BIDSSharedMemoryData>(false);
+      OpenD ODNew = (OpenD)SML?.Read<OpenD>(false);
+
       MakeRun(ref BSMDVersionNum, BSMDOld.VersionNum, BSMDNew.VersionNum);
 
       MakeRun(ref BSMDSpecB, BSMDOld.SpecData.B, BSMDNew.SpecData.B);
@@ -167,7 +159,6 @@ namespace BIDSDataChecker
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
       SML = new SMemLib();
-      SML?.ReadStart(0);
       DT?.Start();
       PDT?.Start();
       SDT?.Start();
@@ -234,7 +225,6 @@ namespace BIDSDataChecker
       DT?.Stop();
       PDT?.Stop();
       SDT?.Stop();
-      SML?.ReadStop(0);
       SML?.Dispose();
       SML = null;
     }
