@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Tech Otter")]
 [assembly: AssemblyProduct("BIDS Project")]
-[assembly: AssemblyCopyright("(C) 2019 Tetsu Otter")]
+[assembly: AssemblyCopyright("Copyright © Tetsu Otter 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
