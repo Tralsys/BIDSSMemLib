@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using OpenBveApi.Runtime;
 using OpenBveApi.Interface;
 using OpenBveApi.FileSystem;
@@ -15,7 +12,7 @@ namespace TR.BIDSSMemLib
     public static float ToFloat(in this double d) => (float)d;
   }
 
-  class InputDevice : IInputDevice
+  class InputDeviceOBVE : IInputDevice
   {
     public InputControl[] Controls { get; set; } = new InputControl[1];
 
