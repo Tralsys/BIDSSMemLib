@@ -32,7 +32,8 @@ namespace TR.BIDSSMemLib
 
     public void Load(string settingsPath) => ci = new CtrlInput();
 
-    public void SetAxisRanges(int[][] ranges) { }
+    bool IsOneHandle = false;
+    public void SetAxisRanges(int[][] ranges) => IsOneHandle = ranges[3][0] < 0 && 0 < ranges[3][1];
 
     public void Tick()
     {
@@ -40,9 +41,18 @@ namespace TR.BIDSSMemLib
       bool[] kd = ci?.GetIsKeyPushed() ?? new bool[CtrlInput.KeyArrSizeMax];
       if (!Equals(h, hd))
       {
-        if (h.R != hd.R) LM(Axis.Reverser, hd.R);
-        if (h.P != hd.P) LM(Axis.Power, hd.P);
-        if (h.B != hd.B) LM(Axis.Brake, hd.B);
+        LM(Axis.Reverser, hd.R);
+        if (IsOneHandle)
+        {
+          int Pos = -hd.B;
+          if (Pos == 0) Pos = hd.P;
+          LM(Axis.SHandle, Pos);
+        }
+        else
+        {
+          LM(Axis.Power, hd.P);
+          LM(Axis.Brake, hd.B);
+        }
         h = hd;
       }
       for (int i = 0; i < 20; i++)
