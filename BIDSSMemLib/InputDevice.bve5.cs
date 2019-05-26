@@ -1,22 +1,20 @@
-﻿using System;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 using System.Windows.Forms;
 using Mackoy.Bvets;
 
 namespace TR.BIDSSMemLib
 {
-  class InputDeviceBVE5 : IInputDevice
+  public class InputDeviceBVE5 : IInputDevice
   {
     public event InputEventHandler LeverMoved;
     public event InputEventHandler KeyDown;
     public event InputEventHandler KeyUp;
 
-	class Axis
+    class Axis
     {
-      internal const int FuncKey = -2;
-      internal const int ATSKey = -1;
-	  internal const int Reverser = 0;
+      internal const int FuncKey = -1;
+      internal const int ATSKey = -2;
+      internal const int Reverser = 0;
       internal const int Power = 1;
       internal const int Brake = 2;
       internal const int SHandle = 3;
@@ -26,9 +24,9 @@ namespace TR.BIDSSMemLib
     Hand h = new Hand();
 
     public void Configure(IWin32Window owner)
-		=> MessageBox.Show(owner, "BIDS Shared Memory Library\nBVE5 Input Device Plugin File\nVersion : "
-		+ Assembly.GetExecutingAssembly().GetName().Version.ToString(), Assembly.GetExecutingAssembly().GetName().Name);
-    
+    => MessageBox.Show(owner, "BIDS Shared Memory Library\nBVE5 Input Device Plugin File\nVersion : "
+    + Assembly.GetExecutingAssembly().GetName().Version.ToString(), Assembly.GetExecutingAssembly().GetName().Name);
+
     CtrlInput ci = null;
     public void Dispose() => ci?.Dispose();
 
@@ -47,7 +45,7 @@ namespace TR.BIDSSMemLib
         if (h.B != hd.B) LM(Axis.Brake, hd.B);
         h = hd;
       }
-	  for(int i = 0; i < 20; i++)
+      for (int i = 0; i < 20; i++)
       {
         if (k[i] != kd[i]) KE(i, kd[i]);
       }

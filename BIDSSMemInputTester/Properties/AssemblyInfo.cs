@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // 制御されます。アセンブリに関連付けられている情報を変更するには、
-// これらの属性値を変更してください。
-[assembly: AssemblyTitle("BIDSSMemLib.bve5id")]
-[assembly: AssemblyDescription("BIDS Control Library for BVE5 Input Device Plugin Interface")]
+// これらの属性値を変更します。
+[assembly: AssemblyTitle("BIDSSMemInputTester")]
+[assembly: AssemblyDescription("BIDS Input Command Tester")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Tech Otter")]
 [assembly: AssemblyProduct("BIDS Project")]
@@ -15,13 +16,13 @@ using System.Runtime.InteropServices;
 
 // ComVisible を false に設定すると、このアセンブリ内の型は COM コンポーネントから
 // 参照できなくなります。COM からこのアセンブリ内の型にアクセスする必要がある場合は、
-// その型の ComVisible 属性を true に設定してください。
+// その型の ComVisible 属性を true に設定します。
 [assembly: ComVisible(false)]
 
 // このプロジェクトが COM に公開される場合、次の GUID が typelib の ID になります
-[assembly: Guid("ac5c9aaa-b084-4297-ab37-10cb81e0c299")]
+[assembly: Guid("81e82ffc-f0ae-465c-958c-eaddbc590821")]
 
-// アセンブリのバージョン情報は、以下の 4 つの値で構成されています:
+// アセンブリのバージョン情報は次の 4 つの値で構成されています:
 //
 //      メジャー バージョン
 //      マイナー バージョン

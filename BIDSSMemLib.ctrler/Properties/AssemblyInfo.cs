@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // 制御されます。アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
-[assembly: AssemblyTitle("BIDSSMemLib.bve5id")]
-[assembly: AssemblyDescription("BIDS Control Library for BVE5 Input Device Plugin Interface")]
+[assembly: AssemblyTitle("BIDSSMemLib.ctrler")]
+[assembly: AssemblyDescription("Make the Control Command")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Tech Otter")]
 [assembly: AssemblyProduct("BIDS Project")]
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // このプロジェクトが COM に公開される場合、次の GUID が typelib の ID になります
-[assembly: Guid("ac5c9aaa-b084-4297-ab37-10cb81e0c299")]
+[assembly: Guid("04604f47-737e-467f-838c-f3e523c79546")]
 
 // アセンブリのバージョン情報は、以下の 4 つの値で構成されています:
 //
