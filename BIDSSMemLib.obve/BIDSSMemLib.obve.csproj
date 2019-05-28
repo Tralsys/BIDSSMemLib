@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
-    <Compile Include="..\BIDSSMemLib\InputDevice.cs" Link="InputDevice.cs" />
+    <Compile Include="..\BIDSSMemLib\InputDevice.obve.cs" Link="InputDevice.obve.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
