@@ -221,7 +221,7 @@ namespace TR.BIDSSMemLib
     public BIDSSharedMemoryData Read(out BIDSSharedMemoryData D,bool DoWrite = true)
     {
       D = new BIDSSharedMemoryData();
-      if ((bool)MMFB?.CreateViewAccessor().CanRead)
+      try
       {
         using (var m = MMFB?.CreateViewAccessor())
         {
@@ -229,6 +229,8 @@ namespace TR.BIDSSMemLib
         }
         if (DoWrite && !Equals(BIDSSMemData, D)) BIDSSMemData = D;
       }
+      catch (ObjectDisposedException) { }
+      catch (Exception) { throw; }
       return D;
     }
 #if bve5
@@ -239,11 +241,16 @@ namespace TR.BIDSSMemLib
     public OpenD Read(out OpenD D, bool DoWrite = true)
     {
       D = new OpenD();
-      using (var m = MMFO?.CreateViewAccessor())
+      try
       {
-        m?.Read(0, out D);
+        using (var m = MMFO?.CreateViewAccessor())
+        {
+          m?.Read(0, out D);
+        }
+        if (DoWrite && !Equals(OpenData, D)) OpenData = D;
       }
-      if (DoWrite && !Equals(OpenData, D)) OpenData = D;
+      catch (ObjectDisposedException) { }
+      catch (Exception) { throw; }
       return D;
     }
     /*
@@ -269,38 +276,43 @@ namespace TR.BIDSSMemLib
       D = new PanelD();
       bool IsReOpenNeeded = false;
       int Length = 0;
-      using (var m = MMFPn?.CreateViewAccessor())
+      try
       {
-        if (m != null)
-        {
-          Length = m.ReadInt32(0);
-          IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
-          D.Panels = new int[Length];
-          if (Length <= 0) return D;
-          if (!IsReOpenNeeded)
-          {
-            int[] p = D.Panels;
-            m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
-            D.Panels = p;
-          }
-        }
-      }
-      if (IsReOpenNeeded)
-      {
-        MMFPn?.Dispose();
-        var size = (Length + 1) * sizeof(int);
-        MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", size);
-        using (var m = MMFPn?.CreateViewAccessor(0, size))
+        using (var m = MMFPn?.CreateViewAccessor())
         {
           if (m != null)
           {
-            int[] p = D.Panels;
-            m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
-            D.Panels = p;
+            Length = m.ReadInt32(0);
+            IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
+            D.Panels = new int[Length];
+            if (Length <= 0) return D;
+            if (!IsReOpenNeeded)
+            {
+              int[] p = D.Panels;
+              m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
+              D.Panels = p;
+            }
           }
         }
+        if (IsReOpenNeeded)
+        {
+          MMFPn?.Dispose();
+          var size = (Length + 1) * sizeof(int);
+          MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", size);
+          using (var m = MMFPn?.CreateViewAccessor(0, size))
+          {
+            if (m != null)
+            {
+              int[] p = D.Panels;
+              m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
+              D.Panels = p;
+            }
+          }
+        }
+        if (DoWrite && !Equals(Panels, D)) Panels = D;
       }
-      if (DoWrite && !Equals(Panels, D)) Panels = D;
+      catch (ObjectDisposedException) { }
+      catch (Exception) { throw; }
       return D;
     }
     /// <summary>共有メモリからデータを読み込む</summary>
@@ -311,37 +323,43 @@ namespace TR.BIDSSMemLib
       D = new SoundD();
       bool IsReOpenNeeded = false;
       int Length = 0;
-      using (var m = MMFSn?.CreateViewAccessor())
+      try
       {
-        if (m != null) {
-          Length = m.ReadInt32(0);
-          IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
-          D.Sounds = new int[Length];
-          if (Length <= 0) return D;
-          if (!IsReOpenNeeded)
-          {
-            int[] s = D.Sounds;
-            m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
-            D.Sounds = s;
-          }
-        }
-      }
-      if (IsReOpenNeeded)
-      {
-        MMFSn?.Dispose();
-        var size = (Length + 1) * sizeof(int);
-        MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", size);
-        using (var m = MMFSn?.CreateViewAccessor(0, size))
+        using (var m = MMFSn?.CreateViewAccessor())
         {
           if (m != null)
           {
-            int[] s = D.Sounds;
-            m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
-            D.Sounds = s;
+            Length = m.ReadInt32(0);
+            IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
+            D.Sounds = new int[Length];
+            if (Length <= 0) return D;
+            if (!IsReOpenNeeded)
+            {
+              int[] s = D.Sounds;
+              m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
+              D.Sounds = s;
+            }
           }
         }
+        if (IsReOpenNeeded)
+        {
+          MMFSn?.Dispose();
+          var size = (Length + 1) * sizeof(int);
+          MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", size);
+          using (var m = MMFSn?.CreateViewAccessor(0, size))
+          {
+            if (m != null)
+            {
+              int[] s = D.Sounds;
+              m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
+              D.Sounds = s;
+            }
+          }
+        }
+        if (DoWrite && !Equals(Sounds, D)) Sounds = D;
       }
-      if (DoWrite && !Equals(Sounds, D)) Sounds = D;
+      catch (ObjectDisposedException) { }
+      catch (Exception) { throw; }
       return D;
     }
 
