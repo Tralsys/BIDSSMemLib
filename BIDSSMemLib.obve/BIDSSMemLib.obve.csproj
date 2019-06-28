@@ -40,6 +40,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\BIDSSMemLib\CtrlInput.cs">
+      <Link>CtrlInput.cs</Link>
+    </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
     <Compile Include="..\BIDSSMemLib\InputDevice.obve.cs" Link="InputDevice.obve.cs" />
