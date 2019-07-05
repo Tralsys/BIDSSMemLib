@@ -55,6 +55,23 @@ namespace TR.BIDSSMemLib
     /// <summary>定速制御状態</summary>
     public int C;
   };
+  /// <summary>車両のハンドル位置(InputDevice用)</summary>
+  [StructLayout(LayoutKind.Sequential)]
+  public struct Hands
+  {
+    /// <summary>ブレーキハンドル位置</summary>
+    public int B;
+    /// <summary>ノッチハンドル位置</summary>
+    public int P;
+    /// <summary>レバーサーハンドル位置</summary>
+    public int R;
+    /// <summary>自弁ハンドル位置</summary>
+    public int S;
+    /// <summary>制動ハンドル位置(0~1)</summary>
+    public double BPos;
+    /// <summary>力行ハンドル位置(0~1)</summary>
+    public double PPos;
+  };
   /// <summary>BIDSSharedMemoryのデータ構造体</summary>
   [StructLayout(LayoutKind.Sequential)]
   public struct BIDSSharedMemoryData

@@ -6,10 +6,19 @@
 #define KEY_ARRMAXINDEX 128
 struct Hand
 {
-	int P;
 	int B;
+	int P;
 	int R;
 	int C;
+};
+struct Hands
+{
+	int B;
+	int P;
+	int R;
+	int S;
+	double BPos;
+	double PPos;
 };
 struct KeyD
 {
@@ -18,7 +27,7 @@ struct KeyD
 extern "C"
 {
 	__declspec(dllexport) void Initialize(const char*, const char*);
-	__declspec(dllexport) Hand GetHandD();
+	__declspec(dllexport) Hands GetHandD();
 	__declspec(dllexport) KeyD* GetKeyD();
 	__declspec(dllexport) void Dispose();
 }

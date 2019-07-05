@@ -19,19 +19,19 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 HANDLE MMFCtrlHHandle = NULL;
 HANDLE MMFCtrlKHandle = NULL;
-Hand* MMFViewHHandle = NULL;
+Hands* MMFViewHHandle = NULL;
 KeyD* MMFViewKHandle = NULL;
-const Hand brankhd;
+const Hands brankhd;
 const KeyD brankkd;
 void Initialize(const char* MMFCtrlKName, const char* MMFCtrlHName) {
 	MMFCtrlHHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, false, (LPCSTR)MMFCtrlHName);
 	if (MMFCtrlHHandle == NULL)
-		MMFCtrlHHandle = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(Hand), (LPCSTR)MMFCtrlHName);
+		MMFCtrlHHandle = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(Hands), (LPCSTR)MMFCtrlHName);
 	MMFCtrlKHandle = OpenFileMapping(FILE_MAP_ALL_ACCESS, false, (LPCSTR)MMFCtrlKName);
 	if (MMFCtrlKHandle == NULL)
 		MMFCtrlKHandle = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(KeyD), (LPCSTR)MMFCtrlKName);
 
-	if (MMFCtrlHHandle != NULL) MMFViewHHandle = (Hand*)MapViewOfFile(MMFCtrlHHandle, SECTION_MAP_READ, 0, 0, 0);
+	if (MMFCtrlHHandle != NULL) MMFViewHHandle = (Hands*)MapViewOfFile(MMFCtrlHHandle, SECTION_MAP_READ, 0, 0, 0);
 	else
 	{
 		MessageBox(NULL, (LPCSTR)L"Could not open the Memory Mapped File of HandD.", (LPCSTR)L"BIDSSMemLib Ctrl Reader", 0);
@@ -43,8 +43,8 @@ void Initialize(const char* MMFCtrlKName, const char* MMFCtrlHName) {
 	}
 }
 
-Hand GetHandD() {
-	if (MMFViewHHandle != NULL) return (Hand)(*MMFViewHHandle);
+Hands GetHandD() {
+	if (MMFViewHHandle != NULL) return (Hands)(*MMFViewHHandle);
 	else return brankhd;
 }
 /*

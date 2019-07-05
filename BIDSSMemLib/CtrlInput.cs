@@ -20,7 +20,7 @@ namespace TR.BIDSSMemLib
     [DllImport(CtrlIO_FName)]
     static extern void Initialize(string MMFCtrlKName, string MMFCtrlHName);
     [DllImport(CtrlIO_FName, EntryPoint = "GetHandD")]
-    static extern Hand ppGetHandD();
+    static extern Hands ppGetHandD();
     [DllImport(CtrlIO_FName, EntryPoint = "GetKeyD")]
     static extern IntPtr ppGetKeyD();
     [DllImport(CtrlIO_FName, EntryPoint = "Dispose")]
@@ -33,12 +33,12 @@ namespace TR.BIDSSMemLib
     public CtrlInput()
     {
       MMFCtrlK = MemoryMappedFile.CreateOrOpen(MMFCtrlKName, KeyArrSizeMax * sizeof(bool));
-      MMFCtrlH = MemoryMappedFile.CreateOrOpen(MMFCtrlHName, Marshal.SizeOf(new Hand()));
+      MMFCtrlH = MemoryMappedFile.CreateOrOpen(MMFCtrlHName, Marshal.SizeOf(new Hands()));
     }
 #endif
     public enum HandType
     {
-      Reverser, Power, Brake
+      Reverser, Power, Brake, SelfB, PPos, BPos
     }
 
 #if !CONTROLLER
@@ -168,10 +168,10 @@ namespace TR.BIDSSMemLib
     }
     /// <summary>ハンドル位置指令状態を取得する</summary>
     /// <returns>ハンドル位置指令状態</returns>
-    public Hand GetHandD()
+    public Hands GetHandD()
     {
       //ctr++;
-      Hand hd = new Hand();
+      Hands hd = new Hands();
 #if bve5id
       hd = ppGetHandD();
       //if ((ctr %= 100) == 0)
@@ -197,10 +197,10 @@ namespace TR.BIDSSMemLib
     }
     /// <summary>ハンドル位置指令状態を取得する</summary>
     /// <param name="hd">ハンドル位置指令状態</param>
-    public void GetHandD(ref Hand hd) => hd = GetHandD();
+    public void GetHandD(ref Hands hd) => hd = GetHandD();
     /// <summary>ハンドル位置を設定する</summary>
     /// <param name="hd">指定するハンドル位置</param>
-    public void SetHandD(ref Hand hd)
+    public void SetHandD(ref Hands hd)
     {
 #if bve5id
 
@@ -221,7 +221,7 @@ namespace TR.BIDSSMemLib
 
     public void SetHandD(HandType ht, int value)
     {
-      Hand hd = GetHandD();
+      Hands hd = GetHandD();
       switch (ht)
       {
         case HandType.Brake:
@@ -232,6 +232,35 @@ namespace TR.BIDSSMemLib
           break;
         case HandType.Reverser:
           hd.R = value;
+          break;
+        case HandType.SelfB:
+          hd.S = value;
+          break;
+      }
+      SetHandD(ref hd);
+    }
+    public void SetHandD(HandType ht, double value)
+    {
+      Hands hd = GetHandD();
+      switch (ht)
+      {
+        case HandType.Brake:
+          hd.B = (int)value;
+          break;
+        case HandType.Power:
+          hd.P = (int)value;
+          break;
+        case HandType.Reverser:
+          hd.R = (int)value;
+          break;
+        case HandType.SelfB:
+          hd.S = (int)value;
+          break;
+        case HandType.BPos:
+          hd.BPos = value;
+          break;
+        case HandType.PPos:
+          hd.PPos = value;
           break;
       }
       SetHandD(ref hd);

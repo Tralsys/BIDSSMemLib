@@ -46,12 +46,16 @@ namespace TR.BIDSSMemLib
     //bool[] KeyOld = new bool[CtrlInput.KeyArrSizeMax];
     public void OnUpdateFrame()
     {
-      Hand h = CI.GetHandD();
+      Hands h = CI.GetHandD();
+      if (h.B == 0 && h.P == 0 && (h.BPos != 0 || h.PPos != 0))
+      {
+        h.P = (int)Math.Round(h.PPos * HD.P, MidpointRounding.AwayFromZero);
+        h.B = (int)Math.Round(h.BPos * HD.B, MidpointRounding.AwayFromZero);
+      }
       Controls[0].Option = h.P;
       Controls[1].Option = h.B;
       Controls[2].Option = h.R;
       //bool[] KeyI = CI.GetIsKeyPushed();
-
     }
 
     public void SetElapseData(ElapseData data)
