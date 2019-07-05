@@ -40,6 +40,12 @@ namespace TR.BIDSSMemLib
 
     public void OnUpdateFrame()
     {
+      Hands hd = new Hands();
+      if (hd.B == 0 && hd.P == 0 && (hd.BPos != 0 || hd.PPos != 0))
+      {
+        hd.P = (int)Math.Round(hd.PPos * HD.P, MidpointRounding.AwayFromZero);
+        hd.B = (int)Math.Round(hd.BPos * HD.B, MidpointRounding.AwayFromZero);
+      }
     }
 
     public void SetElapseData(ElapseData data)

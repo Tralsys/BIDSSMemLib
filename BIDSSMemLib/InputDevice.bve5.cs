@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Windows.Forms;
 using Mackoy.Bvets;
 
@@ -18,10 +19,12 @@ namespace TR.BIDSSMemLib
       internal const int Power = 1;
       internal const int Brake = 2;
       internal const int SHandle = 3;
+      internal const int Positive = 1;
+      internal const int Negative = 0;
     }
 
     bool[] k = new bool[CtrlInput.KeyArrSizeMax];
-    Hand h = new Hand();
+    Hands h = new Hands();
 
     public void Configure(IWin32Window owner)
     => MessageBox.Show(owner, "BIDS Shared Memory Library\nBVE5 Input Device Plugin File\nVersion : "
@@ -33,15 +36,27 @@ namespace TR.BIDSSMemLib
     public void Load(string settingsPath) => ci = new CtrlInput();
 
     bool IsOneHandle = false;
-    public void SetAxisRanges(int[][] ranges) => IsOneHandle = ranges[3][0] < 0 && 0 < ranges[3][1];
+    int MaxB = 0;
+    int[] MaxP = new int[2] { 0, 0 };
+    public void SetAxisRanges(int[][] ranges)
+    {
+      IsOneHandle = ranges[Axis.SHandle][Axis.Negative] < 0 && 0 < ranges[Axis.SHandle][Axis.Positive];
+      MaxB = ranges[Axis.Brake][Axis.Positive];
+      MaxP = ranges[Axis.Power];
+    }
 
     public void Tick()
     {
-      Hand hd = ci?.GetHandD() ?? new Hand();
+      Hands hd = ci?.GetHandD() ?? new Hands();
       bool[] kd = ci?.GetIsKeyPushed() ?? new bool[CtrlInput.KeyArrSizeMax];
       if (!Equals(h, hd))
       {
         LM(Axis.Reverser, hd.R);
+        if (hd.B == 0 && hd.P == 0 && (hd.BPos != 0 || hd.PPos != 0))
+        {
+          hd.P = (int)Math.Round(hd.PPos * MaxP[hd.PPos < 0 ? Axis.Negative : Axis.Positive], MidpointRounding.AwayFromZero);
+          hd.B = (int)Math.Round(hd.BPos * MaxB, MidpointRounding.AwayFromZero);
+        }
         if (IsOneHandle)
         {
           int Pos = -hd.B;
