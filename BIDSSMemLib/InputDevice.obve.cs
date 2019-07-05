@@ -4,6 +4,7 @@ using OpenBveApi.Interface;
 using OpenBveApi.FileSystem;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace TR.BIDSSMemLib
 {
@@ -14,8 +15,21 @@ namespace TR.BIDSSMemLib
 
   class InputDeviceOBVE : IInputDevice
   {
-    public InputControl[] Controls { get; set; } = new InputControl[3];
-
+    public InputControl[] Controls { get; private set; } = new InputControl[8]
+    {
+      new InputControl(){ Command = Translations.Command.BrakeEmergency },
+      new InputControl(){ Command = Translations.Command.ReverserAnyPostion, Option = -1 },
+      new InputControl(){ Command = Translations.Command.ReverserAnyPostion, Option = 0 },
+      new InputControl(){ Command = Translations.Command.ReverserAnyPostion, Option = 1 },
+      new InputControl(){ Command = Translations.Command.BrakeDecrease },
+      new InputControl(){ Command = Translations.Command.BrakeIncrease },
+      new InputControl(){ Command = Translations.Command.PowerDecrease },
+      new InputControl(){ Command = Translations.Command.PowerIncrease }
+    };
+    enum CtrlsName : int
+    {
+      EB, RB, RN, RF, BMinus, BPlus, PMinus, PPlus
+    }
     public event EventHandler<InputEventArgs> KeyDown;
     public event EventHandler<InputEventArgs> KeyUp;
 
@@ -27,10 +41,6 @@ namespace TR.BIDSSMemLib
     CtrlInput CI = null;
     public bool Load(FileSystem fileSystem)
     {
-      Controls[0].Command = Translations.Command.PowerAnyNotch;
-      Controls[1].Command = Translations.Command.BrakeAnyNotch;
-      Controls[2].Command = Translations.Command.ReverserAnyPostion;
-      
       try
       {
         SML = new SMemLib(true, 0);
@@ -44,22 +54,65 @@ namespace TR.BIDSSMemLib
       }
     }
     //bool[] KeyOld = new bool[CtrlInput.KeyArrSizeMax];
+    Hands hds = new Hands();
+    bool HandRUpdated = false;
     public void OnUpdateFrame()
     {
       Hands h = CI.GetHandD();
       if (h.B == 0 && h.P == 0 && (h.BPos != 0 || h.PPos != 0))
       {
-        h.P = (int)Math.Round(h.PPos * HD.P, MidpointRounding.AwayFromZero);
-        h.B = (int)Math.Round(h.BPos * HD.B, MidpointRounding.AwayFromZero);
+        h.P = (int)Math.Round(h.PPos * hd.P, MidpointRounding.AwayFromZero);
+        h.B = (int)Math.Round(h.BPos * hd.B, MidpointRounding.AwayFromZero);
       }
-      Controls[0].Option = h.P;
-      Controls[1].Option = h.B;
-      Controls[2].Option = h.R;
+
+      if (!Equals(h.B, hds.B))
+      {
+        if (h.B >= (hd.B + 1))
+        {
+          KD(CtrlsName.EB);
+          KU(CtrlsName.EB);
+        }
+        else
+        {
+          CtrlsName cn = 0;
+          if (h.B > chp.B) cn = CtrlsName.BPlus;
+          if (h.B < chp.B) cn = CtrlsName.BMinus;
+          if (cn != 0)
+          {
+            for (int i = 0; i < (Math.Abs(h.B - chp.B)); i++) KD(cn);
+            KU(cn);
+          }
+        }
+      }
+
+      if (!Equals(h.P, hds.P))
+      {
+        CtrlsName cn = 0;
+        if (h.P > chp.P) cn = CtrlsName.PPlus;
+        if (h.P < chp.P) cn = CtrlsName.PMinus;
+        if (cn != 0)
+        {
+          for (int i = 0; i < (Math.Abs(h.P - chp.P)); i++) KD(cn);
+          KU(cn);
+        }
+      }
+
+      if (HandRUpdated) { KU(Controls[hds.R + 2]); HandRUpdated = false; }
+      if (!Equals(h.R, hds.R)) { KD(Controls[hds.R + 2]); HandRUpdated = true; }
+
       //bool[] KeyI = CI.GetIsKeyPushed();
+      hds = h;
     }
 
+    private void KU(InputControl c) => KeyUp?.Invoke(this, new InputEventArgs(c));
+    private void KD(InputControl c) => KeyDown?.Invoke(this, new InputEventArgs(c));
+    private void KU(CtrlsName cn) => KU(Controls[(int)cn]);
+    private void KD(CtrlsName cn) => KD(Controls[(int)cn]);
+    Hand chp = new Hand();
     public void SetElapseData(ElapseData data)
     {
+      chp.P = data.Handles.PowerNotch;
+      chp.B = data.Handles.BrakeNotch;
       BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData()
       {
         HandleData = new Hand()
@@ -84,7 +137,7 @@ namespace TR.BIDSSMemLib
         IsDoorClosed = data.DoorInterlockState == DoorInterlockStates.Locked,
         IsEnabled = true,
         VersionNum = int.Parse(SMemLib.VersionNum),
-        SpecData = new Spec() { B = HD.B, P = HD.P }
+        SpecData = new Spec() { B = hd.B, P = hd.P }
       };
       OpenD OD = new OpenD()
       {
@@ -109,11 +162,12 @@ namespace TR.BIDSSMemLib
       SML?.Write(in BSMD);
       SML?.Write(in OD);
     }
-    Hand HD = new Hand();
+
+    Hand hd = new Hand();
     public void SetMaxNotch(int powerNotch, int brakeNotch)
     {
-      HD.P = powerNotch;
-      HD.B = brakeNotch;
+      hd.P = powerNotch;
+      hd.B = brakeNotch;
     }
 
     public void Unload()

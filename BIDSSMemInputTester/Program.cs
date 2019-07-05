@@ -41,6 +41,12 @@ namespace TR.BIDSSMemInputTester
                 case 'U':
                   ci.SetIsKeyPushed(int.Parse(sa[i].Remove(0, 1)), false);
                   break;
+                case 'p':
+                  ci.SetHandD(BIDSSMemLib.CtrlInput.HandType.PPos, double.Parse(sa[i].Remove(0, 1)));
+                  break;
+                case 'b':
+                  ci.SetHandD(BIDSSMemLib.CtrlInput.HandType.BPos, double.Parse(sa[i].Remove(0, 1)));
+                  break;
                 case 'e':
                   IsLooping = sa[i] != "exit";
                   break;

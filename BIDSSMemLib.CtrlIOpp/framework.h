@@ -4,13 +4,6 @@
 // Windows ヘッダー ファイル
 #include <windows.h>
 #define KEY_ARRMAXINDEX 128
-struct Hand
-{
-	int B;
-	int P;
-	int R;
-	int C;
-};
 struct Hands
 {
 	int B;
