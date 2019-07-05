@@ -76,7 +76,7 @@ namespace TR.BIDSSMemLib
         __PanelD = value;
       }
     }
-    private PanelD __PanelD = new PanelD();
+    private PanelD __PanelD = new PanelD() { Panels = new int[0] };
 
     /// <summary>Sound配列情報</summary>
     public SoundD Sounds
@@ -91,7 +91,7 @@ namespace TR.BIDSSMemLib
         __SoundD = value;
       }
     }
-    private SoundD __SoundD = new SoundD();
+    private SoundD __SoundD = new SoundD() { Sounds = new int[0] };
 #if reader
 #else
     private bool IsMother { get; }
@@ -117,6 +117,7 @@ namespace TR.BIDSSMemLib
     /// <param name="ModeNum">モード番号</param>
     public SMemLib(bool IsThisMother = false, byte ModeNum = 0)
     {
+      Console.WriteLine("SMemLib Started");
       IsMother = IsThisMother;
 #endif
 #if bve5 || obve
@@ -227,10 +228,13 @@ namespace TR.BIDSSMemLib
         {
           m?.Read(0, out D);
         }
-        if (DoWrite && !Equals(BIDSSMemData, D)) BIDSSMemData = D;
+        try
+        {
+          if (DoWrite && !Equals(BIDSSMemData, D)) BIDSSMemData = D;
+        }catch(Exception e) { Console.WriteLine("BSMD Comp:{0}", e);Console.ReadKey(); }
       }
       catch (ObjectDisposedException) { }
-      catch (Exception) { throw; }
+      catch (Exception e) { Console.WriteLine(e); }
       return D;
     }
 #if bve5
@@ -282,16 +286,19 @@ namespace TR.BIDSSMemLib
         {
           if (m != null)
           {
-            Length = m.ReadInt32(0);
-            IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
-            D.Panels = new int[Length];
-            if (Length <= 0) return D;
-            if (!IsReOpenNeeded)
+            try
             {
-              int[] p = D.Panels;
-              m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
-              D.Panels = p;
-            }
+              Length = m?.ReadInt32(0) ?? 0;
+              IsReOpenNeeded = (Length + 1) * sizeof(int) > (m?.Capacity ?? 0);
+              D.Panels = new int[Length];
+              if (Length <= 0) return D;
+              if (!IsReOpenNeeded)
+              {
+                int[] p = D.Panels;
+                m?.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
+                D.Panels = p;
+              }
+            }catch(Exception e) { Console.WriteLine("RDo:{0}",e); Console.ReadKey(); }
           }
         }
         if (IsReOpenNeeded)
@@ -304,12 +311,15 @@ namespace TR.BIDSSMemLib
             if (m != null)
             {
               int[] p = D.Panels;
-              m.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
+              m?.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
               D.Panels = p;
             }
           }
         }
-        if (DoWrite && !Equals(Panels, D)) Panels = D;
+        try
+        {
+          if (DoWrite && !Equals(Panels, D)) Panels = D;
+        }catch(Exception e) { Console.WriteLine("CompDo{0}", e); Console.ReadKey(); }
       }
       catch (ObjectDisposedException) { }
       catch (Exception) { throw; }
@@ -329,14 +339,14 @@ namespace TR.BIDSSMemLib
         {
           if (m != null)
           {
-            Length = m.ReadInt32(0);
-            IsReOpenNeeded = (Length + 1) * sizeof(int) > m.Capacity;
+            Length = m?.ReadInt32(0) ?? 0;
+            IsReOpenNeeded = (Length + 1) * sizeof(int) > (m?.Capacity ?? 0);
             D.Sounds = new int[Length];
             if (Length <= 0) return D;
             if (!IsReOpenNeeded)
             {
               int[] s = D.Sounds;
-              m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
+              m?.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
               D.Sounds = s;
             }
           }
@@ -351,7 +361,7 @@ namespace TR.BIDSSMemLib
             if (m != null)
             {
               int[] s = D.Sounds;
-              m.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
+              m?.ReadArray(sizeof(int), s, 0, m.ReadInt32(0));
               D.Sounds = s;
             }
           }
@@ -359,7 +369,7 @@ namespace TR.BIDSSMemLib
         if (DoWrite && !Equals(Sounds, D)) Sounds = D;
       }
       catch (ObjectDisposedException) { }
-      catch (Exception) { throw; }
+      catch (Exception) { }
       return D;
     }
 

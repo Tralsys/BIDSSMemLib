@@ -14,7 +14,7 @@ namespace TR.BIDSSMemLib
 
   class InputDeviceOBVE : IInputDevice
   {
-    public InputControl[] Controls { get; set; } = new InputControl[1];
+    public InputControl[] Controls { get; set; } = new InputControl[3];
 
     public event EventHandler<InputEventArgs> KeyDown;
     public event EventHandler<InputEventArgs> KeyUp;
@@ -24,11 +24,17 @@ namespace TR.BIDSSMemLib
       MessageBox.Show(owner, "BIDS Shared Memory Library\nOpenBVE Input Device Plugin File\nVersion : " + SMemLib.VersionNum, Assembly.GetExecutingAssembly().GetName().Name);
     }
     SMemLib SML = null;
+    CtrlInput CI = null;
     public bool Load(FileSystem fileSystem)
     {
+      Controls[0].Command = Translations.Command.PowerAnyNotch;
+      Controls[1].Command = Translations.Command.BrakeAnyNotch;
+      Controls[2].Command = Translations.Command.ReverserAnyPostion;
+      
       try
       {
         SML = new SMemLib(true, 0);
+        CI = new CtrlInput();
         return true;
       }
       catch (Exception e)
@@ -37,15 +43,19 @@ namespace TR.BIDSSMemLib
         return false;
       }
     }
-
+    //bool[] KeyOld = new bool[CtrlInput.KeyArrSizeMax];
     public void OnUpdateFrame()
     {
-      Hands hd = new Hands();
-      if (hd.B == 0 && hd.P == 0 && (hd.BPos != 0 || hd.PPos != 0))
+      Hands h = CI.GetHandD();
+      if (h.B == 0 && h.P == 0 && (h.BPos != 0 || h.PPos != 0))
       {
-        hd.P = (int)Math.Round(hd.PPos * HD.P, MidpointRounding.AwayFromZero);
-        hd.B = (int)Math.Round(hd.BPos * HD.B, MidpointRounding.AwayFromZero);
+        h.P = (int)Math.Round(h.PPos * HD.P, MidpointRounding.AwayFromZero);
+        h.B = (int)Math.Round(h.BPos * HD.B, MidpointRounding.AwayFromZero);
       }
+      Controls[0].Option = h.P;
+      Controls[1].Option = h.B;
+      Controls[2].Option = h.R;
+      //bool[] KeyI = CI.GetIsKeyPushed();
     }
 
     public void SetElapseData(ElapseData data)
