@@ -5,6 +5,14 @@
     <AssemblyName>TR.BIDSSMemLib.Standard</AssemblyName>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
     <Platforms>AnyCPU;x86</Platforms>
+    <Authors>Tetsu Otter</Authors>
+    <Company>Tech Otter</Company>
+    <Product>BIDS Project</Product>
+    <Copyright>Copyright 2019 Tetsu Otter</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://technotter.com/bids</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
