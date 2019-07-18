@@ -5,6 +5,7 @@ using OpenBveApi.FileSystem;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace TR.BIDSSMemLib
 {
@@ -15,20 +16,22 @@ namespace TR.BIDSSMemLib
 
   class InputDeviceOBVE : IInputDevice
   {
-    public InputControl[] Controls { get; private set; } = new InputControl[8]
+    public InputControl[] Controls { get; private set; } = new InputControl[10]
     {
       new InputControl(){ Command = Translations.Command.BrakeEmergency },
-      new InputControl(){ Command = Translations.Command.ReverserAnyPostion, Option = -1 },
+      new InputControl(){ Command = Translations.Command.ReverserBackward, Option = -1 },
       new InputControl(){ Command = Translations.Command.ReverserAnyPostion, Option = 0 },
-      new InputControl(){ Command = Translations.Command.ReverserAnyPostion, Option = 1 },
-      new InputControl(){ Command = Translations.Command.BrakeDecrease },
-      new InputControl(){ Command = Translations.Command.BrakeIncrease },
-      new InputControl(){ Command = Translations.Command.PowerDecrease },
-      new InputControl(){ Command = Translations.Command.PowerIncrease }
+      new InputControl(){ Command = Translations.Command.ReverserForward, Option = 1 },
+      new InputControl(){ Command = Translations.Command.BrakeDecrease, Option = 0 },
+      new InputControl(){ Command = Translations.Command.BrakeIncrease, Option = 0 },
+      new InputControl(){ Command = Translations.Command.PowerDecrease, Option = 0 },
+      new InputControl(){ Command = Translations.Command.PowerIncrease, Option = 0 },
+      new InputControl(){ Command = Translations.Command.BrakeAnyNotch, Option = 0 },
+      new InputControl(){ Command = Translations.Command.PowerAnyNotch, Option = 0 }
     };
     enum CtrlsName : int
     {
-      EB, RB, RN, RF, BMinus, BPlus, PMinus, PPlus
+      EB, RB, RN, RF, BMinus, BPlus, PMinus, PPlus, BAny, PAny
     }
     public event EventHandler<InputEventArgs> KeyDown;
     public event EventHandler<InputEventArgs> KeyUp;
@@ -55,22 +58,33 @@ namespace TR.BIDSSMemLib
     }
     //bool[] KeyOld = new bool[CtrlInput.KeyArrSizeMax];
     Hands hds = new Hands();
+    bool EBUpdated = false;
     bool HandRUpdated = false;
+    CtrlsName bcn;
+    bool HandBUpdated = false;
+    CtrlsName pcn;
+    bool HandPUpdated = false;
     public void OnUpdateFrame()
     {
+      if (EBUpdated) { KU(CtrlsName.EB); EBUpdated = false; }
+      if (HandBUpdated) { KU(bcn); HandBUpdated = false; }
+      if (HandPUpdated) { KU(pcn); HandPUpdated = false; }
+      if (HandRUpdated) { KU(Controls[hds.R + 2]); HandRUpdated = false; }
+
       Hands h = CI.GetHandD();
+      if (h.P > hd.P) h.P = hd.P;
       if (h.B == 0 && h.P == 0 && (h.BPos != 0 || h.PPos != 0))
       {
         h.P = (int)Math.Round(h.PPos * hd.P, MidpointRounding.AwayFromZero);
         h.B = (int)Math.Round(h.BPos * hd.B, MidpointRounding.AwayFromZero);
       }
 
-      if (!Equals(h.B, hds.B))
+      if (!Equals(h.B, chp.B))
       {
         if (h.B >= (hd.B + 1))
         {
           KD(CtrlsName.EB);
-          KU(CtrlsName.EB);
+          EBUpdated = true;
         }
         else
         {
@@ -79,29 +93,32 @@ namespace TR.BIDSSMemLib
           if (h.B < chp.B) cn = CtrlsName.BMinus;
           if (cn != 0)
           {
-            for (int i = 0; i < (Math.Abs(h.B - chp.B)); i++) KD(cn);
-            KU(cn);
+            KD(cn);
+            //KU(cn);
+            HandBUpdated = true;
+            bcn = cn;
           }
         }
       }
 
-      if (!Equals(h.P, hds.P))
+      if (!Equals(h.P, chp.P))
       {
         CtrlsName cn = 0;
         if (h.P > chp.P) cn = CtrlsName.PPlus;
         if (h.P < chp.P) cn = CtrlsName.PMinus;
         if (cn != 0)
         {
-          for (int i = 0; i < (Math.Abs(h.P - chp.P)); i++) KD(cn);
-          KU(cn);
+          KD(cn);
+          HandPUpdated = true;
+          pcn = cn;
         }
       }
 
-      if (HandRUpdated) { KU(Controls[hds.R + 2]); HandRUpdated = false; }
-      if (!Equals(h.R, hds.R)) { KD(Controls[hds.R + 2]); HandRUpdated = true; }
+      if (!Equals(h.R, chp.R)) { KD(Controls[h.R + 2]); HandRUpdated = true; }
 
       //bool[] KeyI = CI.GetIsKeyPushed();
       hds = h;
+      Thread.Sleep(50);
     }
 
     private void KU(InputControl c) => KeyUp?.Invoke(this, new InputEventArgs(c));
@@ -111,6 +128,7 @@ namespace TR.BIDSSMemLib
     Hand chp = new Hand();
     public void SetElapseData(ElapseData data)
     {
+      chp.R = data.Handles.Reverser;
       chp.P = data.Handles.PowerNotch;
       chp.B = data.Handles.BrakeNotch;
       BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData()
