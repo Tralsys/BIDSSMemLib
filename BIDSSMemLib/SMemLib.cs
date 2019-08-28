@@ -66,17 +66,19 @@ namespace TR.BIDSSMemLib
     /// <summary>Panel配列情報</summary>
     public PanelD Panels
     {
-      get { return __PanelD; }
+      get => new PanelD() { Panels = _PanelD };
+        
       private set
       {
 #if bve5 || obve
 #else
-        PanelDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = __PanelD.Panels, NewArray = value.Panels });
+        PanelDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = _PanelD, NewArray = value.Panels });
 #endif
-        __PanelD = value;
+        _PanelD = value.Panels;
       }
     }
-    private PanelD __PanelD = new PanelD() { Panels = new int[0] };
+    //private PanelD __PanelD = new PanelD() { Panels = new int[0] };
+    private int[] _PanelD = new int[0];
 
     /// <summary>Sound配列情報</summary>
     public SoundD Sounds
@@ -298,7 +300,7 @@ namespace TR.BIDSSMemLib
                 m?.ReadArray(sizeof(int), p, 0, m.ReadInt32(0));
                 D.Panels = p;
               }
-            }catch(Exception e) { Console.WriteLine("RDo:{0}",e); Console.ReadKey(); }
+            }catch(Exception e) { Console.WriteLine("PanelSMem ReOpenDo : {0}",e);}
           }
         }
         if (IsReOpenNeeded)
@@ -318,8 +320,8 @@ namespace TR.BIDSSMemLib
         }
         try
         {
-          if (DoWrite && !Equals(Panels, D)) Panels = D;
-        }catch(Exception e) { Console.WriteLine("CompDo{0}", e); Console.ReadKey(); }
+          if (DoWrite && !Equals(Panels.Panels, D.Panels)) Panels = D;
+        }catch(Exception e) { Console.WriteLine("PanelSMem CompareDo : {0}", e);}
       }
       catch (ObjectDisposedException) { }
       catch (Exception) { throw; }
@@ -455,7 +457,7 @@ namespace TR.BIDSSMemLib
               }
             }
           }
-          Panels = pd;
+          _PanelD = pd.Panels;
           break;
         case 7://Sound
           bool IsSReOpenNeeded = false;
