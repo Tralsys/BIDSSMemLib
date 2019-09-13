@@ -16,23 +16,17 @@ namespace TR.BIDSSMemLib
 
   class InputDeviceOBVE : IInputDevice
   {
-    public InputControl[] Controls { get; private set; } = new InputControl[10]
-    {
-      new InputControl(){ Command = Translations.Command.BrakeEmergency },
-      new InputControl(){ Command = Translations.Command.ReverserBackward, Option = -1 },
-      new InputControl(){ Command = Translations.Command.ReverserAnyPostion, Option = 0 },
-      new InputControl(){ Command = Translations.Command.ReverserForward, Option = 1 },
-      new InputControl(){ Command = Translations.Command.BrakeDecrease, Option = 0 },
-      new InputControl(){ Command = Translations.Command.BrakeIncrease, Option = 0 },
-      new InputControl(){ Command = Translations.Command.PowerDecrease, Option = 0 },
-      new InputControl(){ Command = Translations.Command.PowerIncrease, Option = 0 },
-      new InputControl(){ Command = Translations.Command.BrakeAnyNotch, Option = 0 },
-      new InputControl(){ Command = Translations.Command.PowerAnyNotch, Option = 0 }
-    };
-    enum CtrlsName : int
-    {
-      EB, RB, RN, RF, BMinus, BPlus, PMinus, PPlus, BAny, PAny
-    }
+    public InputControl[] Controls { get; private set; } = new InputControl[(PMaxIndex * 2) + 300];
+    //Power :    0- 999
+    //Brake : 1000-1999
+    //Revers: 2000(R),1(N),2(F)
+    //Keys  : 2100-
+    const int PMaxIndex = 1000;
+    const int RevBIndex = PMaxIndex * 2;
+    const int RevNIndex = PMaxIndex * 2 + 1;
+    const int RevFIndex = PMaxIndex * 2 + 2;
+    const int EBIndex = PMaxIndex * 2 + 3;
+
     public event EventHandler<InputEventArgs> KeyDown;
     public event EventHandler<InputEventArgs> KeyUp;
 
@@ -40,10 +34,28 @@ namespace TR.BIDSSMemLib
     {
       MessageBox.Show(owner, "BIDS Shared Memory Library\nOpenBVE Input Device Plugin File\nVersion : " + SMemLib.VersionNum, Assembly.GetExecutingAssembly().GetName().Name);
     }
+
     SMemLib SML = null;
     CtrlInput CI = null;
     public bool Load(FileSystem fileSystem)
     {
+      Parallel.For(0, PMaxIndex, (i) =>
+      {
+        Controls[i] = new InputControl() { Command = Translations.Command.PowerAnyNotch, Option = i };
+        Controls[PMaxIndex + i] = new InputControl() { Command = Translations.Command.BrakeAnyNotch, Option = i };
+      });
+
+      Controls[RevBIndex] = new InputControl() { Command = Translations.Command.ReverserAnyPostion, Option = -1 };
+      Controls[RevNIndex] = new InputControl() { Command = Translations.Command.ReverserAnyPostion, Option = 0 };
+      Controls[RevFIndex] = new InputControl() { Command = Translations.Command.ReverserAnyPostion, Option = 1 };
+
+      Controls[EBIndex] = new InputControl() { Command = Translations.Command.BrakeEmergency};
+
+      Parallel.For(0, CtrlInput.KeyArrSizeMax, (i) =>
+      {
+        Controls[(PMaxIndex * 2) + 100 + i] = new InputControl() { Command = (Translations.Command)i };
+      });
+
       try
       {
         SML = new SMemLib(true, 0);
@@ -56,20 +68,19 @@ namespace TR.BIDSSMemLib
         return false;
       }
     }
+
     //bool[] KeyOld = new bool[CtrlInput.KeyArrSizeMax];
-    Hands hds = new Hands();
     bool EBUpdated = false;
-    bool HandRUpdated = false;
-    CtrlsName bcn;
-    bool HandBUpdated = false;
-    CtrlsName pcn;
-    bool HandPUpdated = false;
+    int? HandRIndex = null;
+    int? HandBIndex = null;
+    int? HandPIndex = null;
+    int LastPPos = 0;
     public void OnUpdateFrame()
     {
-      if (EBUpdated) { KU(CtrlsName.EB); EBUpdated = false; }
-      if (HandBUpdated) { KU(bcn); HandBUpdated = false; }
-      if (HandPUpdated) { KU(pcn); HandPUpdated = false; }
-      if (HandRUpdated) { KU(Controls[hds.R + 2]); HandRUpdated = false; }
+      if (EBUpdated) { KU(Controls[EBIndex]); EBUpdated = false; }
+      if (HandBIndex != null) { KU(Controls[PMaxIndex + HandBIndex ?? 0]); HandBIndex = null; }
+      if (HandPIndex != null) { KU(Controls[HandPIndex ?? 0]); HandPIndex = null; }
+      if (HandRIndex != null) { KU(Controls[RevNIndex+HandRIndex??0]); HandRIndex = null; }
 
       Hands h = CI.GetHandD();
       if (h.P > hd.P) h.P = hd.P;
@@ -83,48 +94,33 @@ namespace TR.BIDSSMemLib
       {
         if (h.B >= (hd.B + 1))
         {
-          KD(CtrlsName.EB);
+          KD(Controls[EBIndex]);
           EBUpdated = true;
         }
         else
         {
-          CtrlsName cn = 0;
-          if (h.B > chp.B) cn = CtrlsName.BPlus;
-          if (h.B < chp.B) cn = CtrlsName.BMinus;
-          if (cn != 0)
-          {
-            KD(cn);
-            //KU(cn);
-            HandBUpdated = true;
-            bcn = cn;
-          }
+          if (h.B >= PMaxIndex) h.B = PMaxIndex - 1;
+          KD(Controls[PMaxIndex + h.B]);
+          HandBIndex = h.B;
         }
       }
 
-      if (!Equals(h.P, chp.P))
+      if (!Equals(h.P, LastPPos))
       {
-        CtrlsName cn = 0;
-        if (h.P > chp.P) cn = CtrlsName.PPlus;
-        if (h.P < chp.P) cn = CtrlsName.PMinus;
-        if (cn != 0)
-        {
-          KD(cn);
-          HandPUpdated = true;
-          pcn = cn;
-        }
+        if (h.P >= PMaxIndex) h.P = PMaxIndex - 1;
+        KD(Controls[h.P]);
+        HandPIndex = h.P;
+        LastPPos = h.P;
       }
 
-      if (!Equals(h.R, chp.R)) { KD(Controls[h.R + 2]); HandRUpdated = true; }
+      if (!Equals(h.R, chp.R)) { KD(Controls[RevNIndex + h.R]); HandRIndex = h.R; }
 
       //bool[] KeyI = CI.GetIsKeyPushed();
-      hds = h;
-      Thread.Sleep(50);
     }
 
     private void KU(InputControl c) => KeyUp?.Invoke(this, new InputEventArgs(c));
     private void KD(InputControl c) => KeyDown?.Invoke(this, new InputEventArgs(c));
-    private void KU(CtrlsName cn) => KU(Controls[(int)cn]);
-    private void KD(CtrlsName cn) => KD(Controls[(int)cn]);
+
     Hand chp = new Hand();
     public void SetElapseData(ElapseData data)
     {
