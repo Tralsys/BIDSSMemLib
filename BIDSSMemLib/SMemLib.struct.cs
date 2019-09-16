@@ -96,35 +96,35 @@ namespace TR.BIDSSMemLib
   public struct OpenD
   {
     /// <summary>情報が有効かどうか</summary>
-    public bool IsEnabled { get; set; }
+    public bool IsEnabled;
     /// <summary>クラスバージョン</summary>
     public readonly int Ver;
     /// <summary>現在のカーブ半径[m]</summary>
-    public double Radius { get; set; }
+    public double Radius;
     /// <summary>現在のカントの大きさ[mm]</summary>
-    public double Cant { get; set; }
+    public double Cant;
     /// <summary>現在の勾配[‰]</summary>
-    public double Pitch { get; set; }
+    public double Pitch;
     /// <summary>1フレーム当たりの時間[ms]</summary>
-    public double ElapTime { get; set; }
+    public double ElapTime;
     /// <summary>先行列車に関する情報</summary>
-    public PreTrainD PreTrain { get; set; }
+    public PreTrainD PreTrain;
     /// <summary>自弁可動域段数</summary>
-    public int SelfBCount { get; set; }
+    public int SelfBCount;
     /// <summary>自弁ハンドル位置</summary>
-    public int SelfBPosition { get; set; }
+    public int SelfBPosition;
 
     [StructLayout(LayoutKind.Sequential)]
     public struct PreTrainD
     {
       /// <summary>情報が有効かどうか</summary>
-      public bool IsEnabled { get; set; }
+      public bool IsEnabled;
       /// <summary>先行列車の尻尾の位置[m]</summary>
-      public double Location { get; set; }
+      public double Location;
       /// <summary>先行列車の尻尾までの距離[m]</summary>
-      public double Distance { get; set; }
+      public double Distance;
       /// <summary>先行列車の速度[km/h]</summary>
-      public double Speed { get; set; }
+      public double Speed;
     }
   }
 
@@ -134,7 +134,7 @@ namespace TR.BIDSSMemLib
   {
     /// <summary>データサイズ</summary>
     public int Size => Marshal.SizeOf(StaList);
-    public List<StationData> StaList { get; set; }
+    public List<StationData> StaList;
     /// <summary>駅に関するデータ</summary>
     [StructLayout(LayoutKind.Sequential)]
     public struct StationData
@@ -172,12 +172,12 @@ namespace TR.BIDSSMemLib
   public struct PanelD
   {
     public int Length => Panels?.Length ?? 0;
-    public int[] Panels { get; set; }
+    public int[] Panels;
   }
   [StructLayout(LayoutKind.Sequential)]
   public struct SoundD
   {
     public int Length => Sounds?.Length ?? 0;
-    public int[] Sounds { get; set; }
+    public int[] Sounds;
   }
 }
