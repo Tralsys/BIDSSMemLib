@@ -181,6 +181,8 @@ namespace TR.BIDSSMemLib
     /// <summary>SharedMemoryを解放する</summary>
     public void Dispose()
     {
+      ReadStop();
+
       MMFB?.Dispose();
 #if bve5
 #else
@@ -190,6 +192,9 @@ namespace TR.BIDSSMemLib
       MMFPn?.Dispose();
       MMFSn?.Dispose();
     }
+
+    ~SMemLib() => Dispose();
+
     /// <summary>共有メモリからデータを読み込む</summary>
     public void Read()
     {
