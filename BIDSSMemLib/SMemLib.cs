@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.MemoryMappedFiles;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -17,11 +18,12 @@ namespace TR.BIDSSMemLib
       {
 #if bve5 || obve
 #else
-        BIDSSMemChanged?.Invoke(value, new BSMDChangedEArgs()
-        {
-          NewData = value,
-          OldData = __BIDSSMemData
-        });
+        if (!Equals(value, __BIDSSMemData))
+          BIDSSMemChanged?.Invoke(value, new BSMDChangedEArgs()
+          {
+            NewData = value,
+            OldData = __BIDSSMemData
+          });
 #endif
         __BIDSSMemData = value;
       }
@@ -37,11 +39,12 @@ namespace TR.BIDSSMemLib
       {
 #if bve5 || obve
 #else
-        OpenDChanged?.Invoke(value, new OpenDChangedEArgs()
-        {
-          NewData = value,
-          OldData = __OpenD
-        });
+        if (!Equals(value, __OpenD))
+          OpenDChanged?.Invoke(value, new OpenDChangedEArgs()
+          {
+            NewData = value,
+            OldData = __OpenD
+          });
 #endif
         __OpenD = value;
       }
@@ -72,7 +75,8 @@ namespace TR.BIDSSMemLib
       {
 #if bve5 || obve
 #else
-        PanelDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = _PanelD, NewArray = value.Panels });
+        if (!_PanelD.SequenceEqual(value.Panels))
+          PanelDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = _PanelD, NewArray = value.Panels });
 #endif
         _PanelD = value.Panels;
       }
@@ -88,7 +92,8 @@ namespace TR.BIDSSMemLib
       {
 #if bve5 || obve
 #else
-        SoundDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = __SoundD.Sounds, NewArray = value.Sounds });
+        if (!__SoundD.Sounds.SequenceEqual(value.Sounds))
+          SoundDChanged?.Invoke(value, new ArrayDChangedEArgs() { OldArray = __SoundD.Sounds, NewArray = value.Sounds });
 #endif
         __SoundD = value;
       }
@@ -237,7 +242,7 @@ namespace TR.BIDSSMemLib
         }
         try
         {
-          if (DoWrite && !Equals(BIDSSMemData, D)) BIDSSMemData = D;
+          if (DoWrite) BIDSSMemData = D;
         }catch(Exception e) { Console.WriteLine("BSMD Comp:{0}", e);Console.ReadKey(); }
       }
       catch (ObjectDisposedException) { }
@@ -258,7 +263,7 @@ namespace TR.BIDSSMemLib
         {
           m?.Read(0, out D);
         }
-        if (DoWrite && !Equals(OpenData, D)) OpenData = D;
+        if (DoWrite) OpenData = D;
       }
       catch (ObjectDisposedException) { }
       catch (Exception) { throw; }
@@ -325,7 +330,7 @@ namespace TR.BIDSSMemLib
         }
         try
         {
-          if (DoWrite && !Equals(Panels.Panels, D.Panels)) Panels = D;
+          if (DoWrite) Panels = D;
         }catch(Exception e) { Console.WriteLine("PanelSMem CompareDo : {0}", e);}
       }
       catch (ObjectDisposedException) { }
@@ -373,7 +378,7 @@ namespace TR.BIDSSMemLib
             }
           }
         }
-        if (DoWrite && !Equals(Sounds, D)) Sounds = D;
+        if (DoWrite) Sounds = D;
       }
       catch (ObjectDisposedException) { }
       catch (Exception) { }
