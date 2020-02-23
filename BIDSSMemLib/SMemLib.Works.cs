@@ -1,4 +1,4 @@
-﻿#if !bve5 || !obve
+﻿#if !(bve5 || obve)
 using System;
 using System.Threading;
 using System.Threading.Tasks;

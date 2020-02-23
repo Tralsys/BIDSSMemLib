@@ -536,10 +536,12 @@ namespace TR.BIDSSMemLib
 
         // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
         // TODO: 大きなフィールドを null に設定します。
+#if !(bve5 || obve || NO_SMEM)
         ReadStop();
+#endif
 
 #if !NO_SMEM
-      MMFB?.Dispose();
+        MMFB?.Dispose();
 #if !bve5
       MMFO?.Dispose();
       //MMFS?.Dispose();
