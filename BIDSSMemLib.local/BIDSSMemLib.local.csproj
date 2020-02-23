@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>TR.BIDSSMemLib.local</AssemblyName>
+    <RootNamespace>TR.BIDSSMemLib</RootNamespace>
+    <Platforms>AnyCPU</Platforms>
+    <Authors>Tetsu Otter</Authors>
+    <Company>Tech Otter</Company>
+    <Product>BIDS Project</Product>
+    <Copyright>Copyright 2020 Tetsu Otter</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://technotter.com/bids</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;NO_SMEM</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;NO_SMEM</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
+    <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs" Link="SMemLib.Events.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
+  </ItemGroup>
+
+</Project>
