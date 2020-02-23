@@ -10,6 +10,8 @@ namespace TR.BIDSSMemLib
   {
     public const string VersionNum = "202";
     static private readonly uint BSMDsize = (uint)Marshal.SizeOf(typeof(BIDSSharedMemoryData));
+    public bool NO_SMEM_MODE { get; } = false;
+
     /// <summary>BIDSSharedMemoryのデータ(互換性確保)</summary>
     public BIDSSharedMemoryData BIDSSMemData
     {
@@ -29,8 +31,7 @@ namespace TR.BIDSSMemLib
       }
     }
     private BIDSSharedMemoryData __BIDSSMemData = new BIDSSharedMemoryData();
-#if bve5
-#else
+#if !bve5
     /// <summary>OpenBVEでのみ得られるデータ(open専用)</summary>
     public OpenD OpenData
     {
@@ -123,9 +124,12 @@ namespace TR.BIDSSMemLib
     /// <summary>SharedMemoryを初期化する。</summary>
     /// <param name="IsThisMother">書き込む側かどうか</param>
     /// <param name="ModeNum">モード番号</param>
-    public SMemLib(bool IsThisMother = false, byte ModeNum = 0)
+    public SMemLib(bool IsThisMother = false, byte ModeNum = 0, bool isNoSMemMode = false)
     {
-      Console.WriteLine("SMemLib Started");
+      NO_SMEM_MODE = isNoSMemMode;
+
+      Console.WriteLine(isNoSMemMode ? "NO_SMEM_MODE Enabled" : "SMemLib Started");
+      
       IsMother = IsThisMother;
 #endif
 #if bve5 || obve
@@ -133,6 +137,7 @@ namespace TR.BIDSSMemLib
       BIDSSMemChanged += Events.OnBSMDChanged;
       //OpenDChanged += Events.OnOpenDChanged;
 #endif
+      if (NO_SMEM_MODE) return;
 #if !NO_SMEM
       if (ModeNum >= 4) throw new ArgumentOutOfRangeException("ModeNumは3以下である必要があります。本ライブラリでReqモードはサポートされません。");
       try
@@ -189,6 +194,7 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     public void Read()
     {
+      if (NO_SMEM_MODE) return;
       Read<BIDSSharedMemoryData>();
 #if bve5
 #else
@@ -218,6 +224,11 @@ namespace TR.BIDSSMemLib
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
     public BIDSSharedMemoryData Read(out BIDSSharedMemoryData D, bool DoWrite = true)
     {
+      if (NO_SMEM_MODE)
+      {
+        D = BIDSSMemData;
+        return BIDSSMemData;
+      }
       D = new BIDSSharedMemoryData();
 #if !NO_SMEM
       try
@@ -244,6 +255,11 @@ namespace TR.BIDSSMemLib
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
     public OpenD Read(out OpenD D, bool DoWrite = true)
     {
+      if (NO_SMEM_MODE)
+      {
+        D = OpenData;
+        return OpenData;
+      }
       D = new OpenD();
 #if !NO_SMEM
       try
@@ -281,6 +297,11 @@ namespace TR.BIDSSMemLib
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
     public PanelD Read(out PanelD D, bool DoWrite = true)
     {
+      if (NO_SMEM_MODE)
+      {
+        D = Panels;
+        return Panels;
+      }
       D = new PanelD();
 #if !NO_SMEM
       bool IsReOpenNeeded = false;
@@ -338,6 +359,11 @@ namespace TR.BIDSSMemLib
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
     public SoundD Read(out SoundD D, bool DoWrite = true)
     {
+      if (NO_SMEM_MODE)
+      {
+        D = Sounds;
+        return Sounds;
+      }
       D = new SoundD();
 #if !NO_SMEM
       bool IsReOpenNeeded = false;
@@ -415,7 +441,7 @@ namespace TR.BIDSSMemLib
           {
             var oe = OpenData = (OpenD)D;
 #if !NO_SMEM
-            using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref oe); }
+            if (!NO_SMEM_MODE) using (var m = MMFO?.CreateViewAccessor()) { m.Write(0, ref oe); }
 #endif
           }
           break;
@@ -438,7 +464,7 @@ namespace TR.BIDSSMemLib
           {
             var f = BIDSSMemData = (BIDSSharedMemoryData)D;
 #if !NO_SMEM
-            using (var m = MMFB?.CreateViewAccessor()) { m?.Write(0, ref f); }
+            if (!NO_SMEM_MODE) using (var m = MMFB?.CreateViewAccessor()) { m?.Write(0, ref f); }
 #endif
           }
           break;
@@ -448,32 +474,35 @@ namespace TR.BIDSSMemLib
           bool IsPReOpenNeeded = false;
           if (pd.Panels == null) pd.Panels = new int[0];
 #if !NO_SMEM
-          using (var m = MMFPn?.CreateViewAccessor())
+          if (!NO_SMEM_MODE)
           {
-            if (m != null)
-            {
-              IsPReOpenNeeded = m.Capacity < (pd.Length + 1) * sizeof(int);
-              if (!IsPReOpenNeeded && m.CanWrite)
-              {
-                int Length = pd.Length;
-                m.Write(0, ref Length);
-                int[] p = pd.Panels;
-                m.WriteArray(sizeof(int), p, 0, p.Length);
-              }
-            }
-          }
-          if (IsPReOpenNeeded)
-          {
-            MMFPn?.Dispose();
-            MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", (pd.Length + 1) * sizeof(int));
             using (var m = MMFPn?.CreateViewAccessor())
             {
-              if (m != null && m.CanWrite)
+              if (m != null)
               {
-                int Length = pd.Length;
-                m.Write(0, ref Length);
-                int[] p = pd.Panels;
-                m.WriteArray(sizeof(int), p, 0, p.Length);
+                IsPReOpenNeeded = m.Capacity < (pd.Length + 1) * sizeof(int);
+                if (!IsPReOpenNeeded && m.CanWrite)
+                {
+                  int Length = pd.Length;
+                  m.Write(0, ref Length);
+                  int[] p = pd.Panels;
+                  m.WriteArray(sizeof(int), p, 0, p.Length);
+                }
+              }
+            }
+            if (IsPReOpenNeeded)
+            {
+              MMFPn?.Dispose();
+              MMFPn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemoryPn", (pd.Length + 1) * sizeof(int));
+              using (var m = MMFPn?.CreateViewAccessor())
+              {
+                if (m != null && m.CanWrite)
+                {
+                  int Length = pd.Length;
+                  m.Write(0, ref Length);
+                  int[] p = pd.Panels;
+                  m.WriteArray(sizeof(int), p, 0, p.Length);
+                }
               }
             }
           }
@@ -485,32 +514,35 @@ namespace TR.BIDSSMemLib
           var e = (SoundD)D;
           if (e.Sounds == null) e.Sounds = new int[0];
 #if !NO_SMEM
-          using (var m = MMFSn?.CreateViewAccessor())
+          if (!NO_SMEM_MODE)
           {
-            if (m != null)
-            {
-              IsSReOpenNeeded = m.Capacity < (e.Length + 1) * sizeof(int);
-              if (!IsSReOpenNeeded && m.CanWrite)
-              {
-                int Length = e.Length;
-                m.Write(0, ref Length);
-                int[] s = e.Sounds;
-                m.WriteArray(sizeof(int), s, 0, s.Length);
-              }
-            }
-          }
-          if (IsSReOpenNeeded)
-          {
-            MMFSn?.Dispose();
-            MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (e.Length + 1) * sizeof(int));
             using (var m = MMFSn?.CreateViewAccessor())
             {
-              if (m != null && m.CanWrite)
+              if (m != null)
               {
-                int Length = e.Length;
-                m.Write(0, ref Length);
-                int[] s = e.Sounds;
-                m.WriteArray(sizeof(int), s, 0, s.Length);
+                IsSReOpenNeeded = m.Capacity < (e.Length + 1) * sizeof(int);
+                if (!IsSReOpenNeeded && m.CanWrite)
+                {
+                  int Length = e.Length;
+                  m.Write(0, ref Length);
+                  int[] s = e.Sounds;
+                  m.WriteArray(sizeof(int), s, 0, s.Length);
+                }
+              }
+            }
+            if (IsSReOpenNeeded)
+            {
+              MMFSn?.Dispose();
+              MMFSn = MemoryMappedFile.CreateOrOpen("BIDSSharedMemorySn", (e.Length + 1) * sizeof(int));
+              using (var m = MMFSn?.CreateViewAccessor())
+              {
+                if (m != null && m.CanWrite)
+                {
+                  int Length = e.Length;
+                  m.Write(0, ref Length);
+                  int[] s = e.Sounds;
+                  m.WriteArray(sizeof(int), s, 0, s.Length);
+                }
               }
             }
           }
