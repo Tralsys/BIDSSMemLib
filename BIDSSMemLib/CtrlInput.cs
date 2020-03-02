@@ -17,7 +17,7 @@ namespace TR.BIDSSMemLib
 #if bve5id
     const string CtrlIO_FName = "TR.pp/TR.BIDSSMemLib.CtrlIOpp.dll";
 
-    [DllImport(CtrlIO_FName)]
+    [DllImport(CtrlIO_FName, CharSet = CharSet.Unicode)]
     static extern void Initialize(string MMFCtrlKName, string MMFCtrlHName);
     [DllImport(CtrlIO_FName, EntryPoint = "GetHandD")]
     static extern Hands ppGetHandD();
