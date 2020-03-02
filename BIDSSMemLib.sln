@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BIDSSMemLib.CtrlIOcs", "BID
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IAtsPI", "..\..\..\source\repos\IAtsPI\IAtsPI.csproj", "{96F39EAE-F957-4607-8169-859D38FCC5D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.local", "BIDSSMemLib.local\BIDSSMemLib.local.csproj", "{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -253,6 +255,22 @@ Global
 		{96F39EAE-F957-4607-8169-859D38FCC5D1}.Release|x64.Build.0 = Release|Any CPU
 		{96F39EAE-F957-4607-8169-859D38FCC5D1}.Release|x86.ActiveCfg = Release|Any CPU
 		{96F39EAE-F957-4607-8169-859D38FCC5D1}.Release|x86.Build.0 = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|ATSPI.ActiveCfg = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|ATSPI.Build.0 = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|x64.Build.0 = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|ATSPI.ActiveCfg = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|ATSPI.Build.0 = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|x64.Build.0 = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{ACE99900-7CB3-42AC-8FCF-7F695657D4B8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
