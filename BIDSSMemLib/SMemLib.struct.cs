@@ -19,6 +19,7 @@ public struct Hands
   /// <summary>力行ハンドル位置(0~1)</summary>
   public double PPos;
 };
+#if !InputD
 /// <summary>BIDSSharedMemoryのデータ構造体</summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct BIDSSharedMemoryData
@@ -127,3 +128,4 @@ public struct SoundD
   public int Length => Sounds?.Length ?? 0;
   public int[] Sounds;
 }
+#endif

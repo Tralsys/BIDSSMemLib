@@ -22,4 +22,8 @@
     <Compile Include="..\BIDSSMemLib\SMemLib.Works.cs" Link="SMemLib.Works.cs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj" />
+  </ItemGroup>
+
 </Project>

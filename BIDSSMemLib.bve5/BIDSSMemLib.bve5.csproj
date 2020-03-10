@@ -50,6 +50,12 @@
     <Compile Include="..\BIDSSMemLib\Ats.cs" Link="Ats.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj">
+      <Project>{96f39eae-f957-4607-8169-859d38fcc5d1}</Project>
+      <Name>IAtsPI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(TargetPath) TR.BIDSpp.dll</PostBuildEvent>

@@ -28,6 +28,7 @@
     <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs" Link="SMemLib.Events.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj" />
     <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
   </ItemGroup>
 

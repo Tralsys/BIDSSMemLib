@@ -22,6 +22,7 @@ namespace TR.BIDSSMemLib
     /// <param name="Interval">読み取り頻度[ms]</param>
     public void ReadStart(int ModeNum = 0, int Interval = 50)
     {
+      if (NO_SMEM_MODE) return;
       switch (ModeNum)
       {
         case 1://OpenD

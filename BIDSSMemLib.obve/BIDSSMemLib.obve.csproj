@@ -48,5 +48,11 @@
     <Compile Include="..\BIDSSMemLib\InputDevice.obve.cs" Link="InputDevice.obve.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj">
+      <Project>{96f39eae-f957-4607-8169-859d38fcc5d1}</Project>
+      <Name>IAtsPI</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

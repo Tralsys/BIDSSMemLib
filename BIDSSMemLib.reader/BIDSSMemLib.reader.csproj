@@ -40,6 +40,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj">
+      <Project>{96f39eae-f957-4607-8169-859d38fcc5d1}</Project>
+      <Name>IAtsPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj">
       <Project>{8c8917ff-842b-49b2-a9b5-f59ae12f19d6}</Project>
       <Name>BIDSSMemLib.structs</Name>

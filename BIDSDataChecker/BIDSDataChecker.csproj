@@ -87,6 +87,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj">
+      <Project>{96f39eae-f957-4607-8169-859d38fcc5d1}</Project>
+      <Name>IAtsPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BIDSSMemLib.CtrlIOcs\BIDSSMemLib.CtrlIOcs.csproj">
       <Project>{cc54107a-9aac-4396-912d-7af81c3571b0}</Project>
       <Name>BIDSSMemLib.CtrlIOcs</Name>

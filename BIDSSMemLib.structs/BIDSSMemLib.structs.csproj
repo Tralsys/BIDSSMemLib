@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\source\repos\IAtsPI\IAtsPI.csproj" />
+    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj" />
   </ItemGroup>
 
 </Project>
