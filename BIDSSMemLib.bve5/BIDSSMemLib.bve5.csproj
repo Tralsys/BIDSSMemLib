@@ -20,7 +20,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -30,7 +30,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -45,6 +45,9 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\BIDSSMemLib\SMemCtrler.cs">
+      <Link>SMemCtrler.cs</Link>
+    </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
     <Compile Include="..\BIDSSMemLib\Ats.cs" Link="Ats.cs" />

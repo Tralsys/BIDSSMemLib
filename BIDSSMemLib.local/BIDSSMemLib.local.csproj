@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+		<LangVersion>8.0</LangVersion>
     <AssemblyName>TR.BIDSSMemLib.local</AssemblyName>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
     <Platforms>AnyCPU</Platforms>
@@ -24,6 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\BIDSSMemLib\SMemCtrler.cs" Link="SMemCtrler.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs" Link="SMemLib.Events.cs" />
   </ItemGroup>

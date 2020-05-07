@@ -10,6 +10,7 @@
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
     <AssemblyName>TR.BIDSSMemLib.obve</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <LangVersion>8.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -42,6 +43,9 @@
   <ItemGroup>
     <Compile Include="..\BIDSSMemLib\CtrlInput.cs">
       <Link>CtrlInput.cs</Link>
+    </Compile>
+    <Compile Include="..\BIDSSMemLib\SMemCtrler.cs">
+      <Link>SMemCtrler.cs</Link>
     </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />

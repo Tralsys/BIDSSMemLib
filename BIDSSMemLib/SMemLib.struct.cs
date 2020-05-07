@@ -19,7 +19,7 @@ public struct Hands
   /// <summary>力行ハンドル位置(0~1)</summary>
   public double PPos;
 };
-#if !InputD
+
 /// <summary>BIDSSharedMemoryのデータ構造体</summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct BIDSSharedMemoryData
@@ -38,7 +38,6 @@ public struct BIDSSharedMemoryData
   public bool IsDoorClosed;
 };
 
-#if !bve5
 /// <summary>OpenBVEのみで取得できるデータ(open専用)</summary>
 [StructLayout(LayoutKind.Sequential)]
 public struct OpenD
@@ -115,7 +114,6 @@ public struct StaD
   }
 }
 
-#endif
 [StructLayout(LayoutKind.Sequential)]
 public struct PanelD
 {
@@ -128,4 +126,3 @@ public struct SoundD
   public int Length => Sounds?.Length ?? 0;
   public int[] Sounds;
 }
-#endif

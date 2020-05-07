@@ -8,7 +8,6 @@ namespace TR.BIDSSMemLib
     static internal double MtoKM(this ref double m) => m / 1000;
     static internal double MtoKM(this ref float m) => m / 1000;
   }
-#if !bve5 || !obve
   public partial class SMemLib
   {
 	//イベントクラスとイベントを列挙
@@ -110,7 +109,7 @@ namespace TR.BIDSSMemLib
       {
         BIDSSharedMemoryData bsmddef = default;
 
-        if (Equals(bsmddef, (BIDSSharedMemoryData)sender)) return;
+        if (Equals(bsmddef, e.NewData)) return;
         if (!Equals(e.OldData.SpecData, e.NewData.SpecData)) SpecChanged?.Invoke(e.NewData.SpecData, new SpecDataChangedEventArgs()
         {
           ATSCheck = e.NewData.SpecData.A,
@@ -203,5 +202,4 @@ namespace TR.BIDSSMemLib
 
 
   }
-#endif
 }
