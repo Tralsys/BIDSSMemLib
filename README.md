@@ -98,15 +98,15 @@ BIDSで使用する構造体を定義しています.  機能は実装されて�
 
 
 ## 削除されたプロジェクト一覧
-重複する機能の整理に伴い, 以下のプロジェクトを削除しております.  [削除commitはこちらです.](/)  
+重複する機能の整理に伴い, 以下のプロジェクトを削除しております.  
 なお, こちらの表では, "BIDSSMemLib"という文字列を"BSML"と省略して記載させていただいております.
 |プロジェクト名|代替|削除commit|
 |-|-|-|
-|BSML.bve5id|BSML.bve5||
-|BSML.ctrler|BSML.rw||
-|BSML.CtrlIOcs|BSML.rw||
-|BSML.CtrlIOpp|(検討中)||
-|BSML.local|BSML.rw||
-|BSML.reader|BSML.rw||
-|BSML.Standard|BSML.rw||
+|BSML.bve5id|BSML.bve5|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
+|BSML.ctrler|BSML.rw|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
+|BSML.CtrlIOcs|BSML.rw|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
+|BSML.CtrlIOpp|(検討中)|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
+|BSML.local|BSML.rw|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
+|BSML.reader|BSML.rw|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
+|BSML.Standard|BSML.rw|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
 
