@@ -1,27 +1,112 @@
 # BIDSSMemLib
-BIDS用SharedMemoryを簡単に扱うためのLibrary
+BIDS用SharedMemoryを簡単に扱うためのLibrary群
 
-Standard Libraryを除いて.NET4.7.2を指定しています。
+
+## BIDSDataChecker
+BIDSのSharedMemoryで共有された情報を表示させます.
+
+
+## BIDSSMemInputTester
+BIDSの入力部分のテストを行うためのコンソールアプリケーションです.
+
 
 ## BIDSSMemLib Project
-BIDSSMemLibシリーズに実装されているすべての機能が含まれています。
+BIDSSMemLibシリーズに実装されているすべての機能が含まれています。  
+一応、このLibraryは.Net Frameworkを使用して開発されているすべてのソフトウェアから参照利用をできますが、通常はBIDSSMemLib.readerを使用してください。  
+### 機能対応表
+実装している機能の一覧です.  実際に利用できるかどうかは確認しておりません.
+|機能|対応状況|備考|
+|-|-|-|
+|車両状態共有エリアの操作|〇||
+|操作共有エリアの操作|〇||
+|BVE5 ATSPI|〇||
+|BVE5 InputDevice|〇||
+|openBVE ATSPI|×|実装予定|
+|openBVE InputDevice|〇||
 
-一応、このLibraryは.Net Frameworkを使用して開発されているすべてのソフトウェアから参照利用をできますが、通常はBIDSSMemLib.readerを使用してください。
+なお, 車両状態共有エリアの操作については, 車両状態変化を通知するイベントも付属します.
 
-## BIDSSMemLib.Standard Project
-.Net Standardや.Net Coreで開発されているソフトウェアから参照利用するためのライブラリです。
 
 ## BIDSSMemLib.bve5 Project
-BVE5のATSプラグイン専用のプロジェクトです。DllExportを使用し、ATSプラグインとして振舞います。  
-生成物にはDllExportのライセンス(MIT License)も発生します。ご注意ください。
+BVE5向けのプラグインとしてのライブラリプロジェクトです。  
+生成物にはDllExportのライセンス(MIT License)も発生します。ご注意ください。  
+ATSプラグイン, 入力デバイスプラグインともにこのプロジェクトで対応します.
+### 機能対応表
+実装している機能の一覧です.  実際に利用できるかどうかは確認しておりません.
+|機能|対応状況|備考|
+|-|-|-|
+|車両状態共有エリアの操作|〇||
+|操作共有エリアの操作|〇||
+|BVE5 ATSPI|〇||
+|BVE5 InputDevice|〇||
+|openBVE ATSPI|×||
+|openBVE InputDevice|×||
 
-一応ATSプラグイン以外の用途でも使用できますが、お勧めはしません。
+なお, 車両状態共有エリアの操作については, 車両状態変化を通知するイベントも付属します.
+
 
 ## BIDSSMemLib.obve Project
-openBVEのInput Device Plugin専用のプロジェクトです。OpenBveApiを参照しております。  
-openBVE側のInputDevicePlugin周りの実装の都合上、Panel情報とSound情報を取得することができません。これに関しては、そのうち対応します。
+openBVE向けのプロジェクトです。OpenBveApiを参照しております。  
+openBVE側のInputDevicePlugin周りの実装の都合上、Panel情報とSound情報を取得することができません。これに関しては、保安装置プラグイン機能を実装することにより対応予定です.
+### 機能対応表
+実装している機能の一覧です.  実際に利用できるかどうかは確認しておりません.
+|機能|対応状況|備考|
+|-|-|-|
+|車両状態共有エリアの操作|〇||
+|操作共有エリアの操作|〇||
+|BVE5 ATSPI|×||
+|BVE5 InputDevice|×||
+|openBVE ATSPI|×|実装予定|
+|openBVE InputDevice|〇||
 
-SMemLibからイベントなどを取っ払っています。
+なお, 車両状態共有エリアの操作については, 車両状態変化を通知するイベントも付属します.
 
-## BIDSSMemLib.reader Project
-ROM専用のLibraryです。Write機能は実装されていません。Displaying Softwareを開発する際は、できるだけこのLibraryを使用するようにしてください。
+
+## BIDSSMemLib.rw Project
+BIDSの共有メモリを操作するためのライブラリです.  ソフトウェアを開発する際は, 通常はこのライブラリを使用します.
+### 機能対応表
+実装している機能の一覧です.  実際に利用できるかどうかは確認しておりません.
+|機能|対応状況|備考|
+|-|-|-|
+|車両状態共有エリアの操作|〇||
+|操作共有エリアの操作|〇||
+|BVE5 ATSPI|×||
+|BVE5 InputDevice|×||
+|openBVE ATSPI|×||
+|openBVE InputDevice|×||
+
+なお, 車両状態共有エリアの操作については, 車両状態変化を通知するイベントも付属します.
+### 依存関係
+本ライブラリは, 明示的に以下のライブラリを参照利用しております.
+- BIDSSMemLib.structs
+- TR.SMemCtrler
+- TR.SMemIF
+
+
+## BIDSSMemLib.structs
+BIDSで使用する構造体を定義しています.  機能は実装されておりませんので, 必要に応じて他のライブラリと併せて使用してください.
+
+
+## TR.SMemCtrler
+任意の構造体データ, および任意の構造体配列を管理します.  必要に応じてSMemIFを使用して共有メモリに書き込むほか, 値の更新を通知するイベントも実装しています.
+### 依存関係
+本ライブラリは, TR.SMemIFを参照利用しています.
+
+
+## TR.SMemIF
+指定の名前を持つ共有メモリを操作し, 情報の読込および書き込みを実行します.  必要に応じて, キャパシティの拡張も行います.
+
+
+## 削除されたプロジェクト一覧
+重複する機能の整理に伴い, 以下のプロジェクトを削除しております.  [削除commitはこちらです.](/)  
+なお, こちらの表では, "BIDSSMemLib"という文字列を"BSML"と省略して記載させていただいております.
+|プロジェクト名|代替|削除commit|
+|-|-|-|
+|BSML.bve5id|BSML.bve5||
+|BSML.ctrler|BSML.rw||
+|BSML.CtrlIOcs|BSML.rw||
+|BSML.CtrlIOpp|(検討中)||
+|BSML.local|BSML.rw||
+|BSML.reader|BSML.rw||
+|BSML.Standard|BSML.rw||
+

@@ -45,9 +45,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BIDSSMemLib.ctrler\BIDSSMemLib.ctrler.csproj">
-      <Project>{04604f47-737e-467f-838c-f3e523c79546}</Project>
-      <Name>BIDSSMemLib.ctrler</Name>
+    <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj">
+      <Project>{ae16cc76-b20e-4425-a0c5-fdc24ebacc73}</Project>
+      <Name>BIDSSMemLib.rw</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
