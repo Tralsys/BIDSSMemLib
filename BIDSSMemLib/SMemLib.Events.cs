@@ -105,23 +105,23 @@ namespace TR.BIDSSMemLib
       private static double OldOldT = 0;
       private static double OldOldZ = 0;
 
-      static internal void OnBSMDChanged(object sender, BSMDChangedEArgs e)
+      static internal void OnBSMDChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
       {
         BIDSSharedMemoryData bsmddef = default;
 
-        if (Equals(bsmddef, e.NewData)) return;
-        if (!Equals(e.OldData.SpecData, e.NewData.SpecData)) SpecChanged?.Invoke(e.NewData.SpecData, new SpecDataChangedEventArgs()
+        if (Equals(bsmddef, e.NewValue)) return;
+        if (!Equals(e.OldValue.SpecData, e.NewValue.SpecData)) SpecChanged?.Invoke(e.NewValue.SpecData, new SpecDataChangedEventArgs()
         {
-          ATSCheck = e.NewData.SpecData.A,
-          Cars = e.NewData.SpecData.C,
-          MaxBrake = e.NewData.SpecData.B,
-          MaxPower = e.NewData.SpecData.P,
-          MaxServiceBrake = e.NewData.SpecData.J
+          ATSCheck = e.NewValue.SpecData.A,
+          Cars = e.NewValue.SpecData.C,
+          MaxBrake = e.NewValue.SpecData.B,
+          MaxPower = e.NewValue.SpecData.P,
+          MaxServiceBrake = e.NewValue.SpecData.J
         });
-        if (!Equals(e.NewData.StateData, e.OldData.StateData))
+        if (!Equals(e.NewValue.StateData, e.OldValue.StateData))
         {
-          State n = e.NewData.StateData;
-          State o = e.OldData.StateData;
+          State n = e.NewValue.StateData;
+          State o = e.OldValue.StateData;
           if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) PressChanged?.Invoke(n, new PressureChangedEventArgs()
           {
             BC = n.BC,
@@ -200,6 +200,36 @@ namespace TR.BIDSSMemLib
     /// <summary> Soundが更新された際に呼ばれるイベント </summary>
     public static event EventHandler<ArrayDChangedEArgs> SoundDChanged;
 
+    public event EventHandler<ValueChangedEventArgs<BIDSSharedMemoryData>> SMC_BSMDChanged
+    {
+      add => SMC_BSMD.ValueChanged += value;
+      remove => SMC_BSMD.ValueChanged -= value;
+    }
+    public event EventHandler<ValueChangedEventArgs<OpenD>> SMC_OpenDChanged
+    {
+      add => SMC_OpenD.ValueChanged += value;
+      remove => SMC_OpenD.ValueChanged -= value;
+    }
+    public event EventHandler<ValueChangedEventArgs<int[]>> SMC_PanelDChanged
+    {
+      add => SMC_PnlD.ValueChanged += value;
+      remove => SMC_PnlD.ValueChanged -= value;
+    }
+    public event EventHandler<ValueChangedEventArgs<int[]>> SMC_SoundDChanged
+    {
+      add => SMC_SndD.ValueChanged += value;
+      remove => SMC_SndD.ValueChanged -= value;
+    }
+
+    private void SMC_BSMD_ValueChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
+  => BIDSSMemChanged?.Invoke(this, new BSMDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue });
+    private void SMC_SndD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
+      => SoundDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue });
+    private void SMC_PnlD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
+    => PanelDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue });
+
+    private void SMC_OpenD_ValueChanged(object sender, ValueChangedEventArgs<OpenD> e)
+    => OpenDChanged?.Invoke(this, new OpenDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue });
 
   }
 }

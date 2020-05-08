@@ -5,7 +5,7 @@ using System.IO.MemoryMappedFiles;
 #endif
 using System.Threading;
 
-namespace TR.BIDSSMemLib
+namespace TR
 {
 	/// <summary>TargetFramework別にSharedMemoryを提供します.</summary>
 	public class SMemIF : IDisposable
@@ -123,7 +123,7 @@ namespace TR.BIDSSMemLib
 				LockGot = true;
 #region SMemへの操作
 #if UMNGD
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 #else
 				MMVA.Read(pos, out buf);
 #endif
@@ -156,7 +156,7 @@ namespace TR.BIDSSMemLib
 				LockGot = true;
 #region SMemへの操作
 #if UMNGD
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 #else
 				MMVA.ReadArray(pos, buf, offset, count);
 #endif
@@ -188,7 +188,7 @@ namespace TR.BIDSSMemLib
 				LockGot = true;
 #region SMemへの操作
 #if UMNGD
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 #else
 				MMVA.Write(pos, ref buf);
 #endif
@@ -220,7 +220,7 @@ namespace TR.BIDSSMemLib
 				LockGot = true;
 #region SMemへの操作
 #if UMNGD
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 #else
 				MMVA.WriteArray(pos, buf, offset, count);
 #endif
@@ -250,7 +250,7 @@ namespace TR.BIDSSMemLib
 				if (!RWLS.TryEnterWriteLock(WRITE_TIMEOUT)) return;//ロック取得失敗
 				LockGot = true;
 #if UMNGD
-				throw new NotImplementedException();
+				//throw new NotImplementedException();
 #else
 				MMVA?.Dispose();
 				MMF?.Dispose();

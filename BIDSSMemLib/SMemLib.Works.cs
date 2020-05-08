@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace TR.BIDSSMemLib
 {
@@ -34,7 +33,7 @@ namespace TR.BIDSSMemLib
           else throw new InvalidOperationException("SoundD共有メモリが有効化されていません。");
           break;
       }
-      if (ModeNum <= 0) Parallel.For(1, 8, (i) => ReadStart(i, Interval));
+      if (ModeNum <= 0) for (int i = 1; i < 8; i++) ReadStart(i, Interval);
     }
 
     
@@ -58,7 +57,7 @@ namespace TR.BIDSSMemLib
           ARS_SndD?.Stop();
           break;
       }
-      if (ModeNum <= 0) Parallel.For(1, 8, (int i) => ReadStop(i));
+      if (ModeNum <= 0) for (int i = 1; i < 8; i++) ReadStop(i);
     }
   }
 }

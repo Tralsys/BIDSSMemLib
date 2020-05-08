@@ -127,12 +127,11 @@ namespace TR.BIDSSMemLib
       ARS_SndD = new SMC_ARSupport<int[]>(SMC_SndD);
 
       SMC_BSMD.ValueChanged += SMC_BSMD_ValueChanged;
-      BIDSSMemChanged += Events.OnBSMDChanged;
-      //OpenDChanged += Events.OnOpenDChanged;
+      SMC_OpenD.ValueChanged += SMC_OpenD_ValueChanged;
+      SMC_PnlD.ValueChanged += SMC_PnlD_ValueChanged;
+      SMC_SndD.ValueChanged += SMC_SndD_ValueChanged;
+      SMC_BSMD.ValueChanged += Events.OnBSMDChanged;
     }
-
-    private void SMC_BSMD_ValueChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
-      => BIDSSMemChanged?.Invoke(this, new BSMDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue });
 
     /// <summary>共有メモリからデータを読み込む</summary>
     public void Read()

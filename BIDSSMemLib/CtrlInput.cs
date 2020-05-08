@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-#if !bve5id
-using System.IO.MemoryMappedFiles;
-#endif
 
 namespace TR.BIDSSMemLib
 {

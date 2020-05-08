@@ -58,7 +58,7 @@ namespace TR.BIDSSMemLib
 
       try
       {
-        SML = new SMemLib(true, 0);
+        SML = new SMemLib(0, true);
         CI = new CtrlInput();
         return true;
       }

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-namespace TR.BIDSSMemLib
+namespace TR
 {
 	public interface ISMemCtrler<T> : IDisposable
 	{
