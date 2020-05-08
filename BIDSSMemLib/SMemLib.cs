@@ -72,13 +72,9 @@ namespace TR.BIDSSMemLib
     private bool IsMother { get; }
 
     /// <summary>SharedMemoryを初期化する。</summary>
-    /// <param name="ModeNum">モード番号</param>
-    public SMemLib(byte ModeNum = 0) => new SMemLib(false, ModeNum);
-    
-    /// <summary>SharedMemoryを初期化する。</summary>
     /// <param name="IsThisMother">書き込む側かどうか</param>
     /// <param name="ModeNum">モード番号</param>
-    public SMemLib(bool IsThisMother = false, byte ModeNum = 0, bool isNoSMemMode = false)
+    public SMemLib(byte ModeNum = 0, bool IsThisMother = false, bool isNoSMemMode = false)
     {
       NO_SMEM_MODE = isNoSMemMode;
 
@@ -225,7 +221,7 @@ namespace TR.BIDSSMemLib
     public void Write(in SoundD D) => SMC_SndD?.Write(D.Sounds);
 
     #region IDisposable Support
-    private bool disposedValue = false; // 重複する呼び出しを検出するには
+    private bool disposedValue = false;
 
     protected virtual void Dispose(bool disposing)
     {
@@ -233,11 +229,7 @@ namespace TR.BIDSSMemLib
       {
         if (disposing)
         {
-          // TODO: マネージ状態を破棄します (マネージ オブジェクト)。
         }
-
-        // TODO: アンマネージ リソース (アンマネージ オブジェクト) を解放し、下のファイナライザーをオーバーライドします。
-        // TODO: 大きなフィールドを null に設定します。
         ReadStop();
 
         SMC_BSMD?.Dispose();
@@ -248,22 +240,7 @@ namespace TR.BIDSSMemLib
         disposedValue = true;
       }
     }
-
-    // TODO: 上の Dispose(bool disposing) にアンマネージ リソースを解放するコードが含まれる場合にのみ、ファイナライザーをオーバーライドします。
-    // ~SMemLib()
-    // {
-    //   // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
-    //   Dispose(false);
-    // }
-
-    // このコードは、破棄可能なパターンを正しく実装できるように追加されました。
-    public void Dispose()
-    {
-      // このコードを変更しないでください。クリーンアップ コードを上の Dispose(bool disposing) に記述します。
-      Dispose(true);
-      // TODO: 上のファイナライザーがオーバーライドされる場合は、次の行のコメントを解除してください。
-      // GC.SuppressFinalize(this);
-    }
+    public void Dispose() => Dispose(true);
     #endregion
   }
 }

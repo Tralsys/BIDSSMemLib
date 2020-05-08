@@ -1,6 +1,4 @@
-﻿#if !(bve5 || obve)
-using System;
-using System.Threading;
+﻿using System;
 using System.Threading.Tasks;
 
 namespace TR.BIDSSMemLib
@@ -64,4 +62,3 @@ namespace TR.BIDSSMemLib
     }
   }
 }
-#endif
