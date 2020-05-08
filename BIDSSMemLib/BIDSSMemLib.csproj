@@ -81,6 +81,7 @@
     <Compile Include="CtrlInput.cs" />
     <Compile Include="InputDevice.obve.cs" />
     <Compile Include="SMemCtrler.cs" />
+    <Compile Include="SMemIF.cs" />
     <Compile Include="SMemLib.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SMemLib.struct.cs" />

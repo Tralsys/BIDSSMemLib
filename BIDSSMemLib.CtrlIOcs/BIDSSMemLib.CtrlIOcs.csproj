@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Include="..\BIDSSMemLib\CtrlInput.cs" Link="CtrlInput.cs" />
     <Compile Include="..\BIDSSMemLib\SMemCtrler.cs" Link="SMemCtrler.cs" />
+    <Compile Include="..\BIDSSMemLib\SMemIF.cs" Link="SMemIF.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />

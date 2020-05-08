@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Compile Include="..\BIDSSMemLib\SMemCtrler.cs" Link="SMemCtrler.cs" />
+    <Compile Include="..\BIDSSMemLib\SMemIF.cs" Link="SMemIF.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs" Link="SMemLib.Events.cs" />
     <Compile Include="..\BIDSSMemLib\SMemLib.Works.cs" Link="SMemLib.Works.cs" />

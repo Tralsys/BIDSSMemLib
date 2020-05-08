@@ -41,6 +41,9 @@
     <Compile Include="..\BIDSSMemLib\SMemCtrler.cs">
       <Link>SMemCtrler.cs</Link>
     </Compile>
+    <Compile Include="..\BIDSSMemLib\SMemIF.cs">
+      <Link>SMemIF.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

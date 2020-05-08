@@ -48,9 +48,18 @@
     <Compile Include="..\BIDSSMemLib\SMemCtrler.cs">
       <Link>SMemCtrler.cs</Link>
     </Compile>
+    <Compile Include="..\BIDSSMemLib\SMemIF.cs">
+      <Link>SMemIF.cs</Link>
+    </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
+    <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs">
+      <Link>SMemLib.Events.cs</Link>
+    </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
     <Compile Include="..\BIDSSMemLib\Ats.cs" Link="Ats.cs" />
+    <Compile Include="..\BIDSSMemLib\SMemLib.Works.cs">
+      <Link>SMemLib.Works.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

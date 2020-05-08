@@ -28,7 +28,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;InputD;bve5id</DefineConstants>
+    <DefineConstants>TRACE;InputD;bve5id;UMNGD</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -48,6 +48,9 @@
     </Compile>
     <Compile Include="..\BIDSSMemLib\SMemCtrler.cs">
       <Link>SMemCtrler.cs</Link>
+    </Compile>
+    <Compile Include="..\BIDSSMemLib\SMemIF.cs">
+      <Link>SMemIF.cs</Link>
     </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
