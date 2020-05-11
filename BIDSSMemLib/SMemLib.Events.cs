@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace TR.BIDSSMemLib
 {
@@ -110,28 +111,30 @@ namespace TR.BIDSSMemLib
         BIDSSharedMemoryData bsmddef = default;
 
         if (Equals(bsmddef, e.NewValue)) return;
-        if (!Equals(e.OldValue.SpecData, e.NewValue.SpecData)) SpecChanged?.Invoke(e.NewValue.SpecData, new SpecDataChangedEventArgs()
+
+        if (!Equals(e.OldValue.SpecData, e.NewValue.SpecData)) Task.Run(() => SpecChanged?.Invoke(e.NewValue.SpecData, new SpecDataChangedEventArgs()
         {
           ATSCheck = e.NewValue.SpecData.A,
           Cars = e.NewValue.SpecData.C,
           MaxBrake = e.NewValue.SpecData.B,
           MaxPower = e.NewValue.SpecData.P,
           MaxServiceBrake = e.NewValue.SpecData.J
-        });
-        if (!Equals(e.NewValue.StateData, e.OldValue.StateData))
-        {
-          State n = e.NewValue.StateData;
-          State o = e.OldValue.StateData;
-          if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) PressChanged?.Invoke(n, new PressureChangedEventArgs()
-          {
-            BC = n.BC,
-            BP = n.BP,
-            ER = n.ER,
-            MR = n.MR,
-            SAP = n.SAP
-          });
+        }));
 
-          if (n.Z != o.Z)
+        if (Equals(e.NewValue.StateData, e.OldValue.StateData)) return;
+        State n = e.NewValue.StateData;
+        State o = e.OldValue.StateData;
+        if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) Task.Run(() => PressChanged?.Invoke(n, new PressureChangedEventArgs()
+        {
+          BC = n.BC,
+          BP = n.BP,
+          ER = n.ER,
+          MR = n.MR,
+          SAP = n.SAP
+        }));
+
+        if (n.Z != o.Z)
+          Task.Run(() =>
           {
             double a = 0;
             double odt, ndt, odz, ndz, ot, nt, ov, nv;
@@ -155,21 +158,18 @@ namespace TR.BIDSSMemLib
 
             OldOldT = oldT;
             OldOldZ = oldZ;
-          }
-          if (n.V != o.V)
+          });
+        if (n.V != o.V)
+          Task.Run(() =>
           {
             double a = 0;
             if (n.T != o.T) a = (n.V.MtoKM() - o.V.MtoKM()) / (n.T.MStoHH() - o.T.MStoHH());
             SpeedChanged?.Invoke(n.V, new SpeedChangedEventArgs() { Acceleration = a, OldSpeed = o.V, Speed = n.V });
-          }
-          if (n.I != o.I) ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I });
-        }
+          });
+        if (n.I != o.I) Task.Run(() => ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I }));
       }
-      
-      static internal void OnOpenDChanged(object sender, OpenDChangedEArgs e)
-      {
 
-      }
+      static internal void OnOpenDChanged(object sender, OpenDChangedEArgs e) { }
     }
 
     public class BSMDChangedEArgs : EventArgs
@@ -212,24 +212,24 @@ namespace TR.BIDSSMemLib
     }
     public event EventHandler<ValueChangedEventArgs<int[]>> SMC_PanelDChanged
     {
-      add => SMC_PnlD.ValueChanged += value;
-      remove => SMC_PnlD.ValueChanged -= value;
+      add => SMC_PnlD.ArrValueChanged += value;
+      remove => SMC_PnlD.ArrValueChanged -= value;
     }
     public event EventHandler<ValueChangedEventArgs<int[]>> SMC_SoundDChanged
     {
-      add => SMC_SndD.ValueChanged += value;
-      remove => SMC_SndD.ValueChanged -= value;
+      add => SMC_SndD.ArrValueChanged += value;
+      remove => SMC_SndD.ArrValueChanged -= value;
     }
 
     private void SMC_BSMD_ValueChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
-  => BIDSSMemChanged?.Invoke(this, new BSMDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue });
+      => Task.Run(() => BIDSSMemChanged?.Invoke(this, new BSMDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue }));
     private void SMC_SndD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
-      => SoundDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue });
+      => Task.Run(() => SoundDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue }));
     private void SMC_PnlD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
-    => PanelDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue });
+      => Task.Run(()=> PanelDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue }));
 
     private void SMC_OpenD_ValueChanged(object sender, ValueChangedEventArgs<OpenD> e)
-    => OpenDChanged?.Invoke(this, new OpenDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue });
+      => Task.Run(() => OpenDChanged?.Invoke(this, new OpenDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue }));
 
   }
 }

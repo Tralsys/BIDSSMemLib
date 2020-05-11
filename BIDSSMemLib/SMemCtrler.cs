@@ -1,89 +1,108 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace TR
 {
-	public interface ISMemCtrler<T> : IDisposable
+	public class SMemCtrler<T> : IDisposable where T : struct
 	{
 		#region Readonly Properties
 		/// <summary>SMemを用いてデータを共有するか</summary>
-		bool No_SMem_Mode { get; }
+		public bool No_SMem_Mode { get; }
 		/// <summary>データ更新時にイベントを発火させるか</summary>
-		bool No_Event_Mode { get; }
+		public bool No_Event_Mode { get; }
 
 		/// <summary>SMemの名前</summary>
-		string SMem_Name { get; }
+		public string SMem_Name { get; }
 		/// <summary>SMemのサイズ</summary>
-		uint Elem_Size { get; }
+		public uint Elem_Size { get; } = (uint)Marshal.SizeOf(default(T));
+
+		const int SizeD_Size = sizeof(int);
 		#endregion
 
-		event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
-
-		T Data { get; set; }
-
-		T Read(bool DoWrite = true);
-		void Read(out T d, bool DoWrite = true);
-		bool Write(in T data);
-	}
-
-	public class SMemCtrler<T> : ISMemCtrler<T> where T : struct
-	{
-		#region Readonly Properties
-		/// <summary>SMemを用いてデータを共有するか</summary>
-		public bool No_SMem_Mode { get; } = false;
-		/// <summary>データ更新時にイベントを発火させるか</summary>
-		public bool No_Event_Mode { get; } = false;
-
-		/// <summary>SMemの名前</summary>
-		public string SMem_Name { get; } = string.Empty;
-		/// <summary>SMemのサイズ</summary>
-		public uint Elem_Size { get; } = (uint)Marshal.SizeOf(typeof(T));
-		#endregion
-
-		/// <summary>値が変化した際に発火するイベント</summary>
 		public event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
+		public event EventHandler<ValueChangedEventArgs<T[]>> ArrValueChanged;
 
-		private T _Data = new T();
-		/// <summary>読み取り結果</summary>
-		public T Data
+		protected SMemIF MMF = null;
+		public bool ARDoing { get; set; } = false;
+
+		public uint ARInterval { get; set; } = 10;
+
+		Task ARThread = null;
+
+		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
-			get => _Data;
-			set
+			async void AR_Action(Action ReadAction)
 			{
-				if (!No_Event_Mode && !Equals(value, _Data))
-					ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(_Data, value));
-
-				_Data = value;
+				ARDoing = true;
+				while (ARDoing && !disposing && !disposedValue)
+				{
+					_ = ReadAction.BeginInvoke(ReadAction.EndInvoke, null);
+					await Task.Delay((int)ARInterval);
+				}
+				ARDoing = false;
 			}
-		}
 
-		private SMemIF MMF = null;
-
-		public SMemCtrler(string SMemName, bool No_SMem = false, bool No_Event = false)
-		{
 			if (string.IsNullOrEmpty(SMemName)) throw new ArgumentException("SMemNameに無効な値が指定されています.");
 			SMem_Name = SMemName;
 			No_SMem_Mode = No_SMem;
 			No_Event_Mode = No_Event;
 
-			if (No_SMem_Mode) return;//SMemを使用しないならここで終了
+			if (IsArray) ARThread = new Task(() => AR_Action(OnlyReadArr));
+			else ARThread = new Task(() => AR_Action(OnlyRead));
 
-			//SMem初期化
-			MMF = new SMemIF(SMem_Name, Elem_Size);
-
+			if (!No_SMem_Mode) MMF = new SMemIF(SMem_Name, Elem_Size);
 		}
 
+		private T _Data = default;
+		public T Data
+		{
+			get => _Data;
+			set
+			{
+				if (!No_Event_Mode && !Equals(_Data, value))
+				{
+					T oldD = _Data;
+					_Data = value;
+					T newD = value;
+					Task.Run(() =>
+					{
+						ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, newD));
+					});
+				}
+				else _Data = value;
+			}
+		}
+
+		private T[] _ArrData = new T[0];
+		public T[] ArrData
+		{
+			get => _ArrData;
+			set
+			{
+				if (!No_Event_Mode && !_ArrData.SequenceEqual(value))
+				{
+					T[] oldD = (T[])_ArrData.Clone();
+					T[] newD = (T[])value.Clone();
+					Task.Run(() =>
+					{
+						ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, newD));
+					});
+				}
+				else _ArrData = value;
+			}
+		}
+
+		public void OnlyRead() => Read(out _, true);
 		public T Read(bool DoWrite = true)
 		{
-			T d = new T();
+			T d = default;
 
 			Read(out d, DoWrite);
 
 			return d;
 		}
-
 		public void Read(out T d, bool DoWrite = true)
 		{
 			d = Data;
@@ -94,139 +113,50 @@ namespace TR
 				if (MMF.Read(0, out d) && DoWrite) Data = d;
 			}
 			catch (ObjectDisposedException) { }
-			catch(Exception e)
-			{
-				Console.WriteLine("SMemCtrler({0}).Read() : {1}", SMem_Name, e);
-			}
 		}
 
 		public bool Write(in T data)
 		{
-			bool isSame = Equals(data, Data);
-
-			if (!isSame) Data = data;
+			if (!Equals(data, Data)) Data = data;
 
 			if (No_SMem_Mode) return true;
 
 			return MMF.Write(0, ref _Data);
 		}
 
-		#region IDisposable Support
-		private bool disposedValue = false;
-
-		protected virtual void Dispose(bool disposing)
+		public void OnlyReadArr() => ReadArr(out _, true);
+		public T[] ReadArr(bool DoWrite = true)
 		{
-			if (!disposedValue)
-			{
-				if (disposing)
-				{
-					// TODO: マネージ状態を破棄します (マネージ オブジェクト)。
-				}
+			T[] d = default;
 
-				MMF?.Dispose();
-				MMF = null;
+			ReadArr(out d, DoWrite);
 
-				disposedValue = true;
-			}
+			return d;
 		}
-		public void Dispose() => Dispose(true);
-		#endregion
-	}
-
-	/// <summary>配列型を書き込みます.</summary>
-	/// <typeparam name="T">配列の要素の型</typeparam>
-	public class ArrDSMemCtrler<T> : ISMemCtrler<T[]> where T : struct
-	{
-		#region Readonly Properties
-		/// <summary>SMemを用いてデータを共有するか</summary>
-		public bool No_SMem_Mode { get; } = false;
-
-		/// <summary>データ更新時にイベントを発火させるか</summary>
-		public bool No_Event_Mode { get; } = false;
-
-		/// <summary>SMemの名前</summary>
-		public string SMem_Name { get; } = string.Empty;
-
-		/// <summary>配列の各要素のサイズ</summary>
-		public uint Elem_Size { get; } = (uint)Marshal.SizeOf(typeof(T));
-
-		public uint SizeD_Size { get; } = sizeof(int);
-
-		#endregion
-
-		/// <summary>値が変化した際に発火するイベント</summary>
-		public event EventHandler<ValueChangedEventArgs<T[]>> ValueChanged;
-
-		private T[] _Data = new T[0];
-		/// <summary>読み取り結果</summary>
-		public T[] Data
+		public void ReadArr(out T[] d, bool DoWrite = true)
 		{
-			get => _Data;
-			set
-			{
-				if (!No_Event_Mode && !_Data.SequenceEqual(value))
-					ValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(_Data, value));
-
-				_Data = value;
-			}
-		}
-
-		/// <summary>配列の各値を格納するMMF</summary>
-		private SMemIF MMF = null;
-		/// <summary>配列の長さを格納するMMF</summary>
-
-		/// <summary>配列型の値を格納するMMFを初期化します.</summary>
-		/// <param name="SMemName">SMemの名前</param>
-		/// <param name="No_SMem">SMemを使用するかどうか</param>
-		/// <param name="No_Event">Eventを発火させるかどうか</param>
-		public ArrDSMemCtrler(string SMemName, bool No_SMem = false, bool No_Event = false)
-		{
-			if (string.IsNullOrEmpty(SMemName)) throw new ArgumentException("SMemNameに無効な値が指定されています.");
-			SMem_Name = SMemName;
-			No_SMem_Mode = No_SMem;
-			No_Event_Mode = No_Event;
-
-			if (No_SMem_Mode) return;//SMemを使用しないならここで終了
-
-			//SMem初期化
-			MMF = new SMemIF(SMemName, SizeD_Size);
-		}
-
-		public T[] Read(bool DoWrite = true)
-		{
-			T[] da = new T[0];
-
-			Read(out da, DoWrite);
-
-			return da;
-		}
-		public void Read(out T[] d, bool DoWrite = true)
-		{
-			d = Data;
+			d = _ArrData;
 			if (No_SMem_Mode || MMF == null) return;
-
 			try
 			{
 				int ArrInSMem_Len = 0;
 				if (!MMF.Read(0, out ArrInSMem_Len)) return;//配列長の取得(失敗したらしゃーなし)
-				d = new T[ArrInSMem_Len];
+				d = default;
 				if (ArrInSMem_Len <= 0) return;
-				if (MMF.ReadArray(SizeD_Size, d, 0, d.Length) && DoWrite) Data = d;//読込成功かつ書き込み可=>Data更新
+				d = new T[ArrInSMem_Len];
+				if (MMF.ReadArray(SizeD_Size, d, 0, d.Length) && DoWrite) ArrData = d;//読込成功かつ書き込み可=>Data更新
 			}
 			catch (ObjectDisposedException) { }//無視
-			catch (Exception) { throw; }
 
 			return;
 		}
-		public bool Write(in T[] data)
+		public bool WriteArr(in T[] data)
 		{
-			if (disposedValue == true) return false;
-			if (data == null) return false;
-			Data = data;//内部データ更新
+			if (disposedValue == true || !(data?.Length > 0)) return false;
+			ArrData = data;//内部データ更新
 			if (No_SMem_Mode) return true;
 			if (MMF == null) return false;
 
-			long SMemCapNeed = data.Length * Elem_Size + SizeD_Size;
 			try
 			{
 				int len = data.Length;
@@ -234,60 +164,13 @@ namespace TR
 				if (len > 0) return MMF.WriteArray(SizeD_Size, data, 0, len);
 			}
 			catch (ObjectDisposedException) { }
-			catch (Exception) { throw; }
 
 			return false;
 		}
 
-		#region IDisposable Support
-		private bool disposedValue = false; // 重複する呼び出しを検出するには
-
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!disposedValue)
-			{
-				if (disposing)
-				{
-					// TODO: マネージ状態を破棄します (マネージ オブジェクト)。
-				}
-
-				MMF?.Dispose();
-				MMF = null;
-
-				disposedValue = true;
-			}
-		}
-		public void Dispose() => Dispose(true);
-		#endregion
-	}
-
-
-	public class SMC_ARSupport<T> : IDisposable
-	{
-		ISMemCtrler<T> SMC = null;
-		public SMC_ARSupport(in ISMemCtrler<T> smc)
-		{
-			SMC = smc;
-
-			//AutoReadThread初期化
-			ARThread = new Thread(() =>
-			{
-				while (ARDoing && !disposedValue)
-				{
-					SMC.Read();
-					Thread.Sleep((int)ARInterval);
-				}
-				ARDoing = false;
-			});
-
-		}
-
-		Thread ARThread = null;
-		public bool ARDoing { get; private set; } = false;
-		public uint ARInterval { get; set; } = 10;
-
-		public void Start(int Interval = 10) => Start((uint)Interval);
-		public void Start(uint Interval = 10)
+		#region Auto Read Methods
+		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
+		public void AR_Start(uint Interval)
 		{
 			ARInterval = Interval;
 			if (ARDoing == true) return;
@@ -298,43 +181,42 @@ namespace TR
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine("ThreadStart at SMC_ARSupport({0}).Start({1}) : {2}", SMC.SMem_Name, Interval, e);
+				Console.WriteLine("ThreadStart at SMemCtrler<{0}>.ar_start({1}) : {2}", typeof(T), Interval, e);
+				ARDoing = false;
 				return;
 			}
 		}
-
-		public void Stop()
+		public void AR_Stop()
 		{
-			if (ARThread?.IsAlive != true) return;
+			if (!ARDoing || ARThread?.IsCompleted != false) return;
 			ARDoing = false;
-			ARThread?.Join(5000);
+			ARThread.Wait(1000 + (int)ARInterval);
 		}
+		#endregion
 
 		#region IDisposable Support
 		private bool disposedValue = false;
+		private bool disposing = false;
 
 		protected virtual void Dispose(bool disposing)
 		{
+			disposing = true;
 			if (!disposedValue)
 			{
 				if (disposing)
 				{
 					// TODO: マネージ状態を破棄します (マネージ オブジェクト)。
+					AR_Stop();
 				}
-
-				ARDoing = false;
-				Stop();
-				SMC = null;
 				ARThread = null;
+				MMF?.Dispose();
+				MMF = null;
 
 				disposedValue = true;
 			}
 		}
-
-		public void Dispose()=>Dispose(true);
+		public virtual void Dispose() => Dispose(true);
 		#endregion
-
-
 	}
 
 	/// <summary>値が変化した際に発火するイベントの引数</summary>
@@ -350,3 +232,54 @@ namespace TR
 		}
 	}
 }
+#if UMNGD
+namespace System.Threading.Tasks
+{
+	//Taskクラスの代替
+	public class Task : IDisposable
+	{
+		static public void Run(Action act) => act?.BeginInvoke(act.EndInvoke, null);
+		public bool IsAlive => !IsCompleted;
+		public bool IsCompleted { get; private set; } = false;
+
+		Action Act { get; }
+
+		public Task(Action act)
+		{
+			if (act == null) throw new ArgumentNullException("arg \"act\" is null");
+			Act = act;
+		}
+
+		/// <summary>指定時間の間, 処理を停止します.</summary>
+		/// <param name="milliseconds">処理を停止する時間</param>
+		public static void Delay(int milliseconds)
+		{
+			if (milliseconds < 0) throw new ArgumentOutOfRangeException("cannot use minus number in the arg \"milliseconds\"");
+			Thread.Sleep(milliseconds);
+		}
+
+		/// <summary>指定時間だけ, スレッドの実行終了を待機します.</summary>
+		/// <param name="milliseconds">待機する時間</param>
+		public void Wait(int milliseconds) => Act.EndInvoke(null);
+		
+
+		/// <summary>初期化時に指定した処理を実行します.</summary>
+		public void Start()
+		{
+			IsCompleted = false;
+			_ = Act.BeginInvoke(Callback, null);
+		}
+
+		public void Dispose()
+		{
+			if (!IsCompleted) Act.EndInvoke(null);
+		}
+
+		private void Callback(IAsyncResult ar)
+		{
+			Act.EndInvoke(ar);
+			IsCompleted = true;
+		}
+	}
+}
+#endif

@@ -14,22 +14,22 @@ namespace TR.BIDSSMemLib
       {
         case 1://OpenD
           if (SMC_OpenD?.No_SMem_Mode == false)
-            ARS_OpenD?.Start(Interval);
+            SMC_OpenD?.AR_Start(Interval);
           else throw new InvalidOperationException("OpenD共有メモリが有効化されていません。");
           break;
         case 5://BSMD
           if (SMC_BSMD?.No_SMem_Mode == false)
-            ARS_BSMD?.Start(Interval);
+            SMC_BSMD?.AR_Start(Interval);
           else throw new InvalidOperationException("BSMD共有メモリが有効化されていません。");
           break;
         case 6://PanelD
           if (SMC_PnlD?.No_SMem_Mode == false)
-            ARS_PnlD?.Start(Interval);
+            SMC_PnlD?.AR_Start(Interval);
           else throw new InvalidOperationException("PanelD共有メモリが有効化されていません。");
           break;
         case 7://Sound D
           if (SMC_SndD?.No_SMem_Mode == false)
-            ARS_SndD?.Start(Interval);
+            SMC_SndD?.AR_Start(Interval);
           else throw new InvalidOperationException("SoundD共有メモリが有効化されていません。");
           break;
       }
@@ -45,16 +45,16 @@ namespace TR.BIDSSMemLib
       switch (ModeNum)
       {
         case 1://OpenD
-          ARS_OpenD?.Stop();
+          SMC_OpenD?.AR_Stop();
           break;
         case 5://BSMD
-          ARS_BSMD?.Stop();
+          SMC_BSMD?.AR_Stop();
           break;
         case 6://PanelD
-          ARS_PnlD?.Stop();
+          SMC_PnlD?.AR_Stop();
           break;
         case 7://Sound D
-          ARS_SndD?.Stop();
+          SMC_SndD?.AR_Stop();
           break;
       }
       if (ModeNum <= 0) for (int i = 1; i < 8; i++) ReadStop(i);

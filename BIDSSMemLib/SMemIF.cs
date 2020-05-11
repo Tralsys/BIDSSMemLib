@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 #if !UMNGD
 using System.IO.MemoryMappedFiles;
 #endif
@@ -95,175 +97,110 @@ namespace TR
 			}
 		}
 
-		const int READ_TIMEOUT = 1;
-		const int WRITE_TIMEOUT = 10;
 		string SMem_Name { get; }
-		ReaderWriterLockSlim RWLS = null;//プロセス間の排他は無視する.
+		RWSemap semap = null;
+
 
 		public SMemIF(string SMemName, long capacity)
 		{
 			if (string.IsNullOrEmpty(SMemName) || capacity <= 0) Dispose();
 			SMem_Name = SMemName;
-			RWLS = new ReaderWriterLockSlim();
-
+			semap = new RWSemap();
+			
 			CheckReOpen(capacity);
 		}
 
 		public bool Read<T>(long pos, out T buf) where T : struct
 		{
-			buf = new T();
-			bool LockGot = false;
+			buf = default;
 			if (pos < 0) throw new ArgumentOutOfRangeException("posに負の値は使用できません.");
 			if (disposing) return false;
-			if (RWLS.IsReadLockHeld) return false;//ロックがかかってたら, Readを行わない.(bufferから読んでね.)
-			try
+
+			CheckReOpen(pos + Marshal.SizeOf(default(T)));
+			T retT = default;
+			_ = semap.Read(() =>
 			{
-				CheckReOpen(pos + Marshal.SizeOf((T)default));
-				if (!RWLS.TryEnterReadLock(READ_TIMEOUT)) return false;
-				LockGot = true;
-#region SMemへの操作
+				#region SMemへの操作
 #if UMNGD
 				//throw new NotImplementedException();
 #else
-				MMVA.Read(pos, out buf);
+				MMVA.Read(pos, out retT);
 #endif
-#endregion
-			}
-			catch (Exception e)
-			{
-#if DEBUG
-				Console.WriteLine("SMemIF.Read<T>({0},) => {1}", pos, e);
-#endif
-				return false;
-			}
-			finally
-			{
-				if (LockGot && RWLS.IsReadLockHeld)
-					RWLS.ExitReadLock();
-			}
+				#endregion
+			});
+			buf = retT;
 			return true;
 		}
 		public bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			bool LockGot = false;
 			if (disposing) return false;
-			if (RWLS.IsReadLockHeld) return false;
-			try
-			{
-				long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
-				CheckReOpen(neededCap);
-				if (!RWLS.TryEnterReadLock(READ_TIMEOUT)) return false;
-				LockGot = true;
-#region SMemへの操作
+
+			long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
+			CheckReOpen(neededCap);
+			_ = semap.Read(() =>
+				{
+				#region SMemへの操作
 #if UMNGD
 				//throw new NotImplementedException();
 #else
 				MMVA.ReadArray(pos, buf, offset, count);
 #endif
-#endregion
-			}
-			catch (Exception e)
-			{
-#if DEBUG
-				Console.WriteLine("SMemIF.ReadArray<T>({0},,{1},{2}) => {3}", pos, offset, count, e);
-#endif
-				return false;
-			}
-			finally
-			{
-				if (LockGot && RWLS.IsReadLockHeld)
-					RWLS.ExitReadLock();
-			}
+				#endregion
+			});
+			
 			return true;
 		}
 		public bool Write<T>(long pos, ref T buf) where T : struct
 		{
-			bool LockGot = false;
 			if (pos < 0) throw new ArgumentOutOfRangeException("posに負の値は使用できません.");
 			if (disposing) return false;
-			try
-			{
-				CheckReOpen(pos + Marshal.SizeOf((T)default));
-				if (!RWLS.TryEnterWriteLock(WRITE_TIMEOUT)) return false;
-				LockGot = true;
-#region SMemへの操作
+			CheckReOpen(pos + Marshal.SizeOf(default(T)));
+			T retT = buf;
+			_ = semap.Write(() =>
+				{
+				#region SMemへの操作
 #if UMNGD
 				//throw new NotImplementedException();
 #else
-				MMVA.Write(pos, ref buf);
+				MMVA.Write(pos, ref retT);
 #endif
-#endregion
-			}
-			catch (Exception e)
-			{
-#if DEBUG
-				Console.WriteLine("SMemIF.Write<T>({0},) => {1}", pos, e);
-#endif
-				return false;
-			}
-			finally
-			{
-				if (LockGot && RWLS.IsWriteLockHeld)
-					RWLS.ExitWriteLock();
-			}
+				#endregion
+			});
 			return true;
 		}
 		public bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			bool LockGot = false;
 			if (disposing) return false;
-			try
-			{
-				long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
-				CheckReOpen(neededCap);
-				if (!RWLS.TryEnterWriteLock(WRITE_TIMEOUT)) return false;
-				LockGot = true;
-#region SMemへの操作
+			long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
+			CheckReOpen(neededCap);
+			_ = semap.Write(() =>
+				{
+				#region SMemへの操作
 #if UMNGD
 				//throw new NotImplementedException();
 #else
 				MMVA.WriteArray(pos, buf, offset, count);
 #endif
-#endregion
-			}
-			catch (Exception e)
-			{
-#if DEBUG
-				Console.WriteLine("SMemIF.WriteArray<T>({0},,{1},{2}) => {3}", pos, offset, count, e);
-#endif
-				return false;
-			}
-			finally
-			{
-				if (LockGot && RWLS.IsWriteLockHeld)
-					RWLS.ExitWriteLock();
-			}
+				#endregion
+			});
 			return true;
 		}
 
 		void CheckReOpen(long capacity)
 		{
-			bool LockGot = false;
-			try
-			{
-				if (Capacity > capacity) return;//保持キャパが要求キャパより大きい
-				if (!RWLS.TryEnterWriteLock(WRITE_TIMEOUT)) return;//ロック取得失敗
-				LockGot = true;
+			if (Capacity > capacity) return;//保持キャパが要求キャパより大きい
+			_ = semap.Write(() =>
+				{
 #if UMNGD
 				//throw new NotImplementedException();
 #else
 				MMVA?.Dispose();
-				MMF?.Dispose();
+					MMF?.Dispose();
 
-				MMF = MemoryMappedFile.CreateOrOpen(SMem_Name, capacity);
-				MMVA = MMF.CreateViewAccessor();
+					MMF = MemoryMappedFile.CreateOrOpen(SMem_Name, capacity);
+					MMVA = MMF.CreateViewAccessor();
 #endif
-			}
-			finally
-			{
-				if (LockGot && RWLS.IsWriteLockHeld)
-					RWLS.ExitWriteLock();
-			}
+			});
 		}
 
 
@@ -286,14 +223,8 @@ namespace TR
 					MMF = null;
 #endif
 				}
-				try
-				{
-					RWLS?.Dispose();
-				}catch(Exception e)
-				{
-					Console.WriteLine(e);
-				}
-				RWLS = null;
+				semap.Dispose();
+				semap = null;
 
 				disposedValue = true;
 			}
@@ -304,4 +235,65 @@ namespace TR
 #endregion
 
 	}
+
+	public class RWSemap : IDisposable
+	{
+		private long WAIT_TICK = 1;
+		private int Reading = 0;
+		private int Want_to_Write = 0;
+		private SemaphoreSlim Semap = new SemaphoreSlim(1);
+
+		public void Dispose()
+		{
+			((IDisposable)Semap).Dispose();
+		}
+
+		public async Task<bool> Read(Action act)
+		{
+			while (Want_to_Write > 0) await Task.Delay(TimeSpan.FromTicks(WAIT_TICK));
+			try
+			{
+				Interlocked.Increment(ref Reading);
+				act?.Invoke();
+			}
+			finally
+			{
+				Interlocked.Decrement(ref Reading);
+			}
+			return true;
+		}
+
+		public async Task<bool> Write(Action act)
+		{
+			try
+			{
+				Interlocked.Increment(ref Want_to_Write);
+				while (Reading > 0) await Task.Delay(TimeSpan.FromTicks(WAIT_TICK));
+				try
+				{
+					await Semap.WaitAsync();
+					act?.Invoke();
+				}
+				finally
+				{
+					Semap.Release();
+				}
+			}
+			finally
+			{
+				Interlocked.Decrement(ref Want_to_Write);
+			}
+			return true;
+		}
+	}
 }
+
+#if UMNGD
+namespace System.Threading.Tasks
+{
+	public class Task
+	{
+		static public void Delay(TimeSpan ts) => Thread.Sleep(ts);
+	}
+}
+#endif

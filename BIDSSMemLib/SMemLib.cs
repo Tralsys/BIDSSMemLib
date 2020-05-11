@@ -14,26 +14,22 @@ namespace TR.BIDSSMemLib
 
     private SMemCtrler<BIDSSharedMemoryData> SMC_BSMD = null;
     private SMemCtrler<OpenD> SMC_OpenD = null;
-    private ArrDSMemCtrler<int> SMC_PnlD = null;
-    private ArrDSMemCtrler<int> SMC_SndD = null;
+    private SMemCtrler<int> SMC_PnlD = null;
+    private SMemCtrler<int> SMC_SndD = null;
     //private ArrDSMemCtrler<StaD> SMC_StaD = null;
 
-    private SMC_ARSupport<BIDSSharedMemoryData> ARS_BSMD = null;
-    private SMC_ARSupport<OpenD> ARS_OpenD = null;
-    private SMC_ARSupport<int[]> ARS_PnlD = null;
-    private SMC_ARSupport<int[]> ARS_SndD = null;
-
+    
     /// <summary>BIDSSharedMemoryのデータ</summary>
     public BIDSSharedMemoryData BIDSSMemData
     {
       get => SMC_BSMD?.Data ?? default;
-      private set => SMC_BSMD.Data = value;
+      private set => SMC_BSMD?.Write(value);
     }
     /// <summary>OpenBVEでのみ得られるデータ(open専用)</summary>
     public OpenD OpenData
     {
       get => SMC_OpenD?.Data ?? default;
-      private set => SMC_OpenD.Data = value;
+      private set => SMC_OpenD?.Write(value);
     }
 
     ///// <summary>駅情報</summary>
@@ -47,26 +43,26 @@ namespace TR.BIDSSMemLib
     /// <summary>Panel配列情報</summary>
     public PanelD Panels
     {
-      get => new PanelD() { Panels = SMC_PnlD?.Data ?? new int[0] };
+      get => new PanelD() { Panels = SMC_PnlD?.ArrData ?? new int[0] };
 
-      private set => SMC_PnlD.Data = value.Panels;
+      private set => SMC_PnlD.WriteArr(value.Panels);
     }
     public int[] PanelA
     {
-      get => SMC_PnlD?.Data;
-      set => SMC_PnlD.Data = value;
+      get => SMC_PnlD?.ArrData;
+      set => SMC_PnlD.WriteArr(value);
     }
 
     /// <summary>Sound配列情報</summary>
     public SoundD Sounds
     {
-      get => new SoundD() { Sounds = SMC_SndD?.Data ?? new int[0] };
-      private set => SMC_SndD.Data = value.Sounds;
+      get => new SoundD() { Sounds = SMC_SndD?.ArrData ?? new int[0] };
+      private set => SMC_SndD.WriteArr(value.Sounds);
     }
     public int[] SoundA
     {
-      get => SMC_SndD?.Data;
-      set => SMC_SndD.Data = value;
+      get => SMC_SndD?.ArrData;
+      set => SMC_SndD.WriteArr(value);
     }
 
     private bool IsMother { get; }
@@ -74,7 +70,7 @@ namespace TR.BIDSSMemLib
     /// <summary>SharedMemoryを初期化する。</summary>
     /// <param name="IsThisMother">書き込む側かどうか</param>
     /// <param name="ModeNum">モード番号</param>
-    public SMemLib(byte ModeNum = 0, bool IsThisMother = false, bool isNoSMemMode = false)
+    public SMemLib(byte ModeNum = 0, bool IsThisMother = false, bool isNoSMemMode = false, bool isNoEventMode = false)
     {
       NO_SMEM_MODE = isNoSMemMode;
 
@@ -116,20 +112,17 @@ namespace TR.BIDSSMemLib
       };
 			#endregion
 
-			SMC_BSMD = new SMemCtrler<BIDSSharedMemoryData>(MMFB_Name, BSMD_NO_SMem);
-      SMC_OpenD = new SMemCtrler<OpenD>(MMFO_Name, OpenD_NO_SMem);
-      SMC_PnlD = new ArrDSMemCtrler<int>(MMFPn_Name, PnlD_NO_SMem);
-      SMC_SndD = new ArrDSMemCtrler<int>(MMFSn_Name, SndD_NO_SMem);
+			SMC_BSMD = new SMemCtrler<BIDSSharedMemoryData>(MMFB_Name, false, BSMD_NO_SMem, isNoEventMode);
+      SMC_OpenD = new SMemCtrler<OpenD>(MMFO_Name, false, OpenD_NO_SMem, isNoEventMode);
+      SMC_PnlD = new SMemCtrler<int>(MMFPn_Name, true, PnlD_NO_SMem, isNoEventMode);
+      SMC_SndD = new SMemCtrler<int>(MMFSn_Name, true, SndD_NO_SMem, isNoEventMode);
 
-      ARS_BSMD = new SMC_ARSupport<BIDSSharedMemoryData>(SMC_BSMD);
-      ARS_OpenD = new SMC_ARSupport<OpenD>(SMC_OpenD);
-      ARS_PnlD = new SMC_ARSupport<int[]>(SMC_PnlD);
-      ARS_SndD = new SMC_ARSupport<int[]>(SMC_SndD);
 
       SMC_BSMD.ValueChanged += SMC_BSMD_ValueChanged;
       SMC_OpenD.ValueChanged += SMC_OpenD_ValueChanged;
-      SMC_PnlD.ValueChanged += SMC_PnlD_ValueChanged;
-      SMC_SndD.ValueChanged += SMC_SndD_ValueChanged;
+      SMC_PnlD.ArrValueChanged += SMC_PnlD_ValueChanged;
+      SMC_SndD.ArrValueChanged += SMC_SndD_ValueChanged;
+
       SMC_BSMD.ValueChanged += Events.OnBSMDChanged;
     }
 
@@ -191,7 +184,7 @@ namespace TR.BIDSSMemLib
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
     public PanelD Read(out PanelD D, bool DoWrite = true)
     {
-      D = new PanelD() { Panels = SMC_PnlD?.Read(DoWrite) ?? new int[0] };
+      D = new PanelD() { Panels = SMC_PnlD?.ReadArr(DoWrite) ?? new int[0] };
       return D;
     }
     /// <summary>共有メモリからデータを読み込む</summary>
@@ -199,7 +192,7 @@ namespace TR.BIDSSMemLib
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
     public SoundD Read(out SoundD D, bool DoWrite = true)
     {
-      D = new SoundD() { Sounds = SMC_SndD?.Read(DoWrite) ?? new int[0] };
+      D = new SoundD() { Sounds = SMC_SndD?.ReadArr(DoWrite) ?? new int[0] };
       return D;
     }
 
@@ -214,10 +207,10 @@ namespace TR.BIDSSMemLib
     //public void Write(in StaD D) => Write(D, 4);
     /// <summary>Panel構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
-    public void Write(in PanelD D) => SMC_PnlD?.Write(D.Panels);
+    public void Write(in PanelD D) => SMC_PnlD?.WriteArr(D.Panels);
     /// <summary>Sound構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
-    public void Write(in SoundD D) => SMC_SndD?.Write(D.Sounds);
+    public void Write(in SoundD D) => SMC_SndD?.WriteArr(D.Sounds);
 
     #region IDisposable Support
     private bool disposedValue = false;
