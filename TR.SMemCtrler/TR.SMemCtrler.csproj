@@ -5,6 +5,7 @@
 		<LangVersion>8.0</LangVersion>
 		<AssemblyName>TR.SMemCtrler</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
+		<Version>1.0.0</Version>
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>
 		<Product>BIDS Project</Product>
