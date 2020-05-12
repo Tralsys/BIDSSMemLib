@@ -49,10 +49,10 @@ namespace TR
 			No_SMem_Mode = No_SMem;
 			No_Event_Mode = No_Event;
 
+			if (No_SMem_Mode) return;
+			MMF = new SMemIF(SMem_Name, Elem_Size);
 			if (IsArray) ARThread = new Task(() => AR_Action(OnlyReadArr));
 			else ARThread = new Task(() => AR_Action(OnlyRead));
-
-			if (!No_SMem_Mode) MMF = new SMemIF(SMem_Name, Elem_Size);
 		}
 
 		private T _Data = default;
@@ -65,10 +65,9 @@ namespace TR
 				{
 					T oldD = _Data;
 					_Data = value;
-					T newD = value;
 					Task.Run(() =>
 					{
-						ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, newD));
+						ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, value));
 					});
 				}
 				else _Data = value;
@@ -84,13 +83,12 @@ namespace TR
 				if (!No_Event_Mode && !_ArrData.SequenceEqual(value))
 				{
 					T[] oldD = (T[])_ArrData.Clone();
-					T[] newD = (T[])value.Clone();
 					Task.Run(() =>
 					{
-						ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, newD));
+						ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, (T[])value.Clone()));
 					});
 				}
-				else _ArrData = value;
+				_ArrData = value;
 			}
 		}
 
@@ -172,6 +170,7 @@ namespace TR
 		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
 		public void AR_Start(uint Interval)
 		{
+			if (MMF == null || ARThread == null) return;
 			ARInterval = Interval;
 			if (ARDoing == true) return;
 			ARDoing = true;
@@ -188,6 +187,7 @@ namespace TR
 		}
 		public void AR_Stop()
 		{
+			if (MMF == null || ARThread == null) return;
 			if (!ARDoing || ARThread?.IsCompleted != false) return;
 			ARDoing = false;
 			ARThread.Wait(1000 + (int)ARInterval);
