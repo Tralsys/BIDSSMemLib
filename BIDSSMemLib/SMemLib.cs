@@ -65,7 +65,7 @@ namespace TR.BIDSSMemLib
       set => SMC_SndD.WriteArr(value);
     }
 
-    private bool IsMother { get; }
+    //private bool IsMother { get; }
 
     /// <summary>SharedMemoryを初期化する。</summary>
     /// <param name="IsThisMother">書き込む側かどうか</param>
@@ -76,7 +76,7 @@ namespace TR.BIDSSMemLib
 
       Console.WriteLine(isNoSMemMode ? "NO_SMEM_MODE Enabled" : "SMemLib Started");
       
-      IsMother = IsThisMother;
+      //IsMother = IsThisMother;
 
       if (ModeNum >= 4) throw new ArgumentOutOfRangeException("ModeNumは3以下である必要があります。");
 
