@@ -10,6 +10,7 @@
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
     <AssemblyName>TR.BIDSSMemLib.obve</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <LangVersion>8.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -32,6 +33,46 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;obve</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE;obve</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;obve</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;obve</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>8.0</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="OpenBveApi">
       <HintPath>..\..\OpenBVE\bin_release\OpenBveApi.dll</HintPath>
@@ -40,12 +81,30 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\IAtsPI\IAtsPI.cs">
+      <Link>IAtsPI.cs</Link>
+    </Compile>
+    <Compile Include="..\BIDSSMemLib\Ats_obve.cs">
+      <Link>Ats_obve.cs</Link>
+    </Compile>
     <Compile Include="..\BIDSSMemLib\CtrlInput.cs">
       <Link>CtrlInput.cs</Link>
     </Compile>
+    <Compile Include="..\BIDSSMemLib\SMemCtrler.cs">
+      <Link>SMemCtrler.cs</Link>
+    </Compile>
+    <Compile Include="..\BIDSSMemLib\SMemIF.cs">
+      <Link>SMemIF.cs</Link>
+    </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
+    <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs">
+      <Link>SMemLib.Events.cs</Link>
+    </Compile>
     <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
     <Compile Include="..\BIDSSMemLib\InputDevice.obve.cs" Link="InputDevice.obve.cs" />
+    <Compile Include="..\BIDSSMemLib\SMemLib.Works.cs">
+      <Link>SMemLib.Works.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

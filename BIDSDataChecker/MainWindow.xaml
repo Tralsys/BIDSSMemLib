@@ -19,6 +19,8 @@
         <!--Panel-->
         <RowDefinition Height="7*"/>
         <!--Sound-->
+        <RowDefinition Height="3*"/>
+        <!--Ctrl-->
       </Grid.RowDefinitions>
       <Grid Grid.Row="0" ShowGridLines="True">
         <Grid.RowDefinitions>
@@ -189,6 +191,58 @@
       </Grid>
       <Grid x:Name="PanelGrid" Grid.Row="2" ShowGridLines="True"/>
       <Grid x:Name="SoundGrid" Grid.Row="3" Background="#11000000" ShowGridLines="True"/>
+      <Grid Background="#1100FF00" Grid.Row="4" ShowGridLines="True">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Column="0" Grid.Row="0">
+        <Run Text="R:"/>
+        <Run x:Name="CtrlR"/>
+        </TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="0">
+        <Run Text="P:"/>
+        <Run x:Name="CtrlP"/>
+        </TextBlock>
+        <TextBlock Grid.Column="2" Grid.Row="0">
+        <Run Text="B:"/>
+        <Run x:Name="CtrlB"/>
+        </TextBlock>
+        <TextBlock Grid.Column="3" Grid.Row="0">
+        <Run Text="C:"/>
+        <Run x:Name="CtrlC"/>
+        </TextBlock>
+        
+        <TextBlock Grid.Column="4" Grid.Row="0">
+        <Run Text="Hn1:"/>
+        <Run x:Name="CtrlKeyH1"/>
+        </TextBlock>
+        <TextBlock Grid.Column="5" Grid.Row="0">
+        <Run Text="Hn2:"/>
+        <Run x:Name="CtrlKeyH2"/>
+        </TextBlock>
+        <TextBlock Grid.Column="6" Grid.Row="0">
+        <Run Text="MH:"/>
+        <Run x:Name="CtrlKeyMH"/>
+        </TextBlock>
+        <TextBlock Grid.Column="7" Grid.Row="0">
+        <Run Text="Cnst:"/>
+        <Run x:Name="CtrlCnst"/>
+        </TextBlock>
+        
+        
+      </Grid>
     </Grid>
     <Label x:Name="FontSizeShowingLB"
            Padding="0"

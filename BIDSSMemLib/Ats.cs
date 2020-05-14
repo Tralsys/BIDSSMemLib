@@ -1,10 +1,6 @@
 ﻿#if x86
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TR.BIDSSMemLib
@@ -138,7 +134,7 @@ namespace TR.BIDSSMemLib
 #if DEBUG
       MessageBox.Show("BIDSSMemLib Debug Build");
 #endif
-      SML = new SMemLib(true, 0);
+      SML = new SMemLib(0, true);
       BSMD.IsEnabled = true;
       BSMD.VersionNum = int.Parse(SMemLib.VersionNum);
       SML.Write(in BSMD);
