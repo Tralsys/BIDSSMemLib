@@ -70,14 +70,13 @@ namespace TR.BIDSSMemLib
     /// <returns>ハンドル位置指令状態</returns>
     public Hands GetHandD()
     {
-      //ctr++;
       Hands hd = new Hands();
       GetHandD(ref hd);
       return hd;
     }
     /// <summary>ハンドル位置指令状態を取得する</summary>
     /// <param name="hd">ハンドル位置指令状態</param>
-    public void GetHandD(ref Hands hd) => SMIF_CtrlK.Read(0, out hd);
+    public void GetHandD(ref Hands hd) => SMIF_CtrlH.Read(0, out hd);
     /// <summary>ハンドル位置を設定する</summary>
     /// <param name="hd">指定するハンドル位置</param>
     public void SetHandD(ref Hands hd) => SMIF_CtrlH.Write(0, ref hd);
