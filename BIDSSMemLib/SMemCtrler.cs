@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TR
@@ -33,13 +34,20 @@ namespace TR
 
 		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
-			async void AR_Action(Action ReadAction)
+#if !UMNGD
+			async
+#endif
+			void AR_Action(Action ReadAction)
 			{
 				ARDoing = true;
 				while (ARDoing && !disposing && !disposedValue)
 				{
 					_ = ReadAction.BeginInvoke(ReadAction.EndInvoke, null);
+#if UMNGD
+					Thread.Sleep((int)ARInterval);
+#else
 					await Task.Delay((int)ARInterval);
+#endif
 				}
 				ARDoing = false;
 			}
@@ -166,7 +174,7 @@ namespace TR
 			return false;
 		}
 
-		#region Auto Read Methods
+#region Auto Read Methods
 		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
 		public void AR_Start(uint Interval)
 		{
@@ -192,9 +200,9 @@ namespace TR
 			ARDoing = false;
 			ARThread.Wait(1000 + (int)ARInterval);
 		}
-		#endregion
+#endregion
 
-		#region IDisposable Support
+#region IDisposable Support
 		private bool disposedValue = false;
 		private bool disposing = false;
 
@@ -216,7 +224,7 @@ namespace TR
 			}
 		}
 		public virtual void Dispose() => Dispose(true);
-		#endregion
+#endregion
 	}
 
 	/// <summary>値が変化した際に発火するイベントの引数</summary>
