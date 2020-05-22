@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace TR.BIDSSMemLib
 {
@@ -70,6 +71,7 @@ namespace TR.BIDSSMemLib
     /// <summary>SharedMemoryを初期化する。</summary>
     /// <param name="IsThisMother">書き込む側かどうか</param>
     /// <param name="ModeNum">モード番号</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public SMemLib(byte ModeNum = 0, bool IsThisMother = false, bool isNoSMemMode = false, bool isNoEventMode = false)
     {
       NO_SMEM_MODE = isNoSMemMode;
@@ -127,6 +129,7 @@ namespace TR.BIDSSMemLib
     }
 
     /// <summary>共有メモリからデータを読み込む</summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public void Read()
     {
       if (NO_SMEM_MODE) return;
@@ -138,20 +141,22 @@ namespace TR.BIDSSMemLib
     }
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public object Read<T>(bool DoWrite = true) where T : struct
     {
       T v = default;
       if (v is BIDSSharedMemoryData b) return Read(out b, DoWrite);
-      if (v is OpenD o) return Read(out o, DoWrite);
+      else if (v is OpenD o) return Read(out o, DoWrite);
       //if (v is StaD s) return Read(out s, DoWrite);
-      if (v is PanelD pn) return Read(out pn, DoWrite);
-      if (v is SoundD sn) return Read(out sn, DoWrite);
-      throw new InvalidOperationException("指定された型は使用できません。");
+      else if (v is PanelD pn) return Read(out pn, DoWrite);
+      else if (v is SoundD sn) return Read(out sn, DoWrite);
+      else throw new InvalidOperationException("指定された型は使用できません。");
     }
 
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public BIDSSharedMemoryData Read(out BIDSSharedMemoryData D, bool DoWrite = true)
     {
       SMC_BSMD.Read(out D, DoWrite);
@@ -160,6 +165,7 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public OpenD Read(out OpenD D, bool DoWrite = true)
     {
       SMC_OpenD.Read(out D, DoWrite);
@@ -182,6 +188,7 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public PanelD Read(out PanelD D, bool DoWrite = true)
     {
       D = new PanelD() { Panels = SMC_PnlD?.ReadArr(DoWrite) ?? new int[0] };
@@ -190,6 +197,7 @@ namespace TR.BIDSSMemLib
     /// <summary>共有メモリからデータを読み込む</summary>
     /// <param name="D">読み込んだデータを書き込む変数</param>
     /// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public SoundD Read(out SoundD D, bool DoWrite = true)
     {
       D = new SoundD() { Sounds = SMC_SndD?.ReadArr(DoWrite) ?? new int[0] };
@@ -198,18 +206,22 @@ namespace TR.BIDSSMemLib
 
     /// <summary>BIDSSharedMemoryData構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public void Write(in BIDSSharedMemoryData D) => SMC_BSMD?.Write(D);
     /// <summary>OpenD構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public void Write(in OpenD D) => SMC_OpenD?.Write(D);
     /// <summary>StaD構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
     //public void Write(in StaD D) => Write(D, 4);
     /// <summary>Panel構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public void Write(in PanelD D) => SMC_PnlD?.WriteArr(D.Panels);
     /// <summary>Sound構造体の情報を共有メモリに書き込む</summary>
     /// <param name="D">書き込む構造体</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public void Write(in SoundD D) => SMC_SndD?.WriteArr(D.Sounds);
 
     #region IDisposable Support

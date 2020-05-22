@@ -108,6 +108,7 @@ namespace TR
 		RWSemap semap = null;
 
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public SMemIF(string SMemName, long capacity)
 		{
 			if (string.IsNullOrEmpty(SMemName) || capacity <= 0) Dispose();
@@ -117,6 +118,7 @@ namespace TR
 			CheckReOpen(capacity);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public bool Read<T>(long pos, out T buf) where T : struct
 		{
 			buf = default;
@@ -147,6 +149,7 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">読み取りを行う数</param>
 		/// <returns>読み取りに成功したかどうか</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
 			if (disposing) return false;
@@ -183,6 +186,7 @@ namespace TR
 
 			return true;
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public bool Write<T>(long pos, ref T buf) where T : struct
 		{
 			if (pos < 0) throw new ArgumentOutOfRangeException("posに負の値は使用できません.");
@@ -211,6 +215,7 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">書き込む要素数</param>
 		/// <returns>書き込みに成功したかどうか</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
 			if (disposing) return false;
@@ -243,6 +248,7 @@ namespace TR
 			return true;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		void CheckReOpen(long capacity)
 		{
 			if (Capacity > capacity) return;//保持キャパが要求キャパより大きい
@@ -353,6 +359,7 @@ namespace TR
 		/// <summary>Writeロックを行ったうえで, 指定の読み取り操作を行います</summary>
 		/// <param name="act">読み取り操作</param>
 		/// <returns>成功したかどうか</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public
 #if UMNGD
 			bool
@@ -383,6 +390,7 @@ namespace TR
 		/// <summary>Readロックを行ったうえで, 指定の書き込み操作を実行します</summary>
 		/// <param name="act">書き込み操作</param>
 		/// <returns>成功したかどうか</returns>
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public
 #if UMNGD
 			bool
@@ -417,6 +425,7 @@ namespace TR
 #if UMNGD
 		static private void Delay(TimeSpan ts) => Thread.Sleep(ts);
 #else
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		static private async Task Delay(TimeSpan ts) => await Task.Delay(ts);
 #endif
 

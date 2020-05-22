@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace TR.BIDSSMemLib
 {
@@ -7,6 +8,7 @@ namespace TR.BIDSSMemLib
     /// <summary>AutoReadを開始します。実行中である場合、Exceptionをthrowします。</summary>
     /// <param name="ModeNum">自動読み取りを開始する情報種類</param>
     /// <param name="Interval">読み取り頻度[ms]</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public void ReadStart(int ModeNum = 0, int Interval = 50)
     {
       if (NO_SMEM_MODE) return;
@@ -36,10 +38,11 @@ namespace TR.BIDSSMemLib
       if (ModeNum <= 0) for (int i = 1; i < 8; i++) ReadStart(i, Interval);
     }
 
-    
+
 
     /// <summary>AutoReadを終了します。実行中でなくともエラーは返しません。TimeOut:1000ms</summary>
     /// <param name="ModeNum">終了させる情報種類</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     public void ReadStop(int ModeNum = 0)
     {
       switch (ModeNum)

@@ -33,6 +33,7 @@ namespace TR
 
 		Task ARThread = null;
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
 
@@ -116,6 +117,7 @@ namespace TR
 			return d;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void Read(out T d, bool DoWrite = true)
 		{
 			d = Data;
@@ -150,6 +152,7 @@ namespace TR
 
 			return d;
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void ReadArr(out T[] d, bool DoWrite = true)
 		{
 			d = _ArrData;
@@ -166,6 +169,7 @@ namespace TR
 
 			return;
 		}
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public bool WriteArr(in T[] data)
 		{
 			if (disposedValue == true || !(data?.Length > 0)) return false;
@@ -187,6 +191,7 @@ namespace TR
 		#region Auto Read Methods
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(uint Interval)
 		{
 			if (MMF == null || ARThread == null) return;
