@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace TR.BIDSSMemLib
@@ -106,69 +107,73 @@ namespace TR.BIDSSMemLib
       private static double OldOldT = 0;
       private static double OldOldZ = 0;
 
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
       static internal void OnBSMDChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
-      {
-        BIDSSharedMemoryData bsmddef = default;
+      => _ = Task.Run(() =>
+           {
+             BIDSSharedMemoryData bsmddef = default;
 
-        if (Equals(bsmddef, e.NewValue)) return;
+             if (Equals(bsmddef, e.NewValue)) return;
 
-        if (!Equals(e.OldValue.SpecData, e.NewValue.SpecData)) Task.Run(() => SpecChanged?.Invoke(e.NewValue.SpecData, new SpecDataChangedEventArgs()
-        {
-          ATSCheck = e.NewValue.SpecData.A,
-          Cars = e.NewValue.SpecData.C,
-          MaxBrake = e.NewValue.SpecData.B,
-          MaxPower = e.NewValue.SpecData.P,
-          MaxServiceBrake = e.NewValue.SpecData.J
-        }));
+             if (!Equals(e.OldValue.SpecData, e.NewValue.SpecData)) Task.Run(() => SpecChanged?.Invoke(e.NewValue.SpecData, new SpecDataChangedEventArgs()
+             {
+               ATSCheck = e.NewValue.SpecData.A,
+               Cars = e.NewValue.SpecData.C,
+               MaxBrake = e.NewValue.SpecData.B,
+               MaxPower = e.NewValue.SpecData.P,
+               MaxServiceBrake = e.NewValue.SpecData.J
+             }));
 
-        if (Equals(e.NewValue.StateData, e.OldValue.StateData)) return;
-        State n = e.NewValue.StateData;
-        State o = e.OldValue.StateData;
-        if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) Task.Run(() => PressChanged?.Invoke(n, new PressureChangedEventArgs()
-        {
-          BC = n.BC,
-          BP = n.BP,
-          ER = n.ER,
-          MR = n.MR,
-          SAP = n.SAP
-        }));
+             if (Equals(e.NewValue.StateData, e.OldValue.StateData)) return;
+             State n = e.NewValue.StateData;
+             State o = e.OldValue.StateData;
+             if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) Task.Run(() => PressChanged?.Invoke(n, new PressureChangedEventArgs()
+             {
+               BC = n.BC,
+               BP = n.BP,
+               ER = n.ER,
+               MR = n.MR,
+               SAP = n.SAP
+             }));
 
-        if (n.Z != o.Z)
-          Task.Run(() =>
-          {
-            double a = 0;
-            double odt, ndt, odz, ndz, ot, nt, ov, nv;
-            double oldT = o.T.MStoHH();
-            double newT = n.T.MStoHH();
-            double oldZ = o.Z.MtoKM();
-            double newZ = n.Z.MtoKM();
-            if (n.T != o.T && OldOldT != o.T)
-            {
-              odt = oldT - OldOldT;
-              ndt = newT - oldT;
-              odz = oldZ - OldOldZ;
-              ndz = newZ - oldZ;
-              ov = odz / odt;
-              nv = ndz / ndt;
-              ot = OldOldT + (odt / 2);
-              nt = oldT + (ndt / 2);
-              if (ot != nt) a = (nv - ov) / (nt - ot);
-            }
-            LocationChanged?.Invoke(n.Z, new LocationChangedEventArgs() { Acceleration = a, Location = n.Z, OldLocation = o.Z });
+             if (n.Z != o.Z)
+               Task.Run(() =>
+               {
+                 double a = 0;
+                 double odt, ndt, odz, ndz, ot, nt, ov, nv;
+                 double oldT = o.T.MStoHH();
+                 double newT = n.T.MStoHH();
+                 double oldZ = o.Z.MtoKM();
+                 double newZ = n.Z.MtoKM();
+                 if (n.T != o.T && OldOldT != o.T)
+                 {
+                   odt = oldT - OldOldT;
+                   ndt = newT - oldT;
+                   odz = oldZ - OldOldZ;
+                   ndz = newZ - oldZ;
+                   ov = odz / odt;
+                   nv = ndz / ndt;
+                   ot = OldOldT + (odt / 2);
+                   nt = oldT + (ndt / 2);
+                   if (ot != nt) a = (nv - ov) / (nt - ot);
+                 }
+                 LocationChanged?.Invoke(n.Z, new LocationChangedEventArgs() { Acceleration = a, Location = n.Z, OldLocation = o.Z });
 
-            OldOldT = oldT;
-            OldOldZ = oldZ;
-          });
-        if (n.V != o.V)
-          Task.Run(() =>
-          {
-            double a = 0;
-            if (n.T != o.T) a = (n.V.MtoKM() - o.V.MtoKM()) / (n.T.MStoHH() - o.T.MStoHH());
-            SpeedChanged?.Invoke(n.V, new SpeedChangedEventArgs() { Acceleration = a, OldSpeed = o.V, Speed = n.V });
-          });
-        if (n.I != o.I) Task.Run(() => ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I }));
-      }
+                 OldOldT = oldT;
+                 OldOldZ = oldZ;
+               });
+             if (n.V != o.V)
+               Task.Run(() =>
+               {
+                 double a = 0;
+                 if (n.T != o.T) a = (n.V.MtoKM() - o.V.MtoKM()) / (n.T.MStoHH() - o.T.MStoHH());
+                 SpeedChanged?.Invoke(n.V, new SpeedChangedEventArgs() { Acceleration = a, OldSpeed = o.V, Speed = n.V });
+               });
+             if (n.I != o.I) Task.Run(() => ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I }));
+           });
+      
 
+      [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
       static internal void OnOpenDChanged(object sender, OpenDChangedEArgs e) { }
     }
 
@@ -221,13 +226,17 @@ namespace TR.BIDSSMemLib
       remove => SMC_SndD.ArrValueChanged -= value;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     private void SMC_BSMD_ValueChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
       => Task.Run(() => BIDSSMemChanged?.Invoke(this, new BSMDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue }));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     private void SMC_SndD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
       => Task.Run(() => SoundDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue }));
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     private void SMC_PnlD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
       => Task.Run(()=> PanelDChanged?.Invoke(this, new ArrayDChangedEArgs() { OldArray = e.OldValue, NewArray = e.NewValue }));
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
     private void SMC_OpenD_ValueChanged(object sender, ValueChangedEventArgs<OpenD> e)
       => Task.Run(() => OpenDChanged?.Invoke(this, new OpenDChangedEArgs() { OldData = e.OldValue, NewData = e.NewValue }));
 
