@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,6 +35,8 @@ namespace TR
 
 		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
+
+			[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 #if !UMNGD
 			async
 #endif
@@ -100,7 +103,10 @@ namespace TR
 			}
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void OnlyRead() => Read(out _, true);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public T Read(bool DoWrite = true)
 		{
 			T d = default;
@@ -109,6 +115,7 @@ namespace TR
 
 			return d;
 		}
+
 		public void Read(out T d, bool DoWrite = true)
 		{
 			d = Data;
@@ -121,6 +128,7 @@ namespace TR
 			catch (ObjectDisposedException) { }
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public bool Write(in T data)
 		{
 			if (!Equals(data, Data)) Data = data;
@@ -130,7 +138,10 @@ namespace TR
 			return MMF.Write(0, ref _Data);
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void OnlyReadArr() => ReadArr(out _, true);
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public T[] ReadArr(bool DoWrite = true)
 		{
 			T[] d = default;
@@ -142,15 +153,14 @@ namespace TR
 		public void ReadArr(out T[] d, bool DoWrite = true)
 		{
 			d = _ArrData;
-			if (No_SMem_Mode || MMF == null) return;
+			if (No_SMem_Mode || MMF == null) return;//SMem使えないなら内部記録だけを返す.
 			try
 			{
 				int ArrInSMem_Len = 0;
 				if (!MMF.Read(0, out ArrInSMem_Len)) return;//配列長の取得(失敗したらしゃーなし)
-				d = default;
-				if (ArrInSMem_Len <= 0) return;
 				d = new T[ArrInSMem_Len];
-				if (MMF.ReadArray(SizeD_Size, d, 0, d.Length) && DoWrite) ArrData = d;//読込成功かつ書き込み可=>Data更新
+				if (ArrInSMem_Len <= 0) return;//配列長0なら後は読まない.
+				if (MMF.ReadArray(SizeD_Size, d, 0, d.Length) && DoWrite) ArrData = d;//読込成功かつ書き込み可=>Data更新(更新確認はsetterの仕事)
 			}
 			catch (ObjectDisposedException) { }//無視
 
@@ -174,7 +184,8 @@ namespace TR
 			return false;
 		}
 
-#region Auto Read Methods
+		#region Auto Read Methods
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
 		public void AR_Start(uint Interval)
 		{
@@ -193,6 +204,8 @@ namespace TR
 				return;
 			}
 		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Stop()
 		{
 			if (MMF == null || ARThread == null) return;
