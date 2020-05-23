@@ -55,19 +55,19 @@ namespace BIDSDataChecker
 
     private void PDT_Tick(object sender, EventArgs e)
     {
-      PanelD PDNew = (PanelD)SML?.Read<PanelD>(false);
+      int[] PDNew = SMemLib.ReadPanel(false);
       for (int i = 0; i < 256; i++)
       {
-        MakeRun(ref PRun[i], PDOld.Length > i ? PDOld.Panels[i] : 0, PDNew.Length > i ? PDNew.Panels[i] : 0);
+        MakeRun(ref PRun[i], PDOld.Length > i ? PDOld[i] : 0, PDNew.Length > i ? PDNew[i] : 0);
       }
       PDOld = PDNew;
     }
     private void SDT_Tick(object sender, EventArgs e)
     {
-      SoundD SDNew = (SoundD)SML?.Read<SoundD>(false);
+      int[] SDNew = SMemLib.ReadSound(false);
       for (int i = 0; i < 256; i++)
       {
-        MakeRun(ref SRun[i], SDOld.Length > i ? SDOld.Sounds[i] : 0, SDNew.Length > i ? SDNew.Sounds[i] : 0);
+        MakeRun(ref SRun[i], SDOld.Length > i ? SDOld[i] : 0, SDNew.Length > i ? SDNew[i] : 0);
       }
       SDOld = SDNew;
     }
@@ -103,12 +103,14 @@ namespace BIDSDataChecker
     }
     BIDSSharedMemoryData BSMDOld = new BIDSSharedMemoryData();
     OpenD ODOld = new OpenD();
-    PanelD PDOld = new PanelD() { Panels = new int[0] };
-    SoundD SDOld = new SoundD() { Sounds = new int[0] };
+    int[] PDOld = new int[0];
+    int[] SDOld = new int[0];
+    TimeSpan TSOld = new TimeSpan(0);
     private void DT_Tick(object sender, EventArgs e)
     {
-      BIDSSharedMemoryData BSMDNew = (BIDSSharedMemoryData)SML?.Read<BIDSSharedMemoryData>(false);
-      OpenD ODNew = (OpenD)SML?.Read<OpenD>(false);
+      BIDSSharedMemoryData BSMDNew = SMemLib.ReadBSMD(false);
+      OpenD ODNew = SMemLib.ReadOpenD(false);
+      TimeSpan TSNew = TimeSpan.FromMilliseconds(BSMDNew.StateData.T);
 
       MakeRun(ref BSMDVersionNum, BSMDOld.VersionNum, BSMDNew.VersionNum);
 
@@ -120,10 +122,10 @@ namespace BIDSDataChecker
 
       MakeRun(ref BSMDStateZ, BSMDOld.StateData.Z, BSMDNew.StateData.Z);
       MakeRun(ref BSMDStateV, BSMDOld.StateData.V, BSMDNew.StateData.V);
-      MakeRun(ref BSMDStateHH, BSMDOld.StateData.T / 60 / 60 / 1000, BSMDNew.StateData.T / 60 / 60 / 1000);
-      MakeRun(ref BSMDStateMM, (BSMDOld.StateData.T / 60 / 1000) % 60, (BSMDNew.StateData.T / 60 / 1000) % 60);
-      MakeRun(ref BSMDStateSS, (BSMDOld.StateData.T / 1000) % 60, (BSMDNew.StateData.T / 1000) % 60);
-      MakeRun(ref BSMDStateMS, BSMDOld.StateData.T % 1000, BSMDNew.StateData.T % 1000);
+      MakeRun(ref BSMDStateHH, TSOld.Hours, TSNew.Hours);
+      MakeRun(ref BSMDStateMM, TSOld.Minutes, TSNew.Minutes);
+      MakeRun(ref BSMDStateSS, TSOld.Seconds, TSNew.Seconds);
+      MakeRun(ref BSMDStateMS, TSOld.Milliseconds, TSNew.Milliseconds);
       MakeRun(ref BSMDStateBC, BSMDOld.StateData.BC, BSMDNew.StateData.BC);
       MakeRun(ref BSMDStateMR, BSMDOld.StateData.MR, BSMDNew.StateData.MR);
       MakeRun(ref BSMDStateER, BSMDOld.StateData.ER, BSMDNew.StateData.ER);
@@ -153,12 +155,12 @@ namespace BIDSDataChecker
 
       BSMDOld = BSMDNew;
       ODOld = ODNew;
+      TSOld = TSNew;
     }
 
-    SMemLib SML = null;
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-      SML = new SMemLib();
+      SMemLib.Begin(false, true);
       DT?.Start();
       PDT?.Start();
       SDT?.Start();
@@ -174,18 +176,19 @@ namespace BIDSDataChecker
           if(IsFSLBShowingMode) FSLBShow(0);
           break;
         case Key.Down:
-          FontSize--;
+          if (FontSize > 1) FontSize--;//FontSizeは最小でも1.
           if (IsFSLBShowingMode) FSLBShow(0);
           break;
         case Key.Left:
-          TickRate -= TickRate <= 10 ? 0 : 10;
+          TickRate -= TickRate > 10 ? 10 ://TickRateが10より大きいなら10msごと.
+            TickRate > 1 ? 1 : 0;//TickRateが10より小さいなら, 1msより大きい場合に限って1msずつ引く.  1ms未満にはしない.
           DT.Interval = new TimeSpan(0, 0, 0, 0, TickRate);
           PDT.Interval = new TimeSpan(0, 0, 0, 0, TickRate);
           SDT.Interval = new TimeSpan(0, 0, 0, 0, TickRate);
           if (IsTickRateShowintMode) FSLBShow(1);
           break;
         case Key.Right:
-          TickRate += 10;
+          TickRate += TickRate < 10 ? 1 : 10;//TickRateが10未満なら1msずつ, 10以上なら10msずつ上昇させる.
           DT.Interval = new TimeSpan(0, 0, 0, 0, TickRate);
           PDT.Interval = new TimeSpan(0, 0, 0, 0, TickRate);
           SDT.Interval = new TimeSpan(0, 0, 0, 0, TickRate);
@@ -225,28 +228,31 @@ namespace BIDSDataChecker
       DT?.Stop();
       PDT?.Stop();
       SDT?.Stop();
-      SML?.Dispose();
-      SML = null;
     }
 
-    static Brush Red = new SolidColorBrush(Colors.Red);
-    static Brush White = new SolidColorBrush(Colors.White);
-    static Brush Black = new SolidColorBrush(Colors.Black);
-    static Brush Trans = new SolidColorBrush(Colors.Transparent);
-    internal static void MakeRun(ref Run t, object Old, object New)
+    static readonly Brush Red = new SolidColorBrush(Colors.Red);
+    static readonly Brush Green = new SolidColorBrush(Color.FromArgb(0xFF, 0, 0xFF, 0));
+    static readonly Brush Blue = new SolidColorBrush(Colors.Blue);
+    static readonly Brush White = new SolidColorBrush(Colors.White);
+    static readonly Brush Black = new SolidColorBrush(Colors.Black);
+    static readonly Brush Trans = new SolidColorBrush(Colors.Transparent);
+
+    static readonly Brush ValueDown = Green;
+    static readonly Brush ValueUp = Red;
+    internal static void MakeRun<T>(ref Run t, in T Old, in T New) where T : IComparable
     {
       if (t != null)
       {
         if (!Equals(Old, New))
         {
           t.Text = New.ToString();
-          t.Background = Red;
-          t.Foreground = White;
+          t.Background = Old.CompareTo(New) > 0 ? ValueDown : ValueUp;
+          //t.Foreground = White;
         }
         else
         {
           if (t.Background != Trans) t.Background = Trans;
-          if (t.Foreground != Black) t.Foreground = Black;
+          //if (t.Foreground != Black) t.Foreground = Black;
         }
       }
     }
