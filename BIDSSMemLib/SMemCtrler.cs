@@ -71,16 +71,13 @@ namespace TR
 		public T Data
 		{
 			get => _Data;
-			set
+			private set
 			{
 				if (!No_Event_Mode && !Equals(_Data, value))
 				{
 					T oldD = _Data;
 					_Data = value;
-					Task.Run(() =>
-					{
-						ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, value));
-					});
+					Task.Run(() => ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, value)));
 				}
 				else _Data = value;
 			}
@@ -90,15 +87,12 @@ namespace TR
 		public T[] ArrData
 		{
 			get => _ArrData;
-			set
+			private set
 			{
 				if (!No_Event_Mode && !_ArrData.SequenceEqual(value))
 				{
-					T[] oldD = (T[])_ArrData.Clone();
-					Task.Run(() =>
-					{
-						ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, (T[])value.Clone()));
-					});
+					T[] oldD = _ArrData;
+					Task.Run(() => ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, value)));
 				}
 				_ArrData = value;
 			}
@@ -108,7 +102,7 @@ namespace TR
 		public void OnlyRead() => Read(out _, true);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
-		public T Read(bool DoWrite = true)
+		public T Read(in bool DoWrite = true)
 		{
 			T d = default;
 
@@ -118,7 +112,7 @@ namespace TR
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
-		public void Read(out T d, bool DoWrite = true)
+		public void Read(out T d, in bool DoWrite = true)
 		{
 			d = Data;
 			if (No_SMem_Mode || MMF == null) return;
@@ -144,7 +138,7 @@ namespace TR
 		public void OnlyReadArr() => ReadArr(out _, true);
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
-		public T[] ReadArr(bool DoWrite = true)
+		public T[] ReadArr(in bool DoWrite = true)
 		{
 			T[] d = default;
 
@@ -153,7 +147,7 @@ namespace TR
 			return d;
 		}
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
-		public void ReadArr(out T[] d, bool DoWrite = true)
+		public void ReadArr(out T[] d, in bool DoWrite = true)
 		{
 			d = _ArrData;
 			if (No_SMem_Mode || MMF == null) return;//SMem使えないなら内部記録だけを返す.
@@ -247,10 +241,10 @@ namespace TR
 
 	/// <summary>値が変化した際に発火するイベントの引数</summary>
 	/// <typeparam name="T">値の型</typeparam>
-	public class ValueChangedEventArgs<T> : EventArgs
+	public readonly struct ValueChangedEventArgs<T>
 	{
-		public T OldValue { get; } = default;
-		public T NewValue { get; } = default;
+		public readonly T OldValue;
+		public readonly T NewValue;
 		public ValueChangedEventArgs(in T oldValue, in T newValue)
 		{
 			OldValue = oldValue;

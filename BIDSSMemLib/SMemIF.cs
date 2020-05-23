@@ -291,8 +291,6 @@ namespace TR
 			disposing = true;
 			if (!disposedValue)
 			{
-				if (disposing)
-				{
 #if UMNGD
 					if (MMVA != IntPtr.Zero)
 					{
@@ -312,7 +310,6 @@ namespace TR
 					MMVA = null;
 					MMF = null;
 #endif
-				}
 				semap.Dispose();
 				semap = null;
 
@@ -320,26 +317,11 @@ namespace TR
 			}
 		}
 
-#if UMNGD
+
 		/// <summary>SMemのハンドルを閉じます.</summary>
-		~SMemIF()
-		{
-			if (MMVA != IntPtr.Zero)
-			{
-				UnmapViewOfFile(MMVA);
-				CloseHandle(MMVA);
-				MMVA = IntPtr.Zero;
-			}
-			if (MMF != IntPtr.Zero)
-			{
-				CloseHandle(MMF);
-				MMF = IntPtr.Zero;
-			}
-		}
-#endif
+		~SMemIF() => Dispose(false);
 
 		public void Dispose() => Dispose(true);
-
 		#endregion
 
 	}
