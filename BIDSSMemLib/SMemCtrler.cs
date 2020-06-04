@@ -9,6 +9,8 @@ namespace TR
 {
 	public class SMemCtrler<T> : IDisposable where T : struct
 	{
+		private const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
+
 		#region Readonly Properties
 		/// <summary>SMemを用いてデータを共有するか</summary>
 		public bool No_SMem_Mode { get; }
@@ -33,11 +35,11 @@ namespace TR
 
 		Task ARThread = null;
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+			[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 #if !UMNGD
 			async
 #endif
@@ -98,10 +100,10 @@ namespace TR
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void OnlyRead() => Read(out _, true);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public T Read(in bool DoWrite = true)
 		{
 			T d = default;
@@ -111,7 +113,7 @@ namespace TR
 			return d;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void Read(out T d, in bool DoWrite = true)
 		{
 			d = Data;
@@ -124,7 +126,7 @@ namespace TR
 			catch (ObjectDisposedException) { }
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public bool Write(in T data)
 		{
 			if (!Equals(data, Data)) Data = data;
@@ -134,10 +136,10 @@ namespace TR
 			return MMF.Write(0, ref _Data);
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void OnlyReadArr() => ReadArr(out _, true);
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public T[] ReadArr(in bool DoWrite = true)
 		{
 			T[] d = default;
@@ -146,7 +148,7 @@ namespace TR
 
 			return d;
 		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void ReadArr(out T[] d, in bool DoWrite = true)
 		{
 			d = _ArrData;
@@ -163,7 +165,7 @@ namespace TR
 
 			return;
 		}
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public bool WriteArr(in T[] data)
 		{
 			if (disposedValue == true || !(data?.Length > 0)) return false;
@@ -183,9 +185,9 @@ namespace TR
 		}
 
 		#region Auto Read Methods
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(uint Interval)
 		{
 			if (MMF == null || ARThread == null) return;
@@ -204,7 +206,7 @@ namespace TR
 			}
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Stop()
 		{
 			if (MMF == null || ARThread == null) return;
@@ -241,7 +243,7 @@ namespace TR
 
 	/// <summary>値が変化した際に発火するイベントの引数</summary>
 	/// <typeparam name="T">値の型</typeparam>
-	public readonly struct ValueChangedEventArgs<T>
+	public class ValueChangedEventArgs<T> : EventArgs
 	{
 		public readonly T OldValue;
 		public readonly T NewValue;
@@ -256,9 +258,9 @@ namespace TR
 namespace System.Threading.Tasks
 {
 	//Taskクラスの代替
-	public class Task : IDisposable
+	internal class Task : IDisposable
 	{
-		static public void Run(Action act) => act?.BeginInvoke(act.EndInvoke, null);
+		static public IAsyncResult Run(Action act) => act?.BeginInvoke(act.EndInvoke, null);
 		public bool IsAlive => !IsCompleted;
 		public bool IsCompleted { get; private set; } = false;
 

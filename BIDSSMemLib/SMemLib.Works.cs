@@ -8,7 +8,7 @@ namespace TR.BIDSSMemLib
 		/// <summary>AutoReadを開始します。</summary>
 		/// <param name="ModeNum">自動読み取りを開始する情報種類</param>
 		/// <param name="Interval">読み取り頻度[ms]</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public static void ReadStart(int ModeNum = 0, int Interval = 50)
 		{
 			if (NO_SMEM_MODE) return;
@@ -42,7 +42,7 @@ namespace TR.BIDSSMemLib
 
 		/// <summary>AutoReadを終了します。実行中でなくともエラーは返しません。TimeOut:1000ms</summary>
 		/// <param name="ModeNum">終了させる情報種類</param>
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public static void ReadStop(int ModeNum = 0)
 		{
 			switch (ModeNum)

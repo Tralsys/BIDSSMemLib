@@ -11,7 +11,7 @@ namespace TR.BIDSSMemLib
     public event InputEventHandler KeyDown;
     public event InputEventHandler KeyUp;
 
-    class Axis
+    static class Axis
     {
       internal const int FuncKey = -1;
       internal const int ATSKey = -2;
@@ -30,10 +30,9 @@ namespace TR.BIDSSMemLib
     => MessageBox.Show(owner, "BIDS Shared Memory Library\nBVE5 Input Device Plugin File\nVersion : "
     + Assembly.GetExecutingAssembly().GetName().Version.ToString(), Assembly.GetExecutingAssembly().GetName().Name);
 
-    CtrlInput ci = null;
-    public void Dispose() => ci?.Dispose();
+    public void Dispose() { }
 
-    public void Load(string settingsPath) => ci = new CtrlInput();
+    public void Load(string settingsPath) { }
 
     bool IsOneHandle = false;
     int MaxB = 0;
@@ -47,8 +46,8 @@ namespace TR.BIDSSMemLib
 
     public void Tick()
     {
-      Hands hd = ci?.GetHandD() ?? new Hands();
-      bool[] kd = ci?.GetIsKeyPushed() ?? new bool[CtrlInput.KeyArrSizeMax];
+      Hands hd = CtrlInput.GetHandD();
+      bool[] kd = CtrlInput.GetIsKeyPushed() ?? new bool[CtrlInput.KeyArrSizeMax];
       if (!Equals(h, hd))
       {
         LM(Axis.Reverser, hd.R);

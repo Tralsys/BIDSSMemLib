@@ -107,7 +107,7 @@ namespace TR.BIDSSMemLib
 			private static double OldOldT = 0;
 			private static double OldOldZ = 0;
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+			[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 			static internal void OnBSMDChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
 			=> _ = Task.Run(() =>
 					 {
@@ -173,7 +173,7 @@ namespace TR.BIDSSMemLib
 					 });
 			
 
-			[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+			[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 			static internal void OnOpenDChanged(object sender, OpenDChangedEArgs e) { }
 		}
 
@@ -207,7 +207,8 @@ namespace TR.BIDSSMemLib
 			public readonly int[] NewArray;
 			public readonly int[] OldArray;
 		}
-
+		#region 旧構造イベント
+		/*
 		/// <summary> BIDSSMemDataが更新された際に呼ばれるイベント </summary>
 		[Obsolete("SMC_***を使用してください")]
 		public static event EventHandler<BSMDChangedEArgs> BIDSSMemChanged;
@@ -223,7 +224,8 @@ namespace TR.BIDSSMemLib
 		/// <summary> Soundが更新された際に呼ばれるイベント </summary>
 		[Obsolete("SMC_***を使用してください")]
 		public static event EventHandler<ArrayDChangedEArgs> SoundDChanged;
-
+		*/
+		#endregion
 		public static event EventHandler<ValueChangedEventArgs<BIDSSharedMemoryData>> SMC_BSMDChanged
 		{
 			add => SMC_BSMD.ValueChanged += value;
@@ -245,19 +247,20 @@ namespace TR.BIDSSMemLib
 			remove => SMC_SndD.ArrValueChanged -= value;
 		}
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		/* 旧構造イベント
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		private static void SMC_BSMD_ValueChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
 			=> Task.Run(() => BIDSSMemChanged?.Invoke(sender, new BSMDChangedEArgs(e.OldValue, e.NewValue)));
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		private static void SMC_SndD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
 			=> Task.Run(() => SoundDChanged?.Invoke(sender, new ArrayDChangedEArgs(e.OldValue, e.NewValue)));
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		private static void SMC_PnlD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
 			=> Task.Run(() => PanelDChanged?.Invoke(sender, new ArrayDChangedEArgs(e.OldValue, e.NewValue)));
 
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]//関数のインライン展開を積極的にやってもらう.
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		private static void SMC_OpenD_ValueChanged(object sender, ValueChangedEventArgs<OpenD> e)
 			=> Task.Run(() => OpenDChanged?.Invoke(sender, new OpenDChangedEArgs(e.OldValue, e.NewValue)));
-
+		*/
 	}
 }

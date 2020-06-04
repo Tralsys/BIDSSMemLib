@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace TR.BIDSSMemLib
 {
-
+  /*
   /// <summary>Beaconに関する構造体</summary>
   [StructLayout(LayoutKind.Sequential)]
   public struct Beacon
@@ -18,7 +18,7 @@ namespace TR.BIDSSMemLib
     public float Z;
     /// <summary>Beaconの第三引数の値</summary>
     public int Data;
-  };
+  };*/
   /// <summary>レバーサー位置</summary>
   public static class Reverser
   {
@@ -126,7 +126,6 @@ namespace TR.BIDSSMemLib
     static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
     static PanelD PD = new PanelD() { Panels = new int[MaxIndex] };
     static SoundD SD = new SoundD() { Sounds = new int[MaxIndex] };
-    static SMemLib SML = null;
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
     public static void Load()
@@ -134,11 +133,11 @@ namespace TR.BIDSSMemLib
 #if DEBUG
       MessageBox.Show("BIDSSMemLib Debug Build");
 #endif
-      SML = new SMemLib(0, true);
+      SMemLib.Begin(false, true);
       BSMD.IsEnabled = true;
       BSMD.VersionNum = int.Parse(SMemLib.VersionNum);
-      SML.Write(in BSMD);
-      if (!Equals(BSMD, SML.Read<BIDSSharedMemoryData>(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
+      SMemLib.Write(in BSMD);
+      if (!Equals(BSMD, SMemLib.ReadBSMD(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
     }
 
     /// <summary>Called when this plugin is unloaded</summary>
@@ -148,10 +147,9 @@ namespace TR.BIDSSMemLib
       BSMD = new BIDSSharedMemoryData();
       PD = new PanelD() { Panels = new int[MaxIndex] };
       SD = new SoundD() { Sounds = new int[MaxIndex] };
-      SML.Write(in BSMD);
-      SML.Write(in PD);
-      SML.Write(in SD);
-      SML.Dispose();
+      SMemLib.Write(in BSMD);
+      SMemLib.Write(in PD);
+      SMemLib.Write(in SD);
     }
 
     /// <summary>Called when the version number is needed</summary>
@@ -180,11 +178,11 @@ namespace TR.BIDSSMemLib
       BSMD.StateData = st;
       BSMD.HandleData = Handle;
       BSMD.IsDoorClosed = DoorClosed;
-      SML.Write(in BSMD);
+      SMemLib.Write(in BSMD);
       Marshal.Copy(Pa, PD.Panels, 0, MaxIndex);
       Marshal.Copy(Sa, SD.Sounds, 0, MaxIndex);
-      SML.Write(in PD);
-      SML.Write(in SD);
+      SMemLib.Write(in PD);
+      SMemLib.Write(in SD);
       return Handle;
     }
 
