@@ -1,24 +1,12 @@
 ﻿#if x86
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace TR.BIDSSMemLib
 {
-  /*
-  /// <summary>Beaconに関する構造体</summary>
-  [StructLayout(LayoutKind.Sequential)]
-  public struct Beacon
-  {
-    /// <summary>Beaconの番号</summary>
-    public int Num;
-    /// <summary>対応する閉塞の現示番号</summary>
-    public int Sig;
-    /// <summary>対応する閉塞までの距離[m]</summary>
-    public float Z;
-    /// <summary>Beaconの第三引数の値</summary>
-    public int Data;
-  };*/
   /// <summary>レバーサー位置</summary>
   public static class Reverser
   {
@@ -109,11 +97,24 @@ namespace TR.BIDSSMemLib
   }
 
 
-
   /// <summary>処理を実装するクラス</summary>
   static public class Ats
   {
-    private const int Version = 0x00020000;
+    static XDocument doc;
+    static Ats()
+		{
+      //Load setting
+      try
+      {
+        doc = XDocument.Load(Assembly.GetExecutingAssembly().Location + ".xml");
+        Version = int.Parse(doc.Element("AtsPISetting").Element("Version").Value);
+			}
+			catch (Exception e)
+			{
+        MessageBox.Show("Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message, "BIDSSMemLib AtsPI IF");
+			}
+		}
+    private static readonly int Version = 0x00020000;
     public const CallingConvention CalCnv = CallingConvention.StdCall;
     const int MaxIndex = 256;
     /// <summary>Is the Door Closed TF</summary>
@@ -155,7 +156,11 @@ namespace TR.BIDSSMemLib
     /// <summary>Called when the version number is needed</summary>
     /// <returns>plugin version number</returns>
     [DllExport(CallingConvention = CalCnv)]
-    public static int GetPluginVersion() => Version;
+    public static int GetPluginVersion() {
+
+      return Version;
+    }
+
 
     /// <summary>Called when set the Vehicle Spec</summary>
     /// <param name="s">Set Spec</param>
