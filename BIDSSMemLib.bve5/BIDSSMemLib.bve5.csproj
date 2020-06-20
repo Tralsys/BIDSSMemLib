@@ -47,6 +47,7 @@
     <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -57,6 +58,7 @@
     <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
@@ -100,9 +102,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) TR.BIDSpp.dll
-copy $(TargetPath) "D:\Users\tetsu\Documents\BveTs\Input Devices\"
-copy $(TargetPath) "D:\Users\tetsu\Documents\BveTs\Scenarios\TR\"</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)$(OutDir)$(TargetFileName)" $(TargetName).$(PlatformName).$(TargetExt)
+copy "$(ProjectDir)$(OutDir)$(TargetName).$(PlatformName).$(TargetExt)" "D:\BveTs\Input Devices\"
+copy "$(ProjectDir)$(OutDir)$(TargetName).$(PlatformName).$(TargetExt)" "D:\BveTs\Scenarios\TR\"</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <DllExportIdent>50EA9DAE-55C6-4DC8-8192-7B494C39867D</DllExportIdent>
