@@ -3,15 +3,16 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+#if !UMNGD
 using System.Threading.Tasks;
-
+#endif
 namespace TR
 {
 	public class SMemCtrler<T> : IDisposable where T : struct
 	{
 		private const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
 
-		#region Readonly Properties
+#region Readonly Properties
 		/// <summary>SMemを用いてデータを共有するか</summary>
 		public bool No_SMem_Mode { get; }
 		/// <summary>データ更新時にイベントを発火させるか</summary>
@@ -23,7 +24,7 @@ namespace TR
 		public uint Elem_Size { get; } = (uint)Marshal.SizeOf(default(T));
 
 		const int SizeD_Size = sizeof(int);
-		#endregion
+#endregion
 
 		public event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
 		public event EventHandler<ValueChangedEventArgs<T[]>> ArrValueChanged;
@@ -184,7 +185,7 @@ namespace TR
 			return false;
 		}
 
-		#region Auto Read Methods
+#region Auto Read Methods
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
@@ -255,7 +256,7 @@ namespace TR
 	}
 }
 #if UMNGD
-namespace System.Threading.Tasks
+namespace TR
 {
 	//Taskクラスの代替
 	internal class Task : IDisposable

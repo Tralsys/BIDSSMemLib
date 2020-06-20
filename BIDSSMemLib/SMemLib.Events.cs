@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+#if !UMNGD
 using System.Threading.Tasks;
-
+#endif
 namespace TR.BIDSSMemLib
 {
 	internal static partial class UsefulFunc
@@ -207,7 +208,7 @@ namespace TR.BIDSSMemLib
 			public readonly int[] NewArray;
 			public readonly int[] OldArray;
 		}
-		#region 旧構造イベント
+#region 旧構造イベント
 		/*
 		/// <summary> BIDSSMemDataが更新された際に呼ばれるイベント </summary>
 		[Obsolete("SMC_***を使用してください")]
@@ -225,7 +226,7 @@ namespace TR.BIDSSMemLib
 		[Obsolete("SMC_***を使用してください")]
 		public static event EventHandler<ArrayDChangedEArgs> SoundDChanged;
 		*/
-		#endregion
+#endregion
 		public static event EventHandler<ValueChangedEventArgs<BIDSSharedMemoryData>> SMC_BSMDChanged
 		{
 			add => SMC_BSMD.ValueChanged += value;
