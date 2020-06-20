@@ -103,7 +103,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)$(OutDir)$(TargetFileName)" $(TargetName).$(PlatformName).$(TargetExt)
+    <PostBuildEvent>copy "$(ProjectDir)$(OutDir)$(TargetFileName)" $(TargetName).$(PlatformName)$(TargetExt)
 copy "$(ProjectDir)$(OutDir)$(TargetName).$(PlatformName).$(TargetExt)" "D:\BveTs\Input Devices\"
 copy "$(ProjectDir)$(OutDir)$(TargetName).$(PlatformName).$(TargetExt)" "D:\BveTs\Scenarios\TR\"</PostBuildEvent>
   </PropertyGroup>
