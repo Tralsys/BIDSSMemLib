@@ -42,7 +42,8 @@ namespace TR
 				ARDoing = true;
 				while (ARDoing && !disposing && !disposedValue)
 				{
-					_ = ReadAction.BeginInvoke(ReadAction.EndInvoke, null);
+					//_ = ReadAction.BeginInvoke(ReadAction.EndInvoke, null);
+					ReadAction.Invoke();
 #if UMNGD
 					Thread.Sleep((int)ARInterval);
 #else
