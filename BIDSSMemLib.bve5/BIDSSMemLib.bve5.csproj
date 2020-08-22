@@ -8,8 +8,10 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
-    <AssemblyName>TR.BIDSSMemLib.bve5</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+		<AssemblyName Condition="'$(Platform)' == 'x86'">TR.BIDSSMemLib.bve5.x86</AssemblyName>
+		<AssemblyName Condition="'$(Platform)' == 'x64'">TR.BIDSSMemLib.bve5.x64</AssemblyName>
+		<TargetFrameworkVersion Condition="'$(Platform)' == 'x86'">v3.5</TargetFrameworkVersion>
+		<TargetFrameworkVersion Condition="'$(Platform)' == 'x64'">v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -17,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UMNGD</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -28,7 +30,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;UMNGD</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -102,11 +104,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)$(OutDir)$(TargetFileName)" $(TargetName).$(PlatformName)$(TargetExt)
-copy "$(ProjectDir)$(OutDir)$(TargetName).$(PlatformName).$(TargetExt)" "D:\BveTs\Input Devices\"
-copy "$(ProjectDir)$(OutDir)$(TargetName).$(PlatformName).$(TargetExt)" "D:\BveTs\Scenarios\TR\"</PostBuildEvent>
-  </PropertyGroup>
   <PropertyGroup>
     <DllExportIdent>50EA9DAE-55C6-4DC8-8192-7B494C39867D</DllExportIdent>
     <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
