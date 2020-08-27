@@ -1,5 +1,4 @@
-﻿#if x86
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -247,4 +246,3 @@ namespace TR.BIDSSMemLib
 
   }
 }
-#endif

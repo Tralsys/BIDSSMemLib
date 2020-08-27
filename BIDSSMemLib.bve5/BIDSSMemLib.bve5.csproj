@@ -8,8 +8,10 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
-    <AssemblyName>TR.BIDSSMemLib.bve5</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+		<AssemblyName Condition="'$(Platform)' == 'x86'">TR.BIDSSMemLib.bve5.x86</AssemblyName>
+		<AssemblyName Condition="'$(Platform)' == 'x64'">TR.BIDSSMemLib.bve5.x64</AssemblyName>
+		<TargetFrameworkVersion Condition="'$(Platform)' == 'x86'">v3.5</TargetFrameworkVersion>
+		<TargetFrameworkVersion Condition="'$(Platform)' == 'x64'">v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
@@ -17,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x86\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;bve5; x86;UMNGD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;UMNGD</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -28,7 +30,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
-    <DefineConstants>TRACE;bve5; x86;UMNGD</DefineConstants>
+    <DefineConstants>TRACE;UMNGD</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -40,23 +42,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;bve5; x86;UMNGD</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
-    <DefineConstants>TRACE;bve5; x86;UMNGD</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DllExport, PublicKeyToken=8337224c9ad9e356">
@@ -64,8 +68,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="Mackoy.IInputDevice">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\mackoy\BveTs5\Mackoy.IInputDevice.DLL</HintPath>
+    <Reference Include="Mackoy.IInputDevice, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\mackoy\BveTs5\Mackoy.IInputDevice.DLL</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -100,16 +105,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetPath) TR.BIDSpp.dll
-copy $(TargetPath) "D:\Users\tetsu\Documents\BveTs\Input Devices\"
-copy $(TargetPath) "D:\Users\tetsu\Documents\BveTs\Scenarios\TR\"</PostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
     <DllExportIdent>50EA9DAE-55C6-4DC8-8192-7B494C39867D</DllExportIdent>
     <DllExportMetaLibName>DllExport.dll</DllExportMetaLibName>
     <DllExportNamespace>TR.BIDSSMemLib</DllExportNamespace>
     <DllExportDDNSCecil>true</DllExportDDNSCecil>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget Condition="'$(Platform)' == 'x86'">x86</PlatformTarget>
+    <PlatformTarget Condition="'$(Platform)' == 'x64'">x64</PlatformTarget>
     <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
     <DllExportGenExpLib>false</DllExportGenExpLib>
     <DllExportOurILAsm>false</DllExportOurILAsm>
