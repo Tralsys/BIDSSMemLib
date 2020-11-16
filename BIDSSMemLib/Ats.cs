@@ -121,7 +121,7 @@ namespace TR.BIDSSMemLib
     /// <summary>Is the Door Closed TF</summary>
     public static bool DoorClosed { get; set; } = false;
     /// <summary>Current State of Handles</summary>
-    public static TR.Hand Handle = default;
+    public static Hand Handle = default;
     /// <summary>Current Key State</summary>
     public static bool[] IsKeyDown { get; set; } = new bool[16];
 
