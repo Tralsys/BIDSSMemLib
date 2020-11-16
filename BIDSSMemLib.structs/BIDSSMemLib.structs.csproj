@@ -59,7 +59,7 @@ published to nuget.org</PackageReleaseNotes>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IAtsPI" Version="1.0.0" />
+    <PackageReference Include="IAtsPI" Version="1.0.0.1" />
   </ItemGroup>
 
 </Project>
