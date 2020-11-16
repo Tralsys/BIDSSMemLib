@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net35;net461;net50</TargetFrameworks>
     <AssemblyName>TR.BIDSSMemLib.structs</AssemblyName>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
 		<Version>1.0.0</Version>
