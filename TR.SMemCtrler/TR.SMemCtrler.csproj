@@ -9,12 +9,17 @@
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>
 		<Product>BIDS Project</Product>
-		<Copyright>Copyright 2020 Tetsu Otter</Copyright>
+		<Copyright>Copyright (C) 2020 Tetsu Otter</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://technotter.com/bids</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib.git</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Platforms>AnyCPU;x64;x86</Platforms>
+		<PackageReleaseNotes># 1.0.0
+published to nuget.org</PackageReleaseNotes>
+		<Description>It provides generic operations and features to use TR.SMemIF, to make access to the MemoryMappedFile more convenient.</Description>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

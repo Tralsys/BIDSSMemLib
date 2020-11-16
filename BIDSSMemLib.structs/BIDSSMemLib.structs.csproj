@@ -9,11 +9,16 @@
     <Authors>Tetsu Otter</Authors>
     <Company>Tech Otter</Company>
     <Product>BIDS Project</Product>
-    <Copyright>Copyright 2019 Tetsu Otter</Copyright>
+    <Copyright>Copyright (C) 2020 Tetsu Otter</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://technotter.com/bids</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes># 1.0.0
+published to nuget.org</PackageReleaseNotes>
+    <Description>It contains structs used in BIDS.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
@@ -54,7 +59,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\IAtsPI\IAtsPI.csproj" />
+    <PackageReference Include="IAtsPI" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
