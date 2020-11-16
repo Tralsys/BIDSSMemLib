@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+using System.Threading;
+#if NET35
 using System.IO;
-#if !UMNGD
+#else
+using System.Threading.Tasks;
 using System.IO.MemoryMappedFiles;
 #endif
-using System.Threading;
-
+//ref : https://docs.microsoft.com/ja-jp/dotnet/standard/library-guidance/cross-platform-targeting
 namespace TR
 {
 	/// <summary>TargetFramework別にSharedMemoryを提供します.</summary>
@@ -15,7 +16,7 @@ namespace TR
 		const byte TRUE_VALUE = 1;
 		const byte FALSE_VALUE = 0;
 		
-#if UMNGD//Unmanaged
+#if NET35//Unmanaged
 		#region 関数のリンク
 		const string DLL_NAME = "kernel32.dll";
 		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
@@ -97,7 +98,7 @@ namespace TR
 #endif
 
 		long Capacity
-#if UMNGD
+#if NET35
 		{ get; set; } = 0;
 #else
 			=> MMVA?.Capacity ?? 0;
@@ -127,7 +128,7 @@ namespace TR
 			_ = semap.Read(() =>
 			{
 				#region SMemへの操作
-#if UMNGD
+#if NET35
 				if (MMVA == IntPtr.Zero) return;
 				retT = (T)Marshal.PtrToStructure(MMVA, typeof(T));
 #else
@@ -140,7 +141,7 @@ namespace TR
 		}
 
 		/// <summary>SMemから連続的に値を読み取ります.</summary>
-		/// <typeparam name="T">値の型(UMNGDモードではint型/bool型のみ使用可能)</typeparam>
+		/// <typeparam name="T">値の型(NET35モードではint型/bool型のみ使用可能)</typeparam>
 		/// <param name="pos">SMem内でのデータ開始位置</param>
 		/// <param name="buf">読み取り結果を格納する配列</param>
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
@@ -155,7 +156,7 @@ namespace TR
 			_ = semap.Read(() =>
 				{
 					#region SMemへの操作
-#if UMNGD
+#if NET35
 					if (MMVA == IntPtr.Zero) return;
 					IntPtr ip_toRead = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
 					if (buf is int[] iarr)//int型配列にキャスト(iarrへの書き込みはbufにも反映される)
@@ -172,7 +173,7 @@ namespace TR
 						for(int i = 0; i < SMem_ba.Length; i++)
 							barr[i + offset] = SMem_ba[i] == TRUE_VALUE;//読み取り結果の書き込み
 					}
-					else throw new ArrayTypeMismatchException("UMNGDモードでBuildされています.  Array操作はint型/bool型のみ受け付けます.");
+					else throw new ArrayTypeMismatchException("NET35モードでBuildされています.  Array操作はint型/bool型のみ受け付けます.");
 
 #else
 				MMVA.ReadArray(pos, buf, offset, count);
@@ -191,7 +192,7 @@ namespace TR
 			_ = semap.Write(() =>
 				{
 					#region SMemへの操作
-#if UMNGD
+#if NET35
 					if (MMVA == IntPtr.Zero) return;//Viewが無効
 					IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
 					Marshal.StructureToPtr(retT, MMVA, false);//予め確保してた場所にStructureを書き込む
@@ -204,7 +205,7 @@ namespace TR
 		}
 
 		/// <summary>SMemに連続した値を書き込みます.</summary>
-		/// <typeparam name="T">書き込む値の型 (UMNGDモードではint/bool型のみ使用可能)</typeparam>
+		/// <typeparam name="T">書き込む値の型 (NET35モードではint/bool型のみ使用可能)</typeparam>
 		/// <param name="pos">書き込みを開始するSMem内の位置</param>
 		/// <param name="buf">SMemに書き込む配列</param>
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
@@ -218,7 +219,7 @@ namespace TR
 			_ = semap.Write(() =>
 				{
 					#region SMemへの操作
-#if UMNGD
+#if NET35
 					if (MMVA == IntPtr.Zero) return;
 					IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
 					if (buf is int[] iarr)//int型配列にキャスト(iarrへの書き込みはbufにも反映される)
@@ -233,7 +234,7 @@ namespace TR
 
 						Marshal.Copy(ba2w, 0, ip_writeTo, ba2w.Length);//SMemに書き込む
 					}
-					else throw new ArrayTypeMismatchException("UMNGDモードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
+					else throw new ArrayTypeMismatchException("NET35モードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
 #else
 				MMVA.WriteArray(pos, buf, offset, count);
 #endif
@@ -248,7 +249,7 @@ namespace TR
 			_ = semap.Write(() =>
 				{
 					if (Capacity > capacity) return;//保持キャパが要求キャパより大きい 再確認
-#if UMNGD
+#if NET35
 					if (MMVA != IntPtr.Zero)
 					{
 						UnmapViewOfFile(MMVA);
@@ -256,7 +257,7 @@ namespace TR
 					}//Viewを閉じる
 					if (MMF != IntPtr.Zero) CloseHandle(MMF);//FileハンドルをRelease
 
-					if (capacity > uint.MaxValue) throw new ArgumentOutOfRangeException("UMNGDモードでは, CapacityはUInt32.MaxValue以下である必要があります.");
+					if (capacity > uint.MaxValue) throw new ArgumentOutOfRangeException("NET35モードでは, CapacityはUInt32.MaxValue以下である必要があります.");
 
 					MMF = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE_VALUE, SMem_Name);//最初はOpenを試行
 					if (MMF == IntPtr.Zero) MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)capacity, SMem_Name);//Openできない=>つくる
@@ -286,7 +287,7 @@ namespace TR
 			{
 				if (disposing)
 				{
-#if UMNGD
+#if NET35
 					if (MMVA != IntPtr.Zero)
 					{
 						UnmapViewOfFile(MMVA);
@@ -313,7 +314,7 @@ namespace TR
 			}
 		}
 
-#if UMNGD
+#if NET35
 		/// <summary>SMemのハンドルを閉じます.</summary>
 		~SMemIF()
 		{
@@ -353,7 +354,7 @@ namespace TR
 		/// <param name="act">読み取り操作</param>
 		/// <returns>成功したかどうか</returns>
 		public
-#if UMNGD
+#if NET35
 			bool
 #else
 			async Task<bool>
@@ -362,7 +363,7 @@ namespace TR
 		{
 			while (Want_to_Write > 0)//Writeロック取得待機
 			{
-#if !UMNGD
+#if !NET35
 				await
 #endif
 				Delay(TimeSpan.FromTicks(WAIT_TICK));
@@ -383,7 +384,7 @@ namespace TR
 		/// <param name="act">書き込み操作</param>
 		/// <returns>成功したかどうか</returns>
 		public
-#if UMNGD
+#if NET35
 			bool
 #else
 			async Task<bool>
@@ -395,7 +396,7 @@ namespace TR
 				Interlocked.Increment(ref Want_to_Write);//Write待機
 				while (Reading > 0)//Read完了待機
 				{
-#if !UMNGD
+#if !NET35
 				await
 #endif
 					Delay(TimeSpan.FromTicks(WAIT_TICK));
@@ -413,7 +414,7 @@ namespace TR
 			return true;
 		}
 
-#if UMNGD
+#if NET35
 		static private void Delay(TimeSpan ts) => Thread.Sleep(ts);
 #else
 		static private async Task Delay(TimeSpan ts) => await Task.Delay(ts);

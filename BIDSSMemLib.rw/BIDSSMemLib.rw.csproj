@@ -10,11 +10,16 @@
     <Authors>Tetsu Otter</Authors>
     <Company>Tech Otter</Company>
     <Product>BIDS Project</Product>
-    <Copyright>Copyright 2020 Tetsu Otter</Copyright>
+    <Copyright>Copyright (C) 2020 Tetsu Otter</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://technotter.com/bids</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib.git</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <Description>It provides easy access to the BIDS bus.</Description>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageReleaseNotes># 1.0.2
+published to nuget.org</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
