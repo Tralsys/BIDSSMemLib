@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Runtime.CompilerServices;
 #if NET35
 using System.IO;
 #else
@@ -313,19 +314,19 @@ namespace TR
 					MMVA = null;
 					MMF = null;
 #endif
-				semap.Dispose();
-				semap = null;
+					semap.Dispose();
+					semap = null;
 
-				disposedValue = true;
+					disposedValue = true;
+				}
 			}
 		}
-
 #if NET35
 		/// <summary>SMemのハンドルを閉じます.</summary>
 		~SMemIF() => Dispose(false);
-
+#endif
 		public void Dispose() => Dispose(true);
-		#endregion
+#endregion
 
 	}
 
