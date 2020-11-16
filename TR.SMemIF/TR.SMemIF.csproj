@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net35;net461</TargetFrameworks>
 		<LangVersion>8.0</LangVersion>
 		<AssemblyName>TR.SMemIF</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
-		<Version>1.0.0</Version>
+		<Version>1.0.0.1</Version>
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>
 		<Product>BIDS Project</Product>
@@ -15,9 +15,11 @@
 		<RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Platforms>AnyCPU;x64;x86</Platforms>
-		<PackageReleaseNotes># 1.0.0
+		<PackageReleaseNotes># 1.0.0.1
+Add net35/net461 support
+# 1.0.0
 published to nuget.org</PackageReleaseNotes>
-		<Description>It provides a version-independent unified implementation for projects using MemoryMappedFile.  However, the library published to nuget.org is for the .Net Standard 2.0 usable projects.  And, therefore you cannot be use it for the .Net Framework 3.5 required projects.  If you want to use it in .Net Framework 3.5 required project, please clone the repository from GitHub and build it on your own computer.
+		<Description>It provides a version-independent unified implementation for projects using MemoryMappedFile.
 
 It is recommended to use through TR.SMemCtrler because this library provides only low-level operations.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
