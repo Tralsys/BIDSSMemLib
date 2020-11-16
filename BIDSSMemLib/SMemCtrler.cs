@@ -3,7 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
-#if !UMNGD
+#if !NET35
 using System.Threading.Tasks;
 #endif
 namespace TR
@@ -40,8 +40,8 @@ namespace TR
 		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
 
-			[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-#if !UMNGD
+			//[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.//ローカル関数へのMethodImpl指定はLangVer9.0以上だそうなので, 一旦無効化
+#if !NET35
 			async
 #endif
 			void AR_Action(Action ReadAction)
@@ -51,7 +51,7 @@ namespace TR
 				{
 					//_ = ReadAction.BeginInvoke(ReadAction.EndInvoke, null);
 					ReadAction.Invoke();
-#if UMNGD
+#if NET35
 					Thread.Sleep((int)ARInterval);
 #else
 					await Task.Delay((int)ARInterval);
@@ -256,11 +256,11 @@ namespace TR
 		}
 	}
 }
-#if UMNGD
+#if NET35
 namespace TR
 {
 	//Taskクラスの代替
-	internal class Task : IDisposable
+	public class Task : IDisposable
 	{
 		static public IAsyncResult Run(Action act) => act?.BeginInvoke(act.EndInvoke, null);
 		public bool IsAlive => !IsCompleted;

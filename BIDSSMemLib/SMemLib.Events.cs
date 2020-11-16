@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-#if !UMNGD
+#if !NET35
 using System.Threading.Tasks;
 #endif
 namespace TR.BIDSSMemLib
