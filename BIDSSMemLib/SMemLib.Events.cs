@@ -172,61 +172,8 @@ namespace TR.BIDSSMemLib
 							 });
 						 if (n.I != o.I) Task.Run(() => ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I }));
 					 });
-			
-
-			[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-			static internal void OnOpenDChanged(object sender, OpenDChangedEArgs e) { }
 		}
 
-		public readonly struct BSMDChangedEArgs
-		{
-			public BSMDChangedEArgs(in BIDSSharedMemoryData oldD, in BIDSSharedMemoryData newD)
-			{
-				OldData = oldD;
-				NewData = newD;
-			}
-			public readonly BIDSSharedMemoryData OldData;
-			public readonly BIDSSharedMemoryData NewData;
-		}
-		public readonly struct OpenDChangedEArgs
-		{
-			public OpenDChangedEArgs(in OpenD oldD, in OpenD newD)
-			{
-				OldData = oldD;
-				NewData = newD;
-			}
-			public readonly OpenD OldData;
-			public readonly OpenD NewData;
-		}
-		public readonly struct ArrayDChangedEArgs
-		{
-			public ArrayDChangedEArgs(in int[] oldD, in int[] newD)
-			{
-				OldArray = oldD;
-				NewArray = newD;
-			}
-			public readonly int[] NewArray;
-			public readonly int[] OldArray;
-		}
-#region 旧構造イベント
-		/*
-		/// <summary> BIDSSMemDataが更新された際に呼ばれるイベント </summary>
-		[Obsolete("SMC_***を使用してください")]
-		public static event EventHandler<BSMDChangedEArgs> BIDSSMemChanged;
-		/// <summary> OpenDが更新された際に呼ばれるイベント </summary>
-		[Obsolete("SMC_***を使用してください")]
-		public static event EventHandler<OpenDChangedEArgs> OpenDChanged;
-		/// <summary> StaDが更新された際に呼ばれるイベント </summary>
-		//public event EventHandler StaDChanged;
-
-		/// <summary> Panelが更新された際に呼ばれるイベント </summary>
-		[Obsolete("SMC_***を使用してください")]
-		public static event EventHandler<ArrayDChangedEArgs> PanelDChanged;
-		/// <summary> Soundが更新された際に呼ばれるイベント </summary>
-		[Obsolete("SMC_***を使用してください")]
-		public static event EventHandler<ArrayDChangedEArgs> SoundDChanged;
-		*/
-#endregion
 		public static event EventHandler<ValueChangedEventArgs<BIDSSharedMemoryData>> SMC_BSMDChanged
 		{
 			add => SMC_BSMD.ValueChanged += value;
@@ -247,21 +194,5 @@ namespace TR.BIDSSMemLib
 			add => SMC_SndD.ArrValueChanged += value;
 			remove => SMC_SndD.ArrValueChanged -= value;
 		}
-
-		/* 旧構造イベント
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		private static void SMC_BSMD_ValueChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
-			=> Task.Run(() => BIDSSMemChanged?.Invoke(sender, new BSMDChangedEArgs(e.OldValue, e.NewValue)));
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		private static void SMC_SndD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
-			=> Task.Run(() => SoundDChanged?.Invoke(sender, new ArrayDChangedEArgs(e.OldValue, e.NewValue)));
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		private static void SMC_PnlD_ValueChanged(object sender, ValueChangedEventArgs<int[]> e)
-			=> Task.Run(() => PanelDChanged?.Invoke(sender, new ArrayDChangedEArgs(e.OldValue, e.NewValue)));
-
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		private static void SMC_OpenD_ValueChanged(object sender, ValueChangedEventArgs<OpenD> e)
-			=> Task.Run(() => OpenDChanged?.Invoke(sender, new OpenDChangedEArgs(e.OldValue, e.NewValue)));
-		*/
 	}
 }
