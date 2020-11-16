@@ -54,7 +54,7 @@ namespace TR.BIDSSMemLib
 		public static int[] PanelA
 		{
 			get => SMC_PnlD?.ArrData;
-			set => SMC_PnlD.WriteArr(value);
+			private set => SMC_PnlD.WriteArr(value);
 		}
 
 		/// <summary>Sound配列情報</summary>
@@ -67,7 +67,7 @@ namespace TR.BIDSSMemLib
 		public static int[] SoundA
 		{
 			get => SMC_SndD?.ArrData;
-			set => SMC_SndD.WriteArr(value);
+			private set => SMC_SndD.WriteArr(value);
 		}
 
 		static public bool IsEnabled { get; private set; }
@@ -88,12 +88,6 @@ namespace TR.BIDSSMemLib
 			SMC_PnlD = new SMemCtrler<int>(MMFPn_Name, true, isNoSMemMode, isNoEventMode);
 			SMC_SndD = new SMemCtrler<int>(MMFSn_Name, true, isNoSMemMode, isNoEventMode);
 
-			/*
-			SMC_BSMD.ValueChanged += SMC_BSMD_ValueChanged;
-			SMC_OpenD.ValueChanged += SMC_OpenD_ValueChanged;
-			SMC_PnlD.ArrValueChanged += SMC_PnlD_ValueChanged;
-			SMC_SndD.ArrValueChanged += SMC_SndD_ValueChanged;
-			*/
 			SMC_BSMD.ValueChanged += Events.OnBSMDChanged;
 
 			IsEnabled = true;
