@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -98,7 +100,7 @@ namespace TR.BIDSSMemLib
   /// <summary>処理を実装するクラス</summary>
   static public class Ats
   {
-    static XDocument doc;
+    static XDocument doc { get; }
     static Ats()
 		{
       //Load setting
@@ -109,7 +111,8 @@ namespace TR.BIDSSMemLib
 			}
 			catch (Exception e)
 			{
-        MessageBox.Show("Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message, "BIDSSMemLib AtsPI IF");
+        //MessageBox.Show("Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message, "BIDSSMemLib AtsPI IF");
+        Debug.WriteLine("[BIDSSMemLib AtsPI IF] Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message);
 			}
 		}
     private static readonly int Version = 0x00020000;
@@ -118,13 +121,13 @@ namespace TR.BIDSSMemLib
     /// <summary>Is the Door Closed TF</summary>
     public static bool DoorClosed { get; set; } = false;
     /// <summary>Current State of Handles</summary>
-    public static Hand Handle = default;
+    public static TR.Hand Handle = default;
     /// <summary>Current Key State</summary>
     public static bool[] IsKeyDown { get; set; } = new bool[16];
 
     static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
-    static PanelD PD = new PanelD() { Panels = new int[MaxIndex] };
-    static SoundD SD = new SoundD() { Sounds = new int[MaxIndex] };
+    static int[] PArr = new int[MaxIndex];
+    static int[] SArr = new int[MaxIndex];
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
     public static void Load()
@@ -134,7 +137,7 @@ namespace TR.BIDSSMemLib
 #endif
       SMemLib.Begin(false, true);
       BSMD.IsEnabled = true;
-      BSMD.VersionNum = int.Parse(SMemLib.VersionNum);
+      BSMD.VersionNum = SMemLib.VersionNumInt;
       SMemLib.Write(in BSMD);
       if (!Equals(BSMD, SMemLib.ReadBSMD(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
     }
@@ -144,22 +147,17 @@ namespace TR.BIDSSMemLib
     public static void Dispose()
     {
       BSMD = new BIDSSharedMemoryData();
-      PD = new PanelD() { Panels = new int[MaxIndex] };
-      SD = new SoundD() { Sounds = new int[MaxIndex] };
+      var BlankArr = new int[MaxIndex];
       SMemLib.Write(in BSMD);
-      SMemLib.Write(in PD);
-      SMemLib.Write(in SD);
+      SMemLib.WritePanel(in BlankArr);
+      SMemLib.WriteSound(in BlankArr);
     }
 
     /// <summary>Called when the version number is needed</summary>
     /// <returns>plugin version number</returns>
     [DllExport(CallingConvention = CalCnv)]
-    public static int GetPluginVersion() {
-
-      return Version;
-    }
-
-
+    public static int GetPluginVersion() => Version;
+    
     /// <summary>Called when set the Vehicle Spec</summary>
     /// <param name="s">Set Spec</param>
     [DllExport(CallingConvention = CalCnv)]
@@ -182,10 +180,10 @@ namespace TR.BIDSSMemLib
       BSMD.HandleData = Handle;
       BSMD.IsDoorClosed = DoorClosed;
       SMemLib.Write(in BSMD);
-      Marshal.Copy(Pa, PD.Panels, 0, MaxIndex);
-      Marshal.Copy(Sa, SD.Sounds, 0, MaxIndex);
-      SMemLib.Write(in PD);
-      SMemLib.Write(in SD);
+      Marshal.Copy(Pa, PArr, 0, MaxIndex);
+      Marshal.Copy(Sa, SArr, 0, MaxIndex);
+      SMemLib.WritePanel(in PArr);
+      SMemLib.WriteSound(in SArr);
       return Handle;
     }
 
