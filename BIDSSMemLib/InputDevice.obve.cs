@@ -35,8 +35,6 @@ namespace TR.BIDSSMemLib
       MessageBox.Show(owner, "BIDS Shared Memory Library\nOpenBVE Input Device Plugin File\nVersion : " + SMemLib.VersionNum, Assembly.GetExecutingAssembly().GetName().Name);
     }
 
-    SMemLib SML = null;
-    CtrlInput CI = null;
     public bool Load(FileSystem fileSystem)
     {
       Parallel.For(0, PMaxIndex, (i) =>
@@ -58,8 +56,7 @@ namespace TR.BIDSSMemLib
 
       try
       {
-        SML = new SMemLib(0, true);
-        CI = new CtrlInput();
+        SMemLib.Begin(false, true);
         return true;
       }
       catch (Exception e)
@@ -82,7 +79,7 @@ namespace TR.BIDSSMemLib
       if (HandPIndex != null) { KU(Controls[HandPIndex ?? 0]); HandPIndex = null; }
       if (HandRIndex != null) { KU(Controls[RevNIndex+HandRIndex??0]); HandRIndex = null; }
 
-      Hands h = CI.GetHandD();
+      Hands h = CtrlInput.GetHandD();
       if (h.P > hd.P) h.P = hd.P;
       if (h.B == 0 && h.P == 0 && (h.BPos != 0 || h.PPos != 0))
       {
@@ -173,8 +170,8 @@ namespace TR.BIDSSMemLib
         };
       }
       else OD.PreTrain = new OpenD.PreTrainD() { IsEnabled = false };
-      SML?.Write(in BSMD);
-      SML?.Write(in OD);
+      SMemLib.Write(in BSMD);
+      SMemLib.Write(in OD);
     }
 
     Hand hd = new Hand();
@@ -188,9 +185,9 @@ namespace TR.BIDSSMemLib
     {
       BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
       OpenD OD = new OpenD();
-      SML?.Write(in BSMD);
-      SML?.Write(in OD);
-      SML?.Dispose();
+      SMemLib.Write(in BSMD);
+      SMemLib.Write(in OD);
+      //SMemLib.Dispose();//static化に伴い不要になる
     }
   }
 }

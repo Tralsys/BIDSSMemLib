@@ -14,7 +14,7 @@ namespace TR.BIDSSMemLib
 		}
 
 		private List<IRuntime> PIList = null;
-		SMemLib SML = null;
+		
 		public void DoorChange(DoorStates oldState, DoorStates newState)
 		{
 			
