@@ -8,10 +8,10 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
-		<AssemblyName Condition="'$(Platform)' == 'x86'">TR.BIDSSMemLib.bve5.x86</AssemblyName>
-		<AssemblyName Condition="'$(Platform)' == 'x64'">TR.BIDSSMemLib.bve5.x64</AssemblyName>
-		<TargetFrameworkVersion Condition="'$(Platform)' == 'x86'">v3.5</TargetFrameworkVersion>
-		<TargetFrameworkVersion Condition="'$(Platform)' == 'x64'">v4.7.2</TargetFrameworkVersion>
+    <AssemblyName Condition="'$(Platform)' == 'x86'">TR.BIDSSMemLib.bve5.x86</AssemblyName>
+    <AssemblyName Condition="'$(Platform)' == 'x64'">TR.BIDSSMemLib.bve5.x64</AssemblyName>
+    <TargetFrameworkVersion Condition="'$(Platform)' == 'x86'">v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion Condition="'$(Platform)' == 'x64'">v4.7.2</TargetFrameworkVersion>
     <LangVersion>preview</LangVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -98,12 +98,6 @@
       <Link>SMemLib.Works.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\source\repos\IAtsPI\IAtsPI.csproj">
-      <Project>{c01d180a-4ef3-41fe-abdd-af8a70d5ae5d}</Project>
-      <Name>IAtsPI</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
