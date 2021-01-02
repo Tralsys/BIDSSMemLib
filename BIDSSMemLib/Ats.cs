@@ -103,6 +103,10 @@ namespace TR.BIDSSMemLib
     static XDocument doc { get; }
     static Ats()
 		{
+#if DEBUG
+      if (!Debugger.IsAttached)
+        Debugger.Launch();
+#endif
       //Load setting
       try
       {
