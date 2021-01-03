@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DllExport" Version="1.7.4" />
-		<PackageReference Include="IAtsPI" Version="1.0.0.2" GeneratePathProperty="true" />
     <PackageReference Include="ilmerge">
       <Version>3.0.29</Version>
     </PackageReference>
@@ -93,9 +92,10 @@
   </ItemGroup>
 	<!--nuget package path ref : https://docs.microsoft.com/ja-jp/nuget/consume-packages/package-references-in-project-files#generatepathproperty -->
   <Target Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'x64'" Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
-    <Copy SourceFiles="$(PkgIAtsPI)\lib\net35\IAtsPI.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
-    <Exec Command="$(ILMergeConsolePath) $(TargetFileName) /out:$(TargetFileName).ilm0.dll /log:log.txt" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+		<!--net35 target ref : https://github.com/dotnet/ILMerge/issues/42 -->
+    <Exec Condition="'$(TargetFramework)' == 'net35'" Command="$(ILMergeConsolePath) /target:dll /targetplatform:v2,C:/Windows/Microsoft.NET/Framework64/v2.0.50727 /lib:$(TargetDir) /wildcards TR.*.dll IAtsPI.dll /out:$(TargetFileName).ilm0.dll /ndebug /log" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+    <Exec Condition="'$(TargetFramework)' != 'net35'" Command="$(ILMergeConsolePath) /target:dll /lib:$(TargetDir) /wildcards TR.*.dll IAtsPI.dll /out:$(TargetFileName).ilm0.dll /ndebug" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
     <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
     <Delete Files="$(TargetDir)$(DllExportMetaLibName)" ContinueOnError="true" />
   </Target>
