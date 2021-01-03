@@ -7,7 +7,7 @@ namespace TR.BIDSSMemLib
 	{
 		public static readonly string VersionNum = VersionNumInt.ToString();
 		public static readonly int VersionNumInt = 202;
-		private const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
+		internal const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
 		public static bool NO_SMEM_MODE { get; private set; } = false;
 
 		public const string MMFB_Name = "BIDSSharedMemory";
