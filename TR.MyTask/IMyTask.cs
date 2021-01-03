@@ -2,7 +2,7 @@
 
 namespace TR
 {
-	internal interface IMyTask : IDisposable
+	public interface IMyTask : IDisposable
 	{
 		bool IsAlive { get; }
 		bool IsCompleted { get; }

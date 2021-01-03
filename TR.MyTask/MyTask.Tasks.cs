@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace TR
 {
-	internal class MyTask : Task, IMyTask
+	public class MyTask : Task, IMyTask
 	{
 		static public Task Run(Action<object> act)
 #if NET40
@@ -24,7 +24,7 @@ namespace TR
 
 		void IMyTask.Wait(int milliseconds) => Wait(milliseconds);
 
-		public void Dispose() { }
+		void IDisposable.Dispose() { }
 	}
 }
 #endif

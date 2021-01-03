@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace TR
 {
-	internal class MyTask : IMyTask
+	public class MyTask : IMyTask
 	{
 		static public IAsyncResult Run(Action<object> act) => act?.BeginInvoke(null, act.EndInvoke, null);
 		public bool IsAlive { get => !IsCompleted; }
@@ -14,8 +14,8 @@ namespace TR
 
 		public MyTask(Action<object> act)
 		{
-			if (act == null) throw new ArgumentNullException("arg \"act\" is null");
-			Act = act;
+			//if (act is null) ;
+			Act = act ?? throw new ArgumentNullException("arg \"act\" is null");
 		}
 
 		/// <summary>指定時間の間, 処理を停止します.</summary>
