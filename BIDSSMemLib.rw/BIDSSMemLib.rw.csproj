@@ -17,7 +17,7 @@
     <RepositoryType>git</RepositoryType>
     <Description>It provides easy access to the BIDS bus.</Description>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
     <PackageReleaseNotes># 2.0.0
 Add net20/net5.0 Support
 SMemlib change to static class

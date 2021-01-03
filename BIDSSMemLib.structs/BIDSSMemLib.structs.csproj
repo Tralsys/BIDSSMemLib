@@ -14,7 +14,7 @@
     <PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes># 1.0.0.1
 Add net20 to targetframeworks

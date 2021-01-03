@@ -22,7 +22,7 @@ published to nuget.org</PackageReleaseNotes>
 		<Description>It provides a version-independent unified implementation for projects using MemoryMappedFile.
 
 It is recommended to use through TR.SMemCtrler because this library provides only low-level operations.</Description>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 

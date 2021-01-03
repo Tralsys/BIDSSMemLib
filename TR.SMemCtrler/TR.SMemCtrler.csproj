@@ -20,7 +20,7 @@ Add net20 support
 # 1.0.0
 published to nuget.org</PackageReleaseNotes>
 		<Description>It provides generic operations and features to use TR.SMemIF, to make access to the MemoryMappedFile more convenient.</Description>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
