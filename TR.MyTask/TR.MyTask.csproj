@@ -2,14 +2,23 @@
 
   <PropertyGroup>
     <TargetFrameworks>net20;net40;net45;netstandard1.0;net5.0</TargetFrameworks>
-    <Platforms>AnyCPU;x64;x86</Platforms>
     <RootNamespace>TR</RootNamespace>
-		<LangVersion>9.0</LangVersion>
+    <Version>1.0.0.0</Version>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Authors>Tetsu Otter</Authors>
+    <Company>Tech Otter</Company>
+    <Product>BIDS Project</Product>
+    <Copyright>Copyright (C) 2021 Tetsu Otter</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes># 1.0.0
+published to nuget.org
+    </PackageReleaseNotes>
+    <Description>It contains Custom Task class to use it in net35 or before</Description>
   </PropertyGroup>
-
-	<!--net11のサポートは行わない.-->
-	<PropertyGroup Condition="'$(TargetFramework)' == 'net11'">
-		<DefineConstants>NET11;</DefineConstants>
-	</PropertyGroup>
 
 </Project>
