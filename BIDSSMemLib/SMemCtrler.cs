@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
-#if !NET35
-using System.Threading.Tasks;
-#endif
+
 namespace TR
 {
 	public class SMemCtrler<T> : IDisposable where T : struct
@@ -34,28 +30,27 @@ namespace TR
 
 		public uint ARInterval { get; set; } = 10;
 
-		Task ARThread = null;
+		IMyTask ARThread = null;
 
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
 
 			//[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.//ローカル関数へのMethodImpl指定はLangVer9.0以上だそうなので, 一旦無効化
-#if !NET35
+#if !(NET35 || NET20)
 			async
 #endif
-			void AR_Action(Action ReadAction)
+			void AR_Action(Action<object> ReadAction)
 			{
 				ARDoing = true;
 				while (ARDoing && !disposing && !disposedValue)
 				{
 					//_ = ReadAction.BeginInvoke(ReadAction.EndInvoke, null);
-					ReadAction.Invoke();
-#if NET35
-					Thread.Sleep((int)ARInterval);
-#else
-					await Task.Delay((int)ARInterval);
+					ReadAction.Invoke(null);
+#if !(NET35 || NET20)
+					await
 #endif
+						MyTask.Delay((int)ARInterval);
 				}
 				ARDoing = false;
 			}
@@ -67,8 +62,8 @@ namespace TR
 
 			if (No_SMem_Mode) return;
 			MMF = new SMemIF(SMem_Name, Elem_Size);
-			if (IsArray) ARThread = new Task(() => AR_Action(OnlyReadArr));
-			else ARThread = new Task(() => AR_Action(OnlyRead));
+			if (IsArray) ARThread = new MyTask((_) => AR_Action(OnlyReadArr));
+			else ARThread = new MyTask((_) => AR_Action(OnlyRead));
 		}
 
 		private T _Data = default;
@@ -81,7 +76,7 @@ namespace TR
 				{
 					T oldD = _Data;
 					_Data = value;
-					Task.Run(() => ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, value)));
+					MyTask.Run((_) => ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, value)));
 				}
 				else _Data = value;
 			}
@@ -93,17 +88,32 @@ namespace TR
 			get => _ArrData;
 			private set
 			{
-				if (!No_Event_Mode && !_ArrData.SequenceEqual(value))
+				if (!No_Event_Mode && !ArrayEqual(_ArrData, value))
 				{
 					T[] oldD = _ArrData;
-					Task.Run(() => ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, value)));
+					MyTask.Run((_) => ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, value)));
 				}
 				_ArrData = value;
 			}
 		}
 
+		private bool ArrayEqual(in T[] a, in T[] b)
+		{
+			if (a is null || b is null)//どっちもnullなら不一致とする
+				return false;
+
+			if (a.Length != b.Length)
+				return false;
+
+			for (int i = 0; i < a.Length; i++)
+				if (!a[i].Equals(b[i]))
+					return false;
+
+			return true;
+		}
+
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public void OnlyRead() => Read(out _, true);
+		public void OnlyRead(object o = null) => Read(out _, true);
 
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public T Read(in bool DoWrite = true)
@@ -139,7 +149,7 @@ namespace TR
 		}
 
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public void OnlyReadArr() => ReadArr(out _, true);
+		public void OnlyReadArr(object o = null) => ReadArr(out _, true);
 
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public T[] ReadArr(in bool DoWrite = true)
@@ -256,54 +266,3 @@ namespace TR
 		}
 	}
 }
-#if NET35
-namespace TR
-{
-	//Taskクラスの代替
-	public class Task : IDisposable
-	{
-		static public IAsyncResult Run(Action act) => act?.BeginInvoke(act.EndInvoke, null);
-		public bool IsAlive => !IsCompleted;
-		public bool IsCompleted { get; private set; } = false;
-
-		Action Act { get; }
-
-		public Task(Action act)
-		{
-			if (act == null) throw new ArgumentNullException("arg \"act\" is null");
-			Act = act;
-		}
-
-		/// <summary>指定時間の間, 処理を停止します.</summary>
-		/// <param name="milliseconds">処理を停止する時間</param>
-		public static void Delay(int milliseconds)
-		{
-			if (milliseconds < 0) throw new ArgumentOutOfRangeException("cannot use minus number in the arg \"milliseconds\"");
-			Thread.Sleep(milliseconds);
-		}
-
-		/// <summary>指定時間だけ, スレッドの実行終了を待機します.</summary>
-		/// <param name="milliseconds">待機する時間</param>
-		public void Wait(int milliseconds) => Act.EndInvoke(null);
-		
-
-		/// <summary>初期化時に指定した処理を実行します.</summary>
-		public void Start()
-		{
-			IsCompleted = false;
-			_ = Act.BeginInvoke(Callback, null);
-		}
-
-		public void Dispose()
-		{
-			if (!IsCompleted) Act.EndInvoke(null);
-		}
-
-		private void Callback(IAsyncResult ar)
-		{
-			Act.EndInvoke(ar);
-			IsCompleted = true;
-		}
-	}
-}
-#endif
