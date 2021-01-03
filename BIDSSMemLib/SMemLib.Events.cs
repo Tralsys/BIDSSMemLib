@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-#if !NET35
-using System.Threading.Tasks;
-#endif
+
 namespace TR.BIDSSMemLib
 {
 	internal static partial class UsefulFunc
 	{
-		static internal double MStoHH(this ref int ms) => ((double)ms) / 1000 / 60 / 60;
-		static internal double MtoKM(this ref double m) => m / 1000;
-		static internal double MtoKM(this ref float m) => m / 1000;
+		[MethodImpl(SMemLib.MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		static internal double MStoHH(in int ms) => ((double)ms) / 1000 / 60 / 60;
+		[MethodImpl(SMemLib.MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		static internal double MtoKM(in double m) => m / 1000;
+		[MethodImpl(SMemLib.MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		static internal double MtoKM(in float m) => m / 1000;
 	}
 	public static partial class SMemLib
 	{
@@ -110,13 +111,13 @@ namespace TR.BIDSSMemLib
 
 			[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 			static internal void OnBSMDChanged(object sender, ValueChangedEventArgs<BIDSSharedMemoryData> e)
-			=> _ = Task.Run(() =>
+			=> _ = MyTask.Run((_) =>
 					 {
 						 BIDSSharedMemoryData bsmddef = default;
 
 						 if (Equals(bsmddef, e.NewValue)) return;
 
-						 if (!Equals(e.OldValue.SpecData, e.NewValue.SpecData)) Task.Run(() => SpecChanged?.Invoke(e.NewValue.SpecData, new SpecDataChangedEventArgs()
+						 if (!Equals(e.OldValue.SpecData, e.NewValue.SpecData)) MyTask.Run((_) => SpecChanged?.Invoke(e.NewValue.SpecData, new SpecDataChangedEventArgs()
 						 {
 							 ATSCheck = e.NewValue.SpecData.A,
 							 Cars = e.NewValue.SpecData.C,
@@ -128,7 +129,7 @@ namespace TR.BIDSSMemLib
 						 if (Equals(e.NewValue.StateData, e.OldValue.StateData)) return;
 						 State n = e.NewValue.StateData;
 						 State o = e.OldValue.StateData;
-						 if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) Task.Run(() => PressChanged?.Invoke(n, new PressureChangedEventArgs()
+						 if (n.BC != o.BC || n.BP != o.BP || n.ER != o.ER || n.MR != o.MR || n.SAP != o.SAP) MyTask.Run((_) => PressChanged?.Invoke(n, new PressureChangedEventArgs()
 						 {
 							 BC = n.BC,
 							 BP = n.BP,
@@ -138,14 +139,14 @@ namespace TR.BIDSSMemLib
 						 }));
 
 						 if (n.Z != o.Z)
-							 Task.Run(() =>
+							 MyTask.Run((_) =>
 							 {
 								 double a = 0;
 								 double odt, ndt, odz, ndz, ot, nt, ov, nv;
-								 double oldT = o.T.MStoHH();
-								 double newT = n.T.MStoHH();
-								 double oldZ = o.Z.MtoKM();
-								 double newZ = n.Z.MtoKM();
+								 double oldT = UsefulFunc.MStoHH(o.T);
+								 double newT = UsefulFunc.MStoHH(n.T);
+								 double oldZ = UsefulFunc.MtoKM(o.Z);
+								 double newZ = UsefulFunc.MtoKM(n.Z);
 								 if (n.T != o.T && OldOldT != o.T)
 								 {
 									 odt = oldT - OldOldT;
@@ -164,13 +165,13 @@ namespace TR.BIDSSMemLib
 								 OldOldZ = oldZ;
 							 });
 						 if (n.V != o.V)
-							 Task.Run(() =>
+							 MyTask.Run((_) =>
 							 {
 								 double a = 0;
-								 if (n.T != o.T) a = (n.V.MtoKM() - o.V.MtoKM()) / (n.T.MStoHH() - o.T.MStoHH());
+								 if (n.T != o.T) a = (UsefulFunc.MtoKM(n.V) - UsefulFunc.MtoKM(o.V)) / (UsefulFunc.MStoHH(n.T) - UsefulFunc.MStoHH(o.T));
 								 SpeedChanged?.Invoke(n.V, new SpeedChangedEventArgs() { Acceleration = a, OldSpeed = o.V, Speed = n.V });
 							 });
-						 if (n.I != o.I) Task.Run(() => ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I }));
+						 if (n.I != o.I) MyTask.Run((_) => ElectricalStateChanged?.Invoke(null, new ElectrialStateChangedEventArgs() { Current = n.I }));
 					 });
 		}
 
