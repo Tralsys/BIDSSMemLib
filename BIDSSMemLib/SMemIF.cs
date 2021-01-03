@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Runtime.CompilerServices;
-#if NET35
+#if NET35 || NET20
 using System.IO;
 #else
 using System.Threading.Tasks;
@@ -18,7 +18,7 @@ namespace TR
 		const byte TRUE_VALUE = 1;
 		const byte FALSE_VALUE = 0;
 		
-#if NET35//Unmanaged
+#if NET35 || NET20//Unmanaged
 		#region 関数のリンク
 		const string DLL_NAME = "kernel32.dll";
 		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
@@ -100,7 +100,7 @@ namespace TR
 #endif
 
 		long Capacity
-#if NET35
+#if NET35 || NET20
 		{ get; set; } = 0;
 #else
 			=> MMVA?.Capacity ?? 0;
@@ -129,10 +129,10 @@ namespace TR
 
 			CheckReOpen(pos + Marshal.SizeOf(default(T)));
 			T retT = default;
-			_ = semap.Read(() =>
+			_ = semap.Read((_) =>
 			{
 				#region SMemへの操作
-#if NET35
+#if NET35 || NET20
 				if (MMVA == IntPtr.Zero) return;
 				retT = (T)Marshal.PtrToStructure(MMVA, typeof(T));
 #else
@@ -145,7 +145,7 @@ namespace TR
 		}
 
 		/// <summary>SMemから連続的に値を読み取ります.</summary>
-		/// <typeparam name="T">値の型(NET35モードではint型/bool型のみ使用可能)</typeparam>
+		/// <typeparam name="T">値の型(NET35 || NET20モードではint型/bool型のみ使用可能)</typeparam>
 		/// <param name="pos">SMem内でのデータ開始位置</param>
 		/// <param name="buf">読み取り結果を格納する配列</param>
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
@@ -158,10 +158,10 @@ namespace TR
 
 			long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
 			CheckReOpen(neededCap);
-			_ = semap.Read(() =>
+			_ = semap.Read((_) =>
 				{
 					#region SMemへの操作
-#if NET35
+#if NET35 || NET20
 					if (MMVA == IntPtr.Zero) return;
 					IntPtr ip_toRead = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
 					if (buf is int[] iarr)//int型配列にキャスト(iarrへの書き込みはbufにも反映される)
@@ -178,7 +178,7 @@ namespace TR
 						for(int i = 0; i < SMem_ba.Length; i++)
 							barr[i + offset] = SMem_ba[i] == TRUE_VALUE;//読み取り結果の書き込み
 					}
-					else throw new ArrayTypeMismatchException("NET35モードでBuildされています.  Array操作はint型/bool型のみ受け付けます.");
+					else throw new ArrayTypeMismatchException("NET35 || NET20モードでBuildされています.  Array操作はint型/bool型のみ受け付けます.");
 
 #else
 				MMVA.ReadArray(pos, buf, offset, count);
@@ -195,10 +195,10 @@ namespace TR
 			if (disposing) return false;
 			CheckReOpen(pos + Marshal.SizeOf(default(T)));
 			T retT = buf;
-			_ = semap.Write(() =>
+			_ = semap.Write((_) =>
 				{
 					#region SMemへの操作
-#if NET35
+#if NET35 || NET20
 					if (MMVA == IntPtr.Zero) return;//Viewが無効
 					IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
 					Marshal.StructureToPtr(retT, MMVA, false);//予め確保してた場所にStructureを書き込む
@@ -211,7 +211,7 @@ namespace TR
 		}
 
 		/// <summary>SMemに連続した値を書き込みます.</summary>
-		/// <typeparam name="T">書き込む値の型 (NET35モードではint/bool型のみ使用可能)</typeparam>
+		/// <typeparam name="T">書き込む値の型 (NET35 || NET20モードではint/bool型のみ使用可能)</typeparam>
 		/// <param name="pos">書き込みを開始するSMem内の位置</param>
 		/// <param name="buf">SMemに書き込む配列</param>
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
@@ -223,10 +223,10 @@ namespace TR
 			if (disposing) return false;
 			long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
 			CheckReOpen(neededCap);
-			_ = semap.Write(() =>
+			_ = semap.Write((_) =>
 				{
 					#region SMemへの操作
-#if NET35
+#if NET35 || NET20
 					if (MMVA == IntPtr.Zero) return;
 					IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
 					if (buf is int[] iarr)//int型配列にキャスト(iarrへの書き込みはbufにも反映される)
@@ -241,7 +241,7 @@ namespace TR
 
 						Marshal.Copy(ba2w, 0, ip_writeTo, ba2w.Length);//SMemに書き込む
 					}
-					else throw new ArrayTypeMismatchException("NET35モードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
+					else throw new ArrayTypeMismatchException("NET35 || NET20モードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
 #else
 				MMVA.WriteArray(pos, buf, offset, count);
 #endif
@@ -254,10 +254,10 @@ namespace TR
 		void CheckReOpen(long capacity)
 		{
 			if (Capacity > capacity) return;//保持キャパが要求キャパより大きい
-			_ = semap.Write(() =>
+			_ = semap.Write((_) =>
 				{
 					if (Capacity > capacity) return;//保持キャパが要求キャパより大きい 再確認
-#if NET35
+#if NET35 || NET20
 					if (MMVA != IntPtr.Zero)
 					{
 						UnmapViewOfFile(MMVA);
@@ -265,7 +265,7 @@ namespace TR
 					}//Viewを閉じる
 					if (MMF != IntPtr.Zero) CloseHandle(MMF);//FileハンドルをRelease
 
-					if (capacity > uint.MaxValue) throw new ArgumentOutOfRangeException("NET35モードでは, CapacityはUInt32.MaxValue以下である必要があります.");
+					if (capacity > uint.MaxValue) throw new ArgumentOutOfRangeException("NET35 || NET20モードでは, CapacityはUInt32.MaxValue以下である必要があります.");
 
 					MMF = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE_VALUE, SMem_Name);//最初はOpenを試行
 					if (MMF == IntPtr.Zero) MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)capacity, SMem_Name);//Openできない=>つくる
@@ -295,7 +295,7 @@ namespace TR
 			{
 				if (disposing)
 				{
-#if NET35
+#if NET35 || NET20
 					if (MMVA != IntPtr.Zero)
 					{
 						UnmapViewOfFile(MMVA);
@@ -321,7 +321,7 @@ namespace TR
 				}
 			}
 		}
-#if NET35
+#if NET35 || NET20
 		/// <summary>SMemのハンドルを閉じます.</summary>
 		~SMemIF() => Dispose(false);
 #endif
@@ -348,16 +348,16 @@ namespace TR
 		/// <returns>成功したかどうか</returns>
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public
-#if NET35
+#if NET35 || NET20
 			bool
 #else
 			async Task<bool>
 #endif
-			Read(Action act)
+			Read(Action<object> act)//net2.0対応のため, object型引数を指定  処理的には不要
 		{
 			while (Want_to_Write > 0)//Writeロック取得待機
 			{
-#if !NET35
+#if !(NET35 || NET20)
 				await
 #endif
 				Delay(TimeSpan.FromTicks(WAIT_TICK));
@@ -365,7 +365,7 @@ namespace TR
 			try
 			{
 				Interlocked.Increment(ref Reading);
-				act?.Invoke();
+				act?.Invoke(null);
 			}
 			finally
 			{
@@ -379,19 +379,19 @@ namespace TR
 		/// <returns>成功したかどうか</returns>
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public
-#if NET35
+#if NET35 || NET20
 			bool
 #else
 			async Task<bool>
 #endif
-	Write(Action act)
+	Write(Action<object> act)//net2.0対応のため, object型引数を指定  処理的には不要
 		{
 			try
 			{
 				Interlocked.Increment(ref Want_to_Write);//Write待機
 				while (Reading > 0)//Read完了待機
 				{
-#if !NET35
+#if !(NET35 || NET20)
 				await
 #endif
 					Delay(TimeSpan.FromTicks(WAIT_TICK));
@@ -399,7 +399,7 @@ namespace TR
 				}
 				lock (LockObj)//Writeロック
 				{
-					act?.Invoke();
+					act?.Invoke(null);
 				}
 			}
 			finally
@@ -409,7 +409,7 @@ namespace TR
 			return true;
 		}
 
-#if NET35
+#if NET35 || NET20
 		static private void Delay(TimeSpan ts) => Thread.Sleep(ts);
 #else
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
