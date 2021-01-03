@@ -75,14 +75,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\BIDSSMemLib\CtrlInput.cs" Link="CtrlInput.cs" />
     <Compile Include="..\BIDSSMemLib\InputDevice.bve5.cs" Link="InputDevice.bve5.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemCtrler.cs" Link="SMemCtrler.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemIF.cs" Link="SMemIF.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs" Link="SMemLib.Events.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemLib.Works.cs" Link="SMemLib.Works.cs" />
     <Compile Include="..\BIDSSMemLib\Ats.cs" Link="Ats.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -90,13 +83,16 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DllExport" Version="1.7.4" />
-		<PackageReference Include="IAtsPI" Version="1.0.0.1" GeneratePathProperty="true" />
+		<PackageReference Include="IAtsPI" Version="1.0.0.2" GeneratePathProperty="true" />
     <PackageReference Include="ilmerge">
       <Version>3.0.29</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
+  </ItemGroup>
 	<!--nuget package path ref : https://docs.microsoft.com/ja-jp/nuget/consume-packages/package-references-in-project-files#generatepathproperty -->
-  <Target  Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'x64'" Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
+  <Target Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'x64'" Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
     <Copy SourceFiles="$(PkgIAtsPI)\lib\net35\IAtsPI.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
     <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
     <Exec Command="$(ILMergeConsolePath) $(TargetFileName) /out:$(TargetFileName).ilm0.dll /log:log.txt" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
