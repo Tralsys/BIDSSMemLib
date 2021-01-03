@@ -118,7 +118,7 @@
       <Wz>1</Wz>
     </PackageReference>
     <PackageReference Include="IAtsPI">
-      <Version>1.0.0.1</Version>
+      <Version>1.0.0.2</Version>
     </PackageReference>
     <PackageReference Include="ilmerge">
       <Version>3.0.29</Version>
