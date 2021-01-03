@@ -96,9 +96,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\IAtsPI\IAtsPI.cs">
-      <Link>IAtsPI.cs</Link>
-    </Compile>
     <Compile Include="Ats.cs" />
     <Compile Include="Ats_obve.cs" />
     <Compile Include="CtrlInput.cs" />
@@ -119,6 +116,9 @@
       <Version>1.7.4</Version>
       <Visible>false</Visible>
       <Wz>1</Wz>
+    </PackageReference>
+    <PackageReference Include="IAtsPI">
+      <Version>1.0.0.1</Version>
     </PackageReference>
     <PackageReference Include="ilmerge">
       <Version>3.0.29</Version>
@@ -153,7 +153,8 @@
   </PropertyGroup>
   <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
     <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
-    <Exec Command="$(ILMergeConsolePath) $(TargetDir)IAtsPI.dll  $(TargetFileName) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+    <Exec Command="$(ILMergeConsolePath) $(TargetFileName) IAtsPI.dll /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+    <!--Except for IAtsPI.dll, I dont set to merge dlls because of cumbersum license management reasons.-->
     <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
     <Delete Files="$(TargetDir)$(DllExportMetaLibName)" ContinueOnError="true" />
   </Target>
