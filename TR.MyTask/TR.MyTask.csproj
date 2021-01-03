@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net20;net40;net45;netstandard1.0;net5.0</TargetFrameworks>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <RootNamespace>TR</RootNamespace>
+		<LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+	<!--net11のサポートは行わない.-->
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net11'">
+		<DefineConstants>NET11;</DefineConstants>
+	</PropertyGroup>
+
+</Project>

@@ -1,23 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace TR.BIDSSMemLib
 {
-
-  /// <summary>Beaconに関する構造体</summary>
-  [StructLayout(LayoutKind.Sequential)]
-  public struct Beacon
-  {
-    /// <summary>Beaconの番号</summary>
-    public int Num;
-    /// <summary>対応する閉塞の現示番号</summary>
-    public int Sig;
-    /// <summary>対応する閉塞までの距離[m]</summary>
-    public float Z;
-    /// <summary>Beaconの第三引数の値</summary>
-    public int Data;
-  };
   /// <summary>レバーサー位置</summary>
   public static class Reverser
   {
@@ -108,11 +97,29 @@ namespace TR.BIDSSMemLib
   }
 
 
-
   /// <summary>処理を実装するクラス</summary>
   static public class Ats
   {
-    private const int Version = 0x00020000;
+    static XDocument doc { get; }
+    static Ats()
+		{
+#if DEBUG
+      if (!Debugger.IsAttached)
+        Debugger.Launch();
+#endif
+      //Load setting
+      try
+      {
+        doc = XDocument.Load(Assembly.GetExecutingAssembly().Location + ".xml");
+        Version = int.Parse(doc.Element("AtsPISetting").Element("Version").Value);
+			}
+			catch (Exception e)
+			{
+        //MessageBox.Show("Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message, "BIDSSMemLib AtsPI IF");
+        Debug.WriteLine("[BIDSSMemLib AtsPI IF] Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message);
+			}
+		}
+    private static readonly int Version = 0x00020000;
     public const CallingConvention CalCnv = CallingConvention.StdCall;
     const int MaxIndex = 256;
     /// <summary>Is the Door Closed TF</summary>
@@ -123,9 +130,8 @@ namespace TR.BIDSSMemLib
     public static bool[] IsKeyDown { get; set; } = new bool[16];
 
     static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
-    static PanelD PD = new PanelD() { Panels = new int[MaxIndex] };
-    static SoundD SD = new SoundD() { Sounds = new int[MaxIndex] };
-    static SMemLib SML = null;
+    static int[] PArr = new int[MaxIndex];
+    static int[] SArr = new int[MaxIndex];
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
     public static void Load()
@@ -133,11 +139,11 @@ namespace TR.BIDSSMemLib
 #if DEBUG
       MessageBox.Show("BIDSSMemLib Debug Build");
 #endif
-      SML = new SMemLib(0, true);
+      SMemLib.Begin(false, true);
       BSMD.IsEnabled = true;
-      BSMD.VersionNum = int.Parse(SMemLib.VersionNum);
-      SML.Write(in BSMD);
-      if (!Equals(BSMD, SML.Read<BIDSSharedMemoryData>(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
+      BSMD.VersionNum = SMemLib.VersionNumInt;
+      SMemLib.Write(in BSMD);
+      if (!Equals(BSMD, SMemLib.ReadBSMD(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
     }
 
     /// <summary>Called when this plugin is unloaded</summary>
@@ -145,19 +151,17 @@ namespace TR.BIDSSMemLib
     public static void Dispose()
     {
       BSMD = new BIDSSharedMemoryData();
-      PD = new PanelD() { Panels = new int[MaxIndex] };
-      SD = new SoundD() { Sounds = new int[MaxIndex] };
-      SML.Write(in BSMD);
-      SML.Write(in PD);
-      SML.Write(in SD);
-      SML.Dispose();
+      var BlankArr = new int[MaxIndex];
+      SMemLib.Write(in BSMD);
+      SMemLib.WritePanel(in BlankArr);
+      SMemLib.WriteSound(in BlankArr);
     }
 
     /// <summary>Called when the version number is needed</summary>
     /// <returns>plugin version number</returns>
     [DllExport(CallingConvention = CalCnv)]
     public static int GetPluginVersion() => Version;
-
+    
     /// <summary>Called when set the Vehicle Spec</summary>
     /// <param name="s">Set Spec</param>
     [DllExport(CallingConvention = CalCnv)]
@@ -179,11 +183,11 @@ namespace TR.BIDSSMemLib
       BSMD.StateData = st;
       BSMD.HandleData = Handle;
       BSMD.IsDoorClosed = DoorClosed;
-      SML.Write(in BSMD);
-      Marshal.Copy(Pa, PD.Panels, 0, MaxIndex);
-      Marshal.Copy(Sa, SD.Sounds, 0, MaxIndex);
-      SML.Write(in PD);
-      SML.Write(in SD);
+      SMemLib.Write(in BSMD);
+      Marshal.Copy(Pa, PArr, 0, MaxIndex);
+      Marshal.Copy(Sa, SArr, 0, MaxIndex);
+      SMemLib.WritePanel(in PArr);
+      SMemLib.WriteSound(in SArr);
       return Handle;
     }
 

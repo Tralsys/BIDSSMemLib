@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace TR
 {
 	public class SMemCtrler<T> : IDisposable where T : struct
 	{
-		#region Readonly Properties
+		private const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
+
+#region Readonly Properties
 		/// <summary>SMemを用いてデータを共有するか</summary>
 		public bool No_SMem_Mode { get; }
 		/// <summary>データ更新時にイベントを発火させるか</summary>
@@ -20,7 +20,7 @@ namespace TR
 		public uint Elem_Size { get; } = (uint)Marshal.SizeOf(default(T));
 
 		const int SizeD_Size = sizeof(int);
-		#endregion
+#endregion
 
 		public event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
 		public event EventHandler<ValueChangedEventArgs<T[]>> ArrValueChanged;
@@ -30,25 +30,27 @@ namespace TR
 
 		public uint ARInterval { get; set; } = 10;
 
-		Task ARThread = null;
+		IMyTask ARThread = null;
 
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public SMemCtrler(string SMemName, bool IsArray = false, bool No_SMem = false, bool No_Event = false)
 		{
-#if !UMNGD
+
+			//[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.//ローカル関数へのMethodImpl指定はLangVer9.0以上だそうなので, 一旦無効化
+#if !(NET35 || NET20)
 			async
 #endif
-			void AR_Action(Action ReadAction)
+			void AR_Action(Action<object> ReadAction)
 			{
 				ARDoing = true;
 				while (ARDoing && !disposing && !disposedValue)
 				{
 					//_ = ReadAction.BeginInvoke(ReadAction.EndInvoke, null);
-					ReadAction.Invoke();
-#if UMNGD
-					Thread.Sleep((int)ARInterval);
-#else
-					await Task.Delay((int)ARInterval);
+					ReadAction.Invoke(null);
+#if !(NET35 || NET20)
+					await
 #endif
+						MyTask.Delay((int)ARInterval);
 				}
 				ARDoing = false;
 			}
@@ -60,24 +62,21 @@ namespace TR
 
 			if (No_SMem_Mode) return;
 			MMF = new SMemIF(SMem_Name, Elem_Size);
-			if (IsArray) ARThread = new Task(() => AR_Action(OnlyReadArr));
-			else ARThread = new Task(() => AR_Action(OnlyRead));
+			if (IsArray) ARThread = new MyTask((_) => AR_Action(OnlyReadArr));
+			else ARThread = new MyTask((_) => AR_Action(OnlyRead));
 		}
 
 		private T _Data = default;
 		public T Data
 		{
 			get => _Data;
-			set
+			private set
 			{
 				if (!No_Event_Mode && !Equals(_Data, value))
 				{
 					T oldD = _Data;
 					_Data = value;
-					Task.Run(() =>
-					{
-						ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, value));
-					});
+					MyTask.Run((_) => ValueChanged?.Invoke(this, new ValueChangedEventArgs<T>(oldD, value)));
 				}
 				else _Data = value;
 			}
@@ -87,22 +86,37 @@ namespace TR
 		public T[] ArrData
 		{
 			get => _ArrData;
-			set
+			private set
 			{
-				if (!No_Event_Mode && !_ArrData.SequenceEqual(value))
+				if (!No_Event_Mode && !ArrayEqual(_ArrData, value))
 				{
-					T[] oldD = (T[])_ArrData.Clone();
-					Task.Run(() =>
-					{
-						ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, (T[])value.Clone()));
-					});
+					T[] oldD = _ArrData;
+					MyTask.Run((_) => ArrValueChanged?.Invoke(this, new ValueChangedEventArgs<T[]>(oldD, value)));
 				}
 				_ArrData = value;
 			}
 		}
 
-		public void OnlyRead() => Read(out _, true);
-		public T Read(bool DoWrite = true)
+		private bool ArrayEqual(in T[] a, in T[] b)
+		{
+			if (a is null || b is null)//どっちもnullなら不一致とする
+				return false;
+
+			if (a.Length != b.Length)
+				return false;
+
+			for (int i = 0; i < a.Length; i++)
+				if (!a[i].Equals(b[i]))
+					return false;
+
+			return true;
+		}
+
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		public void OnlyRead(object o = null) => Read(out _, true);
+
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		public T Read(in bool DoWrite = true)
 		{
 			T d = default;
 
@@ -110,7 +124,9 @@ namespace TR
 
 			return d;
 		}
-		public void Read(out T d, bool DoWrite = true)
+
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		public void Read(out T d, in bool DoWrite = true)
 		{
 			d = Data;
 			if (No_SMem_Mode || MMF == null) return;
@@ -122,6 +138,7 @@ namespace TR
 			catch (ObjectDisposedException) { }
 		}
 
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public bool Write(in T data)
 		{
 			if (!Equals(data, Data)) Data = data;
@@ -131,8 +148,11 @@ namespace TR
 			return MMF.Write(0, ref _Data);
 		}
 
-		public void OnlyReadArr() => ReadArr(out _, true);
-		public T[] ReadArr(bool DoWrite = true)
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		public void OnlyReadArr(object o = null) => ReadArr(out _, true);
+
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		public T[] ReadArr(in bool DoWrite = true)
 		{
 			T[] d = default;
 
@@ -140,23 +160,24 @@ namespace TR
 
 			return d;
 		}
-		public void ReadArr(out T[] d, bool DoWrite = true)
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
+		public void ReadArr(out T[] d, in bool DoWrite = true)
 		{
 			d = _ArrData;
-			if (No_SMem_Mode || MMF == null) return;
+			if (No_SMem_Mode || MMF == null) return;//SMem使えないなら内部記録だけを返す.
 			try
 			{
 				int ArrInSMem_Len = 0;
 				if (!MMF.Read(0, out ArrInSMem_Len)) return;//配列長の取得(失敗したらしゃーなし)
-				d = default;
-				if (ArrInSMem_Len <= 0) return;
 				d = new T[ArrInSMem_Len];
-				if (MMF.ReadArray(SizeD_Size, d, 0, d.Length) && DoWrite) ArrData = d;//読込成功かつ書き込み可=>Data更新
+				if (ArrInSMem_Len <= 0) return;//配列長0なら後は読まない.
+				if (MMF.ReadArray(SizeD_Size, d, 0, d.Length) && DoWrite) ArrData = d;//読込成功かつ書き込み可=>Data更新(更新確認はsetterの仕事)
 			}
 			catch (ObjectDisposedException) { }//無視
 
 			return;
 		}
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public bool WriteArr(in T[] data)
 		{
 			if (disposedValue == true || !(data?.Length > 0)) return false;
@@ -176,7 +197,9 @@ namespace TR
 		}
 
 #region Auto Read Methods
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(int Interval = 10) => AR_Start((uint)Interval);
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Start(uint Interval)
 		{
 			if (MMF == null || ARThread == null) return;
@@ -194,6 +217,8 @@ namespace TR
 				return;
 			}
 		}
+
+		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void AR_Stop()
 		{
 			if (MMF == null || ARThread == null) return;
@@ -232,8 +257,8 @@ namespace TR
 	/// <typeparam name="T">値の型</typeparam>
 	public class ValueChangedEventArgs<T> : EventArgs
 	{
-		public T OldValue { get; } = default;
-		public T NewValue { get; } = default;
+		public readonly T OldValue;
+		public readonly T NewValue;
 		public ValueChangedEventArgs(in T oldValue, in T newValue)
 		{
 			OldValue = oldValue;
@@ -241,54 +266,3 @@ namespace TR
 		}
 	}
 }
-#if UMNGD
-namespace System.Threading.Tasks
-{
-	//Taskクラスの代替
-	public class Task : IDisposable
-	{
-		static public void Run(Action act) => act?.BeginInvoke(act.EndInvoke, null);
-		public bool IsAlive => !IsCompleted;
-		public bool IsCompleted { get; private set; } = false;
-
-		Action Act { get; }
-
-		public Task(Action act)
-		{
-			if (act == null) throw new ArgumentNullException("arg \"act\" is null");
-			Act = act;
-		}
-
-		/// <summary>指定時間の間, 処理を停止します.</summary>
-		/// <param name="milliseconds">処理を停止する時間</param>
-		public static void Delay(int milliseconds)
-		{
-			if (milliseconds < 0) throw new ArgumentOutOfRangeException("cannot use minus number in the arg \"milliseconds\"");
-			Thread.Sleep(milliseconds);
-		}
-
-		/// <summary>指定時間だけ, スレッドの実行終了を待機します.</summary>
-		/// <param name="milliseconds">待機する時間</param>
-		public void Wait(int milliseconds) => Act.EndInvoke(null);
-		
-
-		/// <summary>初期化時に指定した処理を実行します.</summary>
-		public void Start()
-		{
-			IsCompleted = false;
-			_ = Act.BeginInvoke(Callback, null);
-		}
-
-		public void Dispose()
-		{
-			if (!IsCompleted) Act.EndInvoke(null);
-		}
-
-		private void Callback(IAsyncResult ar)
-		{
-			Act.EndInvoke(ar);
-			IsCompleted = true;
-		}
-	}
-}
-#endif

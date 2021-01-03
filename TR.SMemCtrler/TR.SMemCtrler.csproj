@@ -1,11 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
-		<LangVersion>8.0</LangVersion>
+		<TargetFrameworks>netstandard2.0;net20;net35;net461;net50</TargetFrameworks>
+		<LangVersion>preview</LangVersion>
 		<AssemblyName>TR.SMemCtrler</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
-		<Version>1.0.0</Version>
+		<Version>1.0.0.1</Version>
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>
 		<Product>BIDS Project</Product>
@@ -15,10 +15,12 @@
 		<RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Platforms>AnyCPU;x64;x86</Platforms>
-		<PackageReleaseNotes># 1.0.0
+		<PackageReleaseNotes># 1.0.0.1
+Add net20 support
+# 1.0.0
 published to nuget.org</PackageReleaseNotes>
 		<Description>It provides generic operations and features to use TR.SMemIF, to make access to the MemoryMappedFile more convenient.</Description>
-		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
@@ -60,6 +62,7 @@ published to nuget.org</PackageReleaseNotes>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\TR.MyTask\TR.MyTask.csproj" />
 	  <ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
 	</ItemGroup>
 
