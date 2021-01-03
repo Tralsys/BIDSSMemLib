@@ -24,7 +24,6 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>8.0</LangVersion>
-    <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -121,11 +120,17 @@
       <Visible>false</Visible>
       <Wz>1</Wz>
     </PackageReference>
+    <PackageReference Include="ilmerge">
+      <Version>3.0.29</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PlatformTarget Condition="'$(Platform)' == 'x86'">x86</PlatformTarget>
     <PlatformTarget Condition="'$(Platform)' == 'x64'">x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Label="8337224c9ad9e356:PreProc">
+    <DebugType Condition="'$(DebugType)'!='full' And '$(DebugType)'!='pdbonly'" Label="8337224c9ad9e356:PreProc">pdbonly</DebugType>
   </PropertyGroup>
   <PropertyGroup>
     <DllExportIdent>CF8A6286-1A16-4C49-90CC-A7053EF96369</DllExportIdent>
@@ -133,7 +138,7 @@
     <DllExportNamespace>TR.BIDSSMemLib</DllExportNamespace>
     <DllExportDDNSCecil>true</DllExportDDNSCecil>
     <DllExportSkipOnAnyCpu>false</DllExportSkipOnAnyCpu>
-    <DllExportPlatform>Auto</DllExportPlatform>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DllExportOrdinalsBase>1</DllExportOrdinalsBase>
     <DllExportGenExpLib>false</DllExportGenExpLib>
     <DllExportOurILAsm>false</DllExportOurILAsm>
@@ -142,9 +147,19 @@
     <DllExportTimeout>30000</DllExportTimeout>
     <DllExportPeCheck>2</DllExportPeCheck>
     <DllExportPatches>0</DllExportPatches>
-    <DllExportPreProcType>0</DllExportPreProcType>
+    <DllExportPreProcType>25</DllExportPreProcType>
+    <DllExportILMerge />
     <DllExportPostProcType>0</DllExportPostProcType>
   </PropertyGroup>
+  <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
+    <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+    <Exec Command="$(ILMergeConsolePath) $(TargetDir)IAtsPI.dll  $(TargetFileName) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+    <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
+    <Delete Files="$(TargetDir)$(DllExportMetaLibName)" ContinueOnError="true" />
+  </Target>
+  <Target Name="DllExportPreProcAfter" AfterTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
+    <Delete Files="$(TargetDir)$(TargetFileName).ilm0.pdb" ContinueOnError="true" />
+  </Target>
   <ImportGroup Label=".NET DllExport">
     <Import Project="$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets" Condition="Exists($([MSBuild]::Escape('$(SolutionDir)packages\DllExport.1.7.4\tools\net.r_eg.DllExport.targets')))" Label="8337224c9ad9e356" />
   </ImportGroup>
