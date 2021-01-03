@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using Mackoy.Bvets;
@@ -7,6 +8,14 @@ namespace TR.BIDSSMemLib
 {
   public class InputDeviceBVE5 : IInputDevice
   {
+    static InputDeviceBVE5()
+		{
+#if DEBUG
+      if (!Debugger.IsAttached)
+        Debugger.Launch();
+#endif
+    }
+
     public event InputEventHandler LeverMoved;
     public event InputEventHandler KeyDown;
     public event InputEventHandler KeyUp;
