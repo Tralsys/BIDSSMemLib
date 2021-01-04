@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
+		<AssemblyName>TR.BIDSSMemLib.obve</AssemblyName>
     <Version>2.0.0.0</Version>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Authors>Tetsu Otter</Authors>
@@ -40,8 +41,9 @@ published to nuget.org
     <PackageReference Include="ILMerge" Version="3.0.41" />
   </ItemGroup>
 
-	<Target Name="ILMerge">
-		<Exec Command="$(ILMergeConsolePath) /target:dll /lib:$(TargetDir) /wildcards TR.*.dll IAtsPI.dll /out:$(TargetFileName).ilm0.dll /ndebug" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
-		<Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)merged\$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="$(ILMergeConsolePath) /target:dll /lib:$(TargetDir) $(TargetFileName) TR.BIDSSMemLib.rw.dll TR.BIDSSMemLib.structs.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll IAtsPI.dll /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="false" />
+		<Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)merged\$(TargetName).dll" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
+		<Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.pdb" DestinationFiles="$(TargetDir)merged\$(TargetName).pdb" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
 	</Target>
 </Project>
