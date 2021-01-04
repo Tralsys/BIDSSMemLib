@@ -13,7 +13,6 @@
     <PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
     <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes># 1.0.0
 published to nuget.org
@@ -30,14 +29,19 @@ published to nuget.org
     <Reference Include="OpenBveApi">
       <HintPath>..\..\OpenBVE\bin_release\OpenBveApi.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj"/>
-    <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj"/>
+    <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
+    <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="IAtsPI">
-      <Version>1.0.0.2</Version>
-    </PackageReference>
+    <PackageReference Include="IAtsPI" Version="1.0.0.2" />
+    <PackageReference Include="ILMerge" Version="3.0.41" />
   </ItemGroup>
+
+	<Target Name="ILMerge">
+		<Exec Command="$(ILMergeConsolePath) /target:dll /lib:$(TargetDir) /wildcards TR.*.dll IAtsPI.dll /out:$(TargetFileName).ilm0.dll /ndebug" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+		<Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)merged\$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
+	</Target>
 </Project>
