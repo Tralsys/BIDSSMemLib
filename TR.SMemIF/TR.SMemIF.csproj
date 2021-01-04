@@ -28,41 +28,9 @@ It is recommended to use through TR.SMemCtrler because this library provides onl
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	<PropertyGroup>
 	  <DebugType>portable</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
+	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
-	  <DebugType>portable</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-	  <DebugType>portable</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <DebugType>portable</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
-	  <DefineConstants>DEBUG;TRACE</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-	  <DebugType>portable</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
-	  <DefineConstants>DEBUG;TRACE</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-	  <DebugType>portable</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
-	  <DefineConstants>DEBUG;TRACE</DefineConstants>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<Compile Include="..\BIDSSMemLib\SMemIF.cs" Link="SMemIF.cs" />
-	</ItemGroup>
-
 </Project>
