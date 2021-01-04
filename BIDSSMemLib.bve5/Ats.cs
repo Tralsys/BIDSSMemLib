@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace TR.BIDSSMemLib
 {
-  /// <summary>レバーサー位置</summary>
-  public static class Reverser
+	#region Constant Values
+	/// <summary>レバーサー位置</summary>
+	public static class Reverser
   {
     /// <summary>後進</summary>
     public const int B = -1;
@@ -95,6 +99,7 @@ namespace TR.BIDSSMemLib
     /// <summary>ATSKey_L (Default : D0)</summary>
     public const int L = 15;
   }
+	#endregion
 
 
   /// <summary>処理を実装するクラス</summary>
@@ -132,6 +137,7 @@ namespace TR.BIDSSMemLib
     static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
     static int[] PArr = new int[MaxIndex];
     static int[] SArr = new int[MaxIndex];
+    static BVEConductorChecker BVE_CC = null;
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
     public static void Load()
@@ -144,10 +150,19 @@ namespace TR.BIDSSMemLib
       BSMD.VersionNum = SMemLib.VersionNumInt;
       SMemLib.Write(in BSMD);
       if (!Equals(BSMD, SMemLib.ReadBSMD(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
+
+      BVE_CC ??= new BVEConductorChecker();
+			BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;
     }
 
-    /// <summary>Called when this plugin is unloaded</summary>
-    [DllExport(CallingConvention = CalCnv)]
+		private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
+		{
+      Debug.WriteLine($"Got : {e.ActionType}, {e.RawString}");
+		}
+
+
+		/// <summary>Called when this plugin is unloaded</summary>
+		[DllExport(CallingConvention = CalCnv)]
     public static void Dispose()
     {
       BSMD = new BIDSSharedMemoryData();
@@ -155,6 +170,12 @@ namespace TR.BIDSSMemLib
       SMemLib.Write(in BSMD);
       SMemLib.WritePanel(in BlankArr);
       SMemLib.WriteSound(in BlankArr);
+      if(BVE_CC is not null)
+			{
+        BVE_CC.ConductorActioned -= BVE_CC_ConductorActioned;
+        BVE_CC.Dispose();
+        BVE_CC = null;
+      }
     }
 
     /// <summary>Called when the version number is needed</summary>
