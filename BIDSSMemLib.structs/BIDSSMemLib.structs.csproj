@@ -29,10 +29,6 @@ published to nuget.org</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="IAtsPI" Version="1.0.0.2" />
   </ItemGroup>
 

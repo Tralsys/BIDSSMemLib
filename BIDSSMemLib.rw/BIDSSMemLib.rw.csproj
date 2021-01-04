@@ -30,12 +30,6 @@ published to nuget.org</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\BIDSSMemLib\CtrlInput.cs" Link="CtrlInput.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemLib.cs" Link="SMemLib.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemLib.Events.cs" Link="SMemLib.Events.cs" />
-    <Compile Include="..\BIDSSMemLib\SMemLib.Works.cs" Link="SMemLib.Works.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
     <ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
     <ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />

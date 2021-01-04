@@ -75,13 +75,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\BIDSSMemLib\InputDevice.bve5.cs" Link="InputDevice.bve5.cs" />
-    <Compile Include="..\BIDSSMemLib\Ats.cs" Link="Ats.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="DllExport" Version="1.7.4" />
     <PackageReference Include="ilmerge">
       <Version>3.0.29</Version>
