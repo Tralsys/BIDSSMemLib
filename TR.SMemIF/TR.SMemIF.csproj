@@ -29,7 +29,7 @@ It is recommended to use through TR.SMemCtrler because this library provides onl
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <DebugType>portable</DebugType>
+	  <DebugType>pdbonly</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
 	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>

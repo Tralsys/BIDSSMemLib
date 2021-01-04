@@ -25,11 +25,14 @@ SMemlib change to static class
 published to nuget.org</PackageReleaseNotes>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup>
+
+	<ItemGroup>
     <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
     <ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
     <ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />

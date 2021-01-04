@@ -25,8 +25,8 @@ published to nuget.org</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup>
-	  <DebugType>portable</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
 	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
 

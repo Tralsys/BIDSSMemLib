@@ -22,7 +22,9 @@ published to nuget.org
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants Condition=" '$(Configuration)' == 'Debug' ">TRACE;DEBUG;obve</DefineConstants>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants Condition=" '$(Configuration)' == 'Debug' ">TRACE;DEBUG;obve</DefineConstants>
     <DefineConstants Condition=" '$(Configuration)' == 'Release' ">TRACE;obve</DefineConstants>
   </PropertyGroup>
 
