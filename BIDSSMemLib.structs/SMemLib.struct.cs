@@ -127,4 +127,11 @@ namespace TR.BIDSSMemLib
 		public int Length => Sounds?.Length ?? 0;
 		public int[] Sounds;
 	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct FixedLenCrumbData
+	{
+		public ushort ID;
+		public ushort Data;
+	}
 }
