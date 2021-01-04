@@ -77,7 +77,7 @@
   <ItemGroup>
     <PackageReference Include="DllExport" Version="1.7.4" />
     <PackageReference Include="ilmerge">
-      <Version>3.0.29</Version>
+      <Version>3.0.41</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
