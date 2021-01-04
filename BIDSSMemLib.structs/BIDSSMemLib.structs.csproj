@@ -17,7 +17,7 @@
     <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageReleaseNotes># 1.0.1.0
-Add fixed length crumb data
+Add fixed length optional data
 # 1.0.0.1
 Add net20 to targetframeworks
 # 1.0.0
