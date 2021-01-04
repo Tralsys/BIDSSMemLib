@@ -5,7 +5,7 @@
 		<LangVersion>8.0</LangVersion>
 		<AssemblyName>TR.SMemIF</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
-		<Version>1.0.0.1</Version>
+		<Version>1.0.0.2</Version>
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>
 		<Product>BIDS Project</Product>
@@ -15,7 +15,9 @@
 		<RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Platforms>AnyCPU;x64;x86</Platforms>
-		<PackageReleaseNotes># 1.0.0.1
+		<PackageReleaseNotes># 1.0.0.2
+Add net20/net50 support
+# 1.0.0.1
 Add net35/net461 support
 # 1.0.0
 published to nuget.org</PackageReleaseNotes>
