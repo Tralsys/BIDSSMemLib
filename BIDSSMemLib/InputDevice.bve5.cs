@@ -36,7 +36,7 @@ namespace TR.BIDSSMemLib
     Hands h = new Hands();
 
     public void Configure(IWin32Window owner)
-    => MessageBox.Show(owner, "BIDS Shared Memory Library\nBVE5 Input Device Plugin File\nVersion : "
+    => MessageBox.Show(owner, "BIDS Shared Memory Library\nBveTs Input Device Plugin File\nVersion : "
     + Assembly.GetExecutingAssembly().GetName().Version.ToString(), Assembly.GetExecutingAssembly().GetName().Name);
 
     public void Dispose() { }
