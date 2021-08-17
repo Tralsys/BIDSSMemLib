@@ -4,7 +4,7 @@
     <AssemblyName>TR.BIDSSMemLib.bve5</AssemblyName>
     <!--this property will be overwritten later-->
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
-    <Version>1.0.2</Version>
+    <Version>1.0.2.1</Version>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Authors>Tetsu Otter</Authors>
     <Company>Tech Otter</Company>
