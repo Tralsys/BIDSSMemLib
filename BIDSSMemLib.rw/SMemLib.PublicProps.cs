@@ -57,16 +57,5 @@ namespace TR.BIDSSMemLib
 			get => SMC_SndD?.ArrData;
 			private set => SMC_SndD.WriteArr(value);
 		}
-
-		public static FixedLenOptData[] FixedLenCrumbDArr
-		{
-#if !(NET20 || NET35)
-			get => SMC_FixedLOptD.ArrData;
-			private set => SMC_FixedLOptD.WriteArr(value);
-#else
-			get => throw new System.NotImplementedException();
-			private set => throw new System.NotImplementedException();
-#endif
-		}
 	}
 }

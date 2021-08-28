@@ -31,13 +31,5 @@ namespace TR.BIDSSMemLib
 		/// <param name="D">書き込む配列</param>
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public static void WriteSound(in int[] D) => SMC_SndD?.WriteArr(D);
-
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public static void WriteFixedLOptD(in FixedLenOptData[] d)
-#if !(NET20 || NET35)
-			=> SMC_FixedLOptD?.WriteArr(d);
-#else
-			=> throw new System.NotImplementedException();
-#endif
 	}
 }

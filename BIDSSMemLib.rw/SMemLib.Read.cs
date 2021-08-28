@@ -74,14 +74,5 @@ namespace TR.BIDSSMemLib
 		public static int[] ReadPanel(in bool DoWrite = true) => SMC_PnlD.ReadArr(DoWrite);
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public static int[] ReadSound(in bool DoWrite = true) => SMC_SndD.ReadArr(DoWrite);
-
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public static FixedLenOptData[] ReadFixedLOptD(in bool DoWrite = true)
-#if !(NET20 || NET35)
-			=> SMC_FixedLOptD.ReadArr(DoWrite);
-#else
-			=> throw new System.NotImplementedException();
-#endif
-
 	}
 }
