@@ -75,28 +75,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\BIDSSMemLib\InputDevice.bve5.cs" Link="InputDevice.bve5.cs" />
-    <Compile Include="..\BIDSSMemLib\Ats.cs" Link="Ats.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="DllExport" Version="1.7.4" />
     <PackageReference Include="ilmerge">
-      <Version>3.0.29</Version>
+      <Version>3.0.41</Version>
     </PackageReference>
+	<PackageReference Include="TR.BVEConductorChecker" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
   </ItemGroup>
+	<PropertyGroup>
+		<LibFilesToMerge>IAtsPI.dll TR.BIDSSMemLib.rw.dll TR.BIDSSMemLib.structs.dll TR.BVEConductorChecker.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll</LibFilesToMerge>
+		<ILMergeTargetPlatform Condition="'$(TargetFramework)' == 'net35'">TargetPlatform=/targetplatform:v2,C:/Windows/Microsoft.NET/Framework64/v2.0.50727</ILMergeTargetPlatform>
+	</PropertyGroup>
 	<!--nuget package path ref : https://docs.microsoft.com/ja-jp/nuget/consume-packages/package-references-in-project-files#generatepathproperty -->
   <Target Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'x64'" Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
-    <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+		<Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
 		<!--net35 target ref : https://github.com/dotnet/ILMerge/issues/42 -->
-    <Exec Condition="'$(TargetFramework)' == 'net35'" Command="$(ILMergeConsolePath) /target:dll /targetplatform:v2,C:/Windows/Microsoft.NET/Framework64/v2.0.50727 /lib:$(TargetDir) /wildcards TR.*.dll IAtsPI.dll /out:$(TargetFileName).ilm0.dll /ndebug /log" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
-    <Exec Condition="'$(TargetFramework)' != 'net35'" Command="$(ILMergeConsolePath) /target:dll /lib:$(TargetDir) /wildcards TR.*.dll IAtsPI.dll /out:$(TargetFileName).ilm0.dll /ndebug" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
-    <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
+		<Exec Command="$(ILMergeConsolePath) /target:dll $(ILMergeTargetPlatform) /lib:$(TargetDir) $(TargetFileName) $(LibFilesToMerge) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="false" />
+    <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="false" />
     <Delete Files="$(TargetDir)$(DllExportMetaLibName)" ContinueOnError="true" />
   </Target>
   <Target Name="DllExportPreProcAfter" AfterTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">

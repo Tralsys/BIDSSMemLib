@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.0;net20;net35;net461;net50</TargetFrameworks>
     <AssemblyName>TR.BIDSSMemLib.structs</AssemblyName>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.1.0</Version>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Authors>Tetsu Otter</Authors>
     <Company>Tech Otter</Company>
@@ -16,7 +16,9 @@
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageReleaseNotes># 1.0.0.1
+    <PackageReleaseNotes># 1.0.1.0
+Add fixed length optional data
+# 1.0.0.1
 Add net20 to targetframeworks
 # 1.0.0
 published to nuget.org</PackageReleaseNotes>
@@ -24,15 +26,14 @@ published to nuget.org</PackageReleaseNotes>
   </PropertyGroup>
 
 
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-  </PropertyGroup>
+	<PropertyGroup>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Include="..\BIDSSMemLib\SMemLib.struct.cs" Link="SMemLib.struct.cs" />
-  </ItemGroup>
 
-  <ItemGroup>
+	<ItemGroup>
     <PackageReference Include="IAtsPI" Version="1.0.0.2" />
   </ItemGroup>
 

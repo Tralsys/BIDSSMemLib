@@ -9,10 +9,13 @@ namespace TR.BIDSSMemLib
 		{
 			All = 0,
 			OpenD = 1,
+			FixedLOptD = 2,
+			FlexLOptD = 3,
 			BSMD = 5,
 			PanelD = 6,
 			SoundD = 7
 		};
+		static private readonly int ARNum_Len = Enum.GetValues(typeof(ARNum)).Length;
 
 		/// <summary>AutoReadを開始します。</summary>
 		/// <param name="ModeNum">自動読み取りを開始する情報種類</param>
@@ -24,27 +27,19 @@ namespace TR.BIDSSMemLib
 			switch (ModeNum)
 			{
 				case (int)ARNum.OpenD://OpenD
-					if (SMC_OpenD?.No_SMem_Mode == false)
-						SMC_OpenD?.AR_Start(Interval);
-					else throw new InvalidOperationException("OpenD共有メモリが有効化されていません。");
+					SMC_OpenD?.AR_Start(Interval);
 					break;
 				case (int)ARNum.BSMD://BSMD
-					if (SMC_BSMD?.No_SMem_Mode == false)
-						SMC_BSMD?.AR_Start(Interval);
-					else throw new InvalidOperationException("BSMD共有メモリが有効化されていません。");
+					SMC_BSMD?.AR_Start(Interval);
 					break;
 				case (int)ARNum.PanelD://PanelD
-					if (SMC_PnlD?.No_SMem_Mode == false)
-						SMC_PnlD?.AR_Start(Interval);
-					else throw new InvalidOperationException("PanelD共有メモリが有効化されていません。");
+					SMC_PnlD?.AR_Start(Interval);
 					break;
 				case (int)ARNum.SoundD://Sound D
-					if (SMC_SndD?.No_SMem_Mode == false)
-						SMC_SndD?.AR_Start(Interval);
-					else throw new InvalidOperationException("SoundD共有メモリが有効化されていません。");
+					SMC_SndD?.AR_Start(Interval);
 					break;
 			}
-			if (ModeNum <= 0) for (int i = 1; i < 8; i++) ReadStart(i, Interval);
+			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStart(i, Interval);
 		}
 
 		/// <summary>AutoReadを開始します。</summary>
@@ -74,7 +69,7 @@ namespace TR.BIDSSMemLib
 					SMC_SndD?.AR_Stop();
 					break;
 			}
-			if (ModeNum <= 0) for (int i = 1; i < 8; i++) ReadStop(i);
+			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStop(i);
 		}
 
 		/// <summary>AutoReadを終了します。実行中でなくともエラーは返しません。TimeOut:1000ms</summary>
