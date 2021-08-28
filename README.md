@@ -10,23 +10,6 @@ BIDSのSharedMemoryで共有された情報を表示させます.
 BIDSの入力部分のテストを行うためのコンソールアプリケーションです.
 
 
-## BIDSSMemLib Project
-BIDSSMemLibシリーズに実装されているすべての機能が含まれています。  
-一応、このLibraryは.Net Frameworkを使用して開発されているすべてのソフトウェアから参照利用をできますが、通常はBIDSSMemLib.readerを使用してください。  
-### 機能対応表
-実装している機能の一覧です.  実際に利用できるかどうかは確認しておりません.
-|機能|対応状況|備考|
-|-|-|-|
-|車両状態共有エリアの操作|〇||
-|操作共有エリアの操作|〇||
-|BVE5 ATSPI|〇||
-|BVE5 InputDevice|〇||
-|openBVE ATSPI|×|実装予定|
-|openBVE InputDevice|〇||
-
-なお, 車両状態共有エリアの操作については, 車両状態変化を通知するイベントも付属します.
-
-
 ## BIDSSMemLib.bve5 Project
 BVE5向けのプラグインとしてのライブラリプロジェクトです。  
 生成物にはDllExportのライセンス(MIT License)も発生します。ご注意ください。  
@@ -102,6 +85,7 @@ BIDSで使用する構造体を定義しています.  機能は実装されて�
 なお, こちらの表では, "BIDSSMemLib"という文字列を"BSML"と省略して記載させていただいております.
 |プロジェクト名|代替|削除commit|
 |-|-|-|
+|BIDSSMemLib|各プロジェクト|[commit 0fd148f57e714a940ed0d073815b16ddee3b1e33](/TetsuOtter/BIDSSMemLib/commit/0fd148f57e714a940ed0d073815b16ddee3b1e33)|
 |BSML.bve5id|BSML.bve5|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
 |BSML.ctrler|BSML.rw|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
 |BSML.CtrlIOcs|BSML.rw|[commit 85f21eabbead68b41203d94bf6ccee6a667197c2](/TetsuOtter/BIDSSMemLib/commit/85f21eabbead68b41203d94bf6ccee6a667197c2)|
