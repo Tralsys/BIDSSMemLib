@@ -120,7 +120,6 @@ namespace TR.BIDSSMemLib
 			}
 			catch (Exception e)
 			{
-        //MessageBox.Show("Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message, "BIDSSMemLib AtsPI IF");
         Debug.WriteLine("[BIDSSMemLib AtsPI IF] Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message);
 			}
 		}
