@@ -38,12 +38,6 @@ namespace TR.BIDSSMemLib
 				case (int)ARNum.SoundD://Sound D
 					SMC_SndD?.AR_Start(Interval);
 					break;
-
-#if !(NET20 || NET35)
-				case (int)ARNum.FixedLOptD:
-					SMC_FixedLOptD?.AR_Start(Interval);
-					break;
-#endif
 			}
 			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStart(i, Interval);
 		}
@@ -74,12 +68,6 @@ namespace TR.BIDSSMemLib
 				case (int)ARNum.SoundD://Sound D
 					SMC_SndD?.AR_Stop();
 					break;
-
-#if !(NET20 || NET35)
-				case (int)ARNum.FixedLOptD:
-					SMC_FixedLOptD?.AR_Stop();
-					break;
-#endif
 			}
 			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStop(i);
 		}

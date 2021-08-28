@@ -13,16 +13,12 @@ namespace TR.BIDSSMemLib
 		public const string MMFO_Name = "BIDSSharedMemoryO";
 		public const string MMFPn_Name = "BIDSSharedMemoryPn";
 		public const string MMFSn_Name = "BIDSSharedMemorySn";
-		public const string MMF_FixedLOptD_Name = "BSM_FixedLOptD";
 
 		private static SMemCtrler<BIDSSharedMemoryData> SMC_BSMD = null;
 		private static SMemCtrler<OpenD> SMC_OpenD = null;
 		private static SMemCtrler<int> SMC_PnlD = null;
 		private static SMemCtrler<int> SMC_SndD = null;
 		//private ArrDSMemCtrler<StaD> SMC_StaD = null;
-#if !(NET20 || NET35)
-		private static SMemCtrler<FixedLenOptData> SMC_FixedLOptD = null;
-#endif
 
 		/// <summary>SharedMemoryを初期化する。</summary>
 		/// <param name="isNoSMemMode">MmmoryMappedFileを使用したデータ共有を行うかどうか</param>
@@ -41,9 +37,6 @@ namespace TR.BIDSSMemLib
 			SMC_OpenD = new SMemCtrler<OpenD>(MMFO_Name, false, isNoSMemMode, isNoEventMode);
 			SMC_PnlD = new SMemCtrler<int>(MMFPn_Name, true, isNoSMemMode, isNoEventMode);
 			SMC_SndD = new SMemCtrler<int>(MMFSn_Name, true, isNoSMemMode, isNoEventMode);
-#if !(NET20 || NET35)
-			SMC_FixedLOptD = new SMemCtrler<FixedLenOptData>(MMF_FixedLOptD_Name, true, isNoSMemMode, isNoEventMode);
-#endif
 
 			if (!isNoOptionalEventMode)
 				SMC_BSMD.ValueChanged += Events.OnBSMDChanged;

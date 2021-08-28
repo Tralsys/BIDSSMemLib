@@ -127,12 +127,4 @@ namespace TR.BIDSSMemLib
 		public int Length => Sounds?.Length ?? 0;
 		public int[] Sounds;
 	}
-
-	/// <summary>固定長追加データ</summary>
-	[StructLayout(LayoutKind.Sequential)]
-	public struct FixedLenOptData
-	{
-		public uint ID;
-		public uint Data;
-	}
 }

@@ -195,7 +195,5 @@ namespace TR.BIDSSMemLib
 			add => SMC_SndD.ArrValueChanged += value;
 			remove => SMC_SndD.ArrValueChanged -= value;
 		}
-
-		public static event EventHandler<ValueChangedEventArgs<FixedLenOptData>> FixedLOptDChanged;
 	}
 }
