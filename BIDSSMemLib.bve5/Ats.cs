@@ -157,7 +157,7 @@ namespace TR.BIDSSMemLib
 
 		private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
 		{
-      Debug.WriteLine($"Got : {e.ActionType}, {e.RawString}");
+      
 		}
 
 
