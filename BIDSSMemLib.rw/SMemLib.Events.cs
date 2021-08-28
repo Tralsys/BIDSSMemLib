@@ -196,15 +196,6 @@ namespace TR.BIDSSMemLib
 			remove => SMC_SndD.ArrValueChanged -= value;
 		}
 
-		public static event EventHandler<ValueChangedEventArgs<FixedLenOptData[]>> SMC_FLCrumbDChanged
-		{
-#if !(NET20 || NET35) //net20やnet35では, SMemIFが未対応であることに伴い, 実装を行わない.
-			add => SMC_FixedLOptD.ArrValueChanged += value;
-			remove => SMC_FixedLOptD.ArrValueChanged -= value;
-#else
-			add => throw new NotImplementedException();
-			remove => throw new NotImplementedException();
-#endif
-		}
+		public static event EventHandler<ValueChangedEventArgs<FixedLenOptData>> FixedLOptDChanged;
 	}
 }
