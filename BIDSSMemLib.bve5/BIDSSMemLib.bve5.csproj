@@ -4,7 +4,7 @@
     <AssemblyName>TR.BIDSSMemLib.bve5</AssemblyName>
     <!--this property will be overwritten later-->
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
-    <Version>1.0.2</Version>
+    <Version>1.0.2.1</Version>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Authors>Tetsu Otter</Authors>
     <Company>Tech Otter</Company>
@@ -28,7 +28,7 @@
 		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
   <PropertyGroup Condition="'$(Platform)' == 'x64'">
-    <TargetFramework>net461</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
     <AssemblyName>TR.BIDSSMemLib.bve5.x64</AssemblyName>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -65,7 +65,7 @@
   <ItemGroup>
     <Reference Include="Mackoy.IInputDevice, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\mackoy\BveTs5\Mackoy.IInputDevice.DLL</HintPath>
+      <HintPath>C:\Program Files\mackoy\BveTs6\Mackoy.IInputDevice.DLL</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" Condition="'$(TargetFramework)' != 'net35'">
       <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Windows.Forms.dll</HintPath>
