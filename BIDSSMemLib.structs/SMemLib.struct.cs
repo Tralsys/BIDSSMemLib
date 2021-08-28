@@ -132,7 +132,7 @@ namespace TR.BIDSSMemLib
 	[StructLayout(LayoutKind.Sequential)]
 	public struct FixedLenOptData
 	{
-		public ushort ID;
-		public ushort Data;
+		public uint ID;
+		public uint Data;
 	}
 }
