@@ -13,7 +13,7 @@ namespace TR.BIDSSMemLib
 		public const string MMFO_Name = "BIDSSharedMemoryO";
 		public const string MMFPn_Name = "BIDSSharedMemoryPn";
 		public const string MMFSn_Name = "BIDSSharedMemorySn";
-		public const string MMF_FixedLOptD_Name = "BSM_FixedLCrumbD";
+		public const string MMF_FixedLOptD_Name = "BSM_FixedLOptD";
 
 		private static SMemCtrler<BIDSSharedMemoryData> SMC_BSMD = null;
 		private static SMemCtrler<OpenD> SMC_OpenD = null;
