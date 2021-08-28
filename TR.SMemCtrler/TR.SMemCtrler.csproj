@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net20;net35;net461;net50</TargetFrameworks>
 		<LangVersion>preview</LangVersion>
+		<Nullable>enable</Nullable>
 		<AssemblyName>TR.SMemCtrler</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
 		<Version>1.0.0.1</Version>
