@@ -5,6 +5,8 @@ namespace TR.BIDSSMemLib
 	public static partial class SMemLib
 	{
 		public static bool NO_SMEM_MODE { get; private set; } = false;
+		public static bool NO_EVENT_MODE { get; private set; } = false;
+		public static bool NO_OPT_EV_MODE { get; private set; } = false;
 		static public bool IsEnabled { get; private set; }
 
 		/// <summary>BIDSSharedMemoryのデータ</summary>

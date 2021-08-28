@@ -34,7 +34,8 @@ namespace TR.BIDSSMemLib
 			if (IsEnabled) return;
 			Console.WriteLine("BIDS SMemLib Begin(isNoSMemMode:{0}, isNoEventMode:{1})", isNoSMemMode, isNoEventMode);
 			NO_SMEM_MODE = isNoSMemMode;
-
+			NO_EVENT_MODE = isNoEventMode;
+			NO_OPT_EV_MODE = isNoOptionalEventMode;
 
 			SMC_BSMD = new SMemCtrler<BIDSSharedMemoryData>(MMFB_Name, false, isNoSMemMode, isNoEventMode);
 			SMC_OpenD = new SMemCtrler<OpenD>(MMFO_Name, false, isNoSMemMode, isNoEventMode);
