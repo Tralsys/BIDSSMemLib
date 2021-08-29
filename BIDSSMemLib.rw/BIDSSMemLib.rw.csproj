@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net20;net35;net461;net5.0</TargetFrameworks>
-		<LangVersion>8.0</LangVersion>
+		<LangVersion>9.0</LangVersion>
     <AssemblyName>TR.BIDSSMemLib.rw</AssemblyName>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
 		<Version>2.0.0.1</Version>
