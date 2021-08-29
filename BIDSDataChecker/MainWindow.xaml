@@ -1,262 +1,295 @@
 ﻿<Window x:Class="BIDSDataChecker.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        Loaded="Window_Loaded"
-        Closing="Window_Closing"
-        KeyDown="Window_KeyEv"
-        Title="BIDS Readed Data Checker v202" Height="500" Width="900">
-  <Grid>
-    <Grid ShowGridLines="True">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="2*"/>
-        <!--BSMD-->
-        <RowDefinition Height="1*"/>
-        <!--OpenD-->
-        <RowDefinition Height="7*"/>
-        <!--Panel-->
-        <RowDefinition Height="7*"/>
-        <!--Sound-->
-        <RowDefinition Height="3*"/>
-        <!--Ctrl-->
-      </Grid.RowDefinitions>
-      <Grid Grid.Row="0" ShowGridLines="True">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0">
-        <Run Text="IsEnabled:"/>
-        <Run x:Name="BSMDIsEnabled"/>
-        </TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="0">
-        <Run Text="Version:"/>
-        <Run x:Name="BSMDVersionNum"/>
-        </TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="0">
-        <Run Text="Spec.B:"/>
-        <Run x:Name="BSMDSpecB"/>
-        </TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row="0">
-        <Run Text="Spec.P:"/>
-        <Run x:Name="BSMDSpecP"/>
-        </TextBlock>
-        <TextBlock Grid.Column="4" Grid.Row="0">
-        <Run Text="Spec.A:"/>
-        <Run x:Name="BSMDSpecA"/>
-        </TextBlock>
-        <TextBlock Grid.Column="5" Grid.Row="0">
-        <Run Text="Spec.J:"/>
-        <Run x:Name="BSMDSpecJ"/>
-        </TextBlock>
-        <TextBlock Grid.Column="6" Grid.Row="0">
-        <Run Text="Spec.C:"/>
-        <Run x:Name="BSMDSpecC"/>
-        </TextBlock>
+				xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+				xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+				xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+				mc:Ignorable="d"
+				Loaded="Window_Loaded"
+				Closing="Window_Closing"
+				KeyDown="Window_KeyEv"
+				Title="BIDS Readed Data Checker v202" Height="500" Width="900">
+	<Grid>
+		<Grid ShowGridLines="True">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="2*"/>
+				<!--BSMD-->
+				<RowDefinition Height="1*"/>
+				<!--OpenD-->
+				<RowDefinition Height="7*"/>
+				<!--Panel-->
+				<RowDefinition Height="7*"/>
+				<!--Sound-->
+				<RowDefinition Height="3*"/>
+				<!--Ctrl-->
+			</Grid.RowDefinitions>
+			<Grid Grid.Row="0" ShowGridLines="True">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Grid.Row="0">
+				<Run Text="IsEnabled:"/>
+				<Run x:Name="BSMDIsEnabled"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="0">
+				<Run Text="Version:"/>
+				<Run x:Name="BSMDVersionNum"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="0">
+				<Run Text="Spec.B:"/>
+				<Run x:Name="BSMDSpecB"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="0">
+				<Run Text="Spec.P:"/>
+				<Run x:Name="BSMDSpecP"/>
+				</TextBlock>
+				<TextBlock Grid.Column="4" Grid.Row="0">
+				<Run Text="Spec.A:"/>
+				<Run x:Name="BSMDSpecA"/>
+				</TextBlock>
+				<TextBlock Grid.Column="5" Grid.Row="0">
+				<Run Text="Spec.J:"/>
+				<Run x:Name="BSMDSpecJ"/>
+				</TextBlock>
+				<TextBlock Grid.Column="6" Grid.Row="0">
+				<Run Text="Spec.C:"/>
+				<Run x:Name="BSMDSpecC"/>
+				</TextBlock>
 
-        <TextBlock Grid.Column="0" Grid.Row="1">
-        <Run Text="Z:"/>
-        <Run x:Name="BSMDStateZ"/>
-        </TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="1">
-        <Run Text="V:"/>
-        <Run x:Name="BSMDStateV"/>
-        </TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="1">
-        <Run Text="Time:"/>
-        <Run x:Name="BSMDStateHH"/>
-        <Run Text=":"/>
-        <Run x:Name="BSMDStateMM"/>
-        <Run Text=":"/>
-        <Run x:Name="BSMDStateSS"/>
-        <Run Text="."/>
-        <Run x:Name="BSMDStateMS"/>
-        </TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row="1">
-        <Run Text="BC:"/>
-        <Run x:Name="BSMDStateBC"/>
-        </TextBlock>
-        <TextBlock Grid.Column="4" Grid.Row="1">
-        <Run Text="MR:"/>
-        <Run x:Name="BSMDStateMR"/>
-        </TextBlock>
-        <TextBlock Grid.Column="5" Grid.Row="1">
-        <Run Text="ER:"/>
-        <Run x:Name="BSMDStateER"/>
-        </TextBlock>
-        <TextBlock Grid.Column="6" Grid.Row="1">
-        <Run Text="BP:"/>
-        <Run x:Name="BSMDStateBP"/>
-        </TextBlock>
-        <TextBlock Grid.Column="0" Grid.Row="2">
-        <Run Text="SAP:"/>
-        <Run x:Name="BSMDStateSAP"/>
-        </TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="2">
-        <Run Text="I:"/>
-        <Run x:Name="BSMDStateI"/>
-        </TextBlock>
+				<TextBlock Grid.Column="0" Grid.Row="1">
+				<Run Text="Z:"/>
+				<Run x:Name="BSMDStateZ"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="1">
+				<Run Text="V:"/>
+				<Run x:Name="BSMDStateV"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="1">
+				<Run Text="Time:"/>
+				<Run x:Name="BSMDStateHH"/>
+				<Run Text=":"/>
+				<Run x:Name="BSMDStateMM"/>
+				<Run Text=":"/>
+				<Run x:Name="BSMDStateSS"/>
+				<Run Text="."/>
+				<Run x:Name="BSMDStateMS"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="1">
+				<Run Text="BC:"/>
+				<Run x:Name="BSMDStateBC"/>
+				</TextBlock>
+				<TextBlock Grid.Column="4" Grid.Row="1">
+				<Run Text="MR:"/>
+				<Run x:Name="BSMDStateMR"/>
+				</TextBlock>
+				<TextBlock Grid.Column="5" Grid.Row="1">
+				<Run Text="ER:"/>
+				<Run x:Name="BSMDStateER"/>
+				</TextBlock>
+				<TextBlock Grid.Column="6" Grid.Row="1">
+				<Run Text="BP:"/>
+				<Run x:Name="BSMDStateBP"/>
+				</TextBlock>
+				<TextBlock Grid.Column="0" Grid.Row="2">
+				<Run Text="SAP:"/>
+				<Run x:Name="BSMDStateSAP"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="2">
+				<Run Text="I:"/>
+				<Run x:Name="BSMDStateI"/>
+				</TextBlock>
 
-        <TextBlock Grid.Column="3" Grid.Row="2">
-        <Run Text="Hand.B:"/>
-        <Run x:Name="BSMDHandB"/>
-        </TextBlock>
-        <TextBlock Grid.Column="4" Grid.Row="2">
-        <Run Text="Hand.P:"/>
-        <Run x:Name="BSMDHandP"/>
-        </TextBlock>
-        <TextBlock Grid.Column="5" Grid.Row="2">
-        <Run Text="Hand.R:"/>
-        <Run x:Name="BSMDHandR"/>
-        </TextBlock>
-        <TextBlock Grid.Column="6" Grid.Row="2">
-        <Run Text="Hand.C:"/>
-        <Run x:Name="BSMDHandC"/>
-        </TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="2">
+				<Run Text="Hand.B:"/>
+				<Run x:Name="BSMDHandB"/>
+				</TextBlock>
+				<TextBlock Grid.Column="4" Grid.Row="2">
+				<Run Text="Hand.P:"/>
+				<Run x:Name="BSMDHandP"/>
+				</TextBlock>
+				<TextBlock Grid.Column="5" Grid.Row="2">
+				<Run Text="Hand.R:"/>
+				<Run x:Name="BSMDHandR"/>
+				</TextBlock>
+				<TextBlock Grid.Column="6" Grid.Row="2">
+				<Run Text="Hand.C:"/>
+				<Run x:Name="BSMDHandC"/>
+				</TextBlock>
 
-      </Grid>
-      <Grid Background="#11000000" Grid.Row="1" ShowGridLines="True">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0">
-        <Run Text="IsEnabled:"/>
-        <Run x:Name="OpenDIsEnabled"/>
-        </TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="0">
-        <Run Text="Ver:"/>
-        <Run x:Name="OpenDVer"/>
-        </TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="0">
-        <Run Text="Radius:"/>
-        <Run x:Name="OpenDRadius"/>
-        </TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row="0">
-        <Run Text="Cant:"/>
-        <Run x:Name="OpenDCant"/>
-        </TextBlock>
-        <TextBlock Grid.Column="4" Grid.Row="0">
-        <Run Text="Pitch:"/>
-        <Run x:Name="OpenDPitch"/>
-        </TextBlock>
-        <TextBlock Grid.Column="5" Grid.Row="0">
-        <Run Text="ElapTime:"/>
-        <Run x:Name="OpenDElapTime"/>
-        </TextBlock>
-        <TextBlock Grid.Column="0" Grid.Row="1">
-        <Run Text="SelfBCount:"/>
-        <Run x:Name="OpenDSelfBCount"/>
-        </TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="1">
-        <Run Text="SelfBPos:"/>
-        <Run x:Name="OpenDSelfBPos"/>
-        </TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="1">
-        <Run Text="Pre.IsEnabled:"/>
-        <Run x:Name="OpenDPreIsEnabled"/>
-        </TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row="1">
-        <Run Text="Pre.Loc:"/>
-        <Run x:Name="OpenDPreLocation"/>
-        </TextBlock>
-        <TextBlock Grid.Column="4" Grid.Row="1">
-        <Run Text="Pre.Dist:"/>
-        <Run x:Name="OpenDPreDistance"/>
-        </TextBlock>
-        <TextBlock Grid.Column="5" Grid.Row="1">
-        <Run Text="Pre.Speed:"/>
-        <Run x:Name="OpenDPreSpeed"/>
-        </TextBlock>
-      </Grid>
-      <Grid x:Name="PanelGrid" Grid.Row="2" ShowGridLines="True"/>
-      <Grid x:Name="SoundGrid" Grid.Row="3" Background="#11000000" ShowGridLines="True"/>
-      <Grid Background="#1100FF00" Grid.Row="4" ShowGridLines="True">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Column="0" Grid.Row="0">
-        <Run Text="R:"/>
-        <Run x:Name="CtrlR"/>
-        </TextBlock>
-        <TextBlock Grid.Column="1" Grid.Row="0">
-        <Run Text="P:"/>
-        <Run x:Name="CtrlP"/>
-        </TextBlock>
-        <TextBlock Grid.Column="2" Grid.Row="0">
-        <Run Text="B:"/>
-        <Run x:Name="CtrlB"/>
-        </TextBlock>
-        <TextBlock Grid.Column="3" Grid.Row="0">
-        <Run Text="C:"/>
-        <Run x:Name="CtrlC"/>
-        </TextBlock>
-        
-        <TextBlock Grid.Column="4" Grid.Row="0">
-        <Run Text="Hn1:"/>
-        <Run x:Name="CtrlKeyH1"/>
-        </TextBlock>
-        <TextBlock Grid.Column="5" Grid.Row="0">
-        <Run Text="Hn2:"/>
-        <Run x:Name="CtrlKeyH2"/>
-        </TextBlock>
-        <TextBlock Grid.Column="6" Grid.Row="0">
-        <Run Text="MH:"/>
-        <Run x:Name="CtrlKeyMH"/>
-        </TextBlock>
-        <TextBlock Grid.Column="7" Grid.Row="0">
-        <Run Text="Cnst:"/>
-        <Run x:Name="CtrlCnst"/>
-        </TextBlock>
-        
-        
-      </Grid>
-    </Grid>
-    <Label x:Name="FontSizeShowingLB"
-           Padding="0"
-           Content="100"
-           Height="100pt"
-           Width="100pt"
-           Opacity="0"
-           Visibility="Collapsed"
-           HorizontalAlignment="Center"
-           VerticalAlignment="Center"
-           HorizontalContentAlignment="Center"
-           VerticalContentAlignment="Center"
-           FontSize="50pt"
-           Background="#55000000"
-           Foreground="Black"/>
-  </Grid>
+			</Grid>
+			<Grid Background="#11000000" Grid.Row="1" ShowGridLines="True">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Grid.Row="0">
+				<Run Text="IsEnabled:"/>
+				<Run x:Name="OpenDIsEnabled"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="0">
+				<Run Text="Ver:"/>
+				<Run x:Name="OpenDVer"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="0">
+				<Run Text="Radius:"/>
+				<Run x:Name="OpenDRadius"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="0">
+				<Run Text="Cant:"/>
+				<Run x:Name="OpenDCant"/>
+				</TextBlock>
+				<TextBlock Grid.Column="4" Grid.Row="0">
+				<Run Text="Pitch:"/>
+				<Run x:Name="OpenDPitch"/>
+				</TextBlock>
+				<TextBlock Grid.Column="5" Grid.Row="0">
+				<Run Text="ElapTime:"/>
+				<Run x:Name="OpenDElapTime"/>
+				</TextBlock>
+				<TextBlock Grid.Column="0" Grid.Row="1">
+				<Run Text="SelfBCount:"/>
+				<Run x:Name="OpenDSelfBCount"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="1">
+				<Run Text="SelfBPos:"/>
+				<Run x:Name="OpenDSelfBPos"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="1">
+				<Run Text="Pre.IsEnabled:"/>
+				<Run x:Name="OpenDPreIsEnabled"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="1">
+				<Run Text="Pre.Loc:"/>
+				<Run x:Name="OpenDPreLocation"/>
+				</TextBlock>
+				<TextBlock Grid.Column="4" Grid.Row="1">
+				<Run Text="Pre.Dist:"/>
+				<Run x:Name="OpenDPreDistance"/>
+				</TextBlock>
+				<TextBlock Grid.Column="5" Grid.Row="1">
+				<Run Text="Pre.Speed:"/>
+				<Run x:Name="OpenDPreSpeed"/>
+				</TextBlock>
+			</Grid>
+			<Grid x:Name="PanelGrid" Grid.Row="2" ShowGridLines="True"/>
+			<Grid x:Name="SoundGrid" Grid.Row="3" Background="#11000000" ShowGridLines="True"/>
+			<Grid Background="#1100FF00" Grid.Row="4" ShowGridLines="True">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Grid.Row="0">
+					<Run Text="R:"/>
+					<Run x:Name="CtrlR"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="0">
+					<Run Text="P:"/>
+					<Run x:Name="CtrlP"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="0">
+					<Run Text="B:"/>
+					<Run x:Name="CtrlB"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="0">
+					<Run Text="C:"/>
+					<Run x:Name="CtrlC"/>
+				</TextBlock>
+
+				<TextBlock Grid.Column="4" Grid.Row="0">
+					<Run Text="Hn1:"/>
+					<Run x:Name="CtrlKeyH1"/>
+				</TextBlock>
+				<TextBlock Grid.Column="5" Grid.Row="0">
+					<Run Text="Hn2:"/>
+					<Run x:Name="CtrlKeyH2"/>
+				</TextBlock>
+				<TextBlock Grid.Column="6" Grid.Row="0">
+					<Run Text="MH:"/>
+					<Run x:Name="CtrlKeyMH"/>
+				</TextBlock>
+				<TextBlock Grid.Column="7" Grid.Row="0">
+					<Run Text="Cnst:"/>
+					<Run x:Name="CtrlCnst"/>
+				</TextBlock>
+
+
+				<TextBlock Grid.Column="0" Grid.Row="1">
+					<Run Text="Conductor[0]:"/>
+					<Run x:Name="Conductor_0"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="1">
+					<Run Text="Conductor[1]:"/>
+					<Run x:Name="Conductor_1"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="1">
+					<Run Text="Conductor[2]:"/>
+					<Run x:Name="Conductor_2"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="1">
+					<Run Text="Conductor[3]:"/>
+					<Run x:Name="Conductor_3"/>
+				</TextBlock>
+				<TextBlock Grid.Column="0" Grid.Row="2">
+					<Run Text="Time[0]:"/>
+					<Run x:Name="Conductor_Time0"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="2">
+					<Run Text="Time[1]:"/>
+					<Run x:Name="Conductor_Time1"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="2">
+					<Run Text="Time[2]:"/>
+					<Run x:Name="Conductor_Time2"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="2">
+					<Run Text="Time[3]:"/>
+					<Run x:Name="Conductor_Time3"/>
+				</TextBlock>
+
+			</Grid>
+		</Grid>
+		<Label x:Name="FontSizeShowingLB"
+					 Padding="0"
+					 Content="100"
+					 Height="100pt"
+					 Width="100pt"
+					 Opacity="0"
+					 Visibility="Collapsed"
+					 HorizontalAlignment="Center"
+					 VerticalAlignment="Center"
+					 HorizontalContentAlignment="Center"
+					 VerticalContentAlignment="Center"
+					 FontSize="50pt"
+					 Background="#55000000"
+					 Foreground="Black"/>
+	</Grid>
 </Window>

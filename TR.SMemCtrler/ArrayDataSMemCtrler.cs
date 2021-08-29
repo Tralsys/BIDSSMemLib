@@ -27,15 +27,19 @@ namespace TR
 
 		void UpdateValueFromSMem() => _ = Read();
 
-		public void Add(T item) => Add(in item);
-		public void Add(in T item)
+		public void Add(T item)
 		{
 			if (TryGetLengthInSMem(out var len) == true && len != Value.Count) //長さが違うなら明確にSMemの内容と手元の内容が違う
 				UpdateValueFromSMem(); //SMemから手元にコピー
 
 			Value.Add(item);
 
-			Write(Value.Count - 1, item); //SMemに新規要素を追加する
+			if (!No_SMem_Mode)
+			{
+				int newLen = Value.Count;
+				_ = (MMF?.Write(0, ref newLen)); //長さ情報の更新
+				_ = (MMF?.Write(sizeof(int) + (Elem_Size * (Value.Count - 1)), ref item)); //配列にデータを追加
+			}
 		}
 
 		public void Clear()
@@ -89,7 +93,11 @@ namespace TR
 			Value.Insert(index, item);
 
 			if (!No_SMem_Mode)
+			{
+				int newLen = Value.Count;
+				_ = (MMF?.Write(0, ref newLen)); //長さ情報の更新
 				_ = (MMF?.WriteArray(sizeof(int) + (Elem_Size * index), Value.ToArray(), index, Value.Count - index)); //SMemの内容も更新する
+			}
 		}
 
 		public bool Remove(T item) => Remove(in item);
@@ -200,7 +208,7 @@ namespace TR
 		{
 			UpdateValueFromSMem();
 
-			if (Value.Count < index)
+			if (Value.Count <= index)
 			{
 				int last_count = Value.Count;
 				var arr = new T[last_count - index];

@@ -154,9 +154,20 @@ namespace TR.BIDSSMemLib
 			BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;
     }
 
+    struct ConductorActionLogStruct
+		{
+      public ConductorActionLogStruct(int time, int action) => (Time, Action) = (time, action);
+      public int Time;
+      public int Action;
+		}
+    static readonly int ConductorActionLog_MaxCount = 16;
+    static ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog { get; } = new(CustomDataNames.ConductorActionLog, false, true);
 		private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
 		{
-      
+      ConductorActionLog.Add(new(BSMD.StateData.T, (int)e.ActionType));
+
+      while (ConductorActionLog.Count > ConductorActionLog_MaxCount)
+        ConductorActionLog.RemoveAt(0);
 		}
 
 
@@ -169,6 +180,7 @@ namespace TR.BIDSSMemLib
       StaticSMemLib.Write(in BSMD);
       StaticSMemLib.WritePanel(in BlankArr);
       StaticSMemLib.WriteSound(in BlankArr);
+      ConductorActionLog.Dispose();
       if(BVE_CC is not null)
 			{
         BVE_CC.ConductorActioned -= BVE_CC_ConductorActioned;
