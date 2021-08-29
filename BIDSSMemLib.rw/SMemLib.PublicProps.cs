@@ -12,14 +12,14 @@ namespace TR.BIDSSMemLib
 		/// <summary>BIDSSharedMemoryのデータ</summary>
 		public static BIDSSharedMemoryData BIDSSMemData
 		{
-			get => SMC_BSMD?.Data ?? default;
+			get => SMC_BSMD?.Value ?? default;
 			private set => SMC_BSMD?.Write(value);
 		}
 
 		/// <summary>OpenBVEでのみ得られるデータ(open専用)</summary>
 		public static OpenD OpenData
 		{
-			get => SMC_OpenD?.Data ?? default;
+			get => SMC_OpenD?.Value ?? default;
 			private set => SMC_OpenD?.Write(value);
 		}
 
@@ -27,27 +27,27 @@ namespace TR.BIDSSMemLib
 		[Obsolete("PanelA(int型配列)を使用してください.")]
 		public static PanelD Panels
 		{
-			get => new PanelD() { Panels = SMC_PnlD?.ArrData ?? new int[0] };
+			get => new PanelD() { Panels = SMC_PnlD?.ToArray() ?? new int[0] };
 
-			private set => SMC_PnlD.WriteArr(value.Panels);
+			private set => SMC_PnlD.Write(value.Panels);
 		}
 		public static int[] PanelA
 		{
-			get => SMC_PnlD?.ArrData;
-			private set => SMC_PnlD.WriteArr(value);
+			get => SMC_PnlD?.ToArray();
+			private set => SMC_PnlD.Write(value);
 		}
 
 		/// <summary>Sound配列情報</summary>
 		[Obsolete("SoundA(int型配列)を使用してください.")]
 		public static SoundD Sounds
 		{
-			get => new SoundD() { Sounds = SMC_SndD?.ArrData ?? new int[0] };
-			private set => SMC_SndD.WriteArr(value.Sounds);
+			get => new SoundD() { Sounds = SMC_SndD?.ToArray() ?? new int[0] };
+			private set => SMC_SndD.Write(value.Sounds);
 		}
 		public static int[] SoundA
 		{
-			get => SMC_SndD?.ArrData;
-			private set => SMC_SndD.WriteArr(value);
+			get => SMC_SndD?.ToArray();
+			private set => SMC_SndD.Write(value);
 		}
 	}
 }

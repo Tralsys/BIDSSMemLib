@@ -27,16 +27,16 @@ namespace TR.BIDSSMemLib
 			switch (ModeNum)
 			{
 				case (int)ARNum.OpenD://OpenD
-					SMC_OpenD?.AR_Start(Interval);
+					SMC_OpenD?.AutoRead.AR_Start(Interval);
 					break;
 				case (int)ARNum.BSMD://BSMD
-					SMC_BSMD?.AR_Start(Interval);
+					SMC_BSMD?.AutoRead.AR_Start(Interval);
 					break;
 				case (int)ARNum.PanelD://PanelD
-					SMC_PnlD?.AR_Start(Interval);
+					SMC_PnlD?.AutoRead.AR_Start(Interval);
 					break;
 				case (int)ARNum.SoundD://Sound D
-					SMC_SndD?.AR_Start(Interval);
+					SMC_SndD?.AutoRead.AR_Start(Interval);
 					break;
 			}
 			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStart(i, Interval);
@@ -57,16 +57,16 @@ namespace TR.BIDSSMemLib
 			switch (ModeNum)
 			{
 				case (int)ARNum.OpenD://OpenD
-					SMC_OpenD?.AR_Stop();
+					SMC_OpenD?.AutoRead.AR_Stop();
 					break;
 				case (int)ARNum.BSMD://BSMD
-					SMC_BSMD?.AR_Stop();
+					SMC_BSMD?.AutoRead.AR_Stop();
 					break;
 				case (int)ARNum.PanelD://PanelD
-					SMC_PnlD?.AR_Stop();
+					SMC_PnlD?.AutoRead.AR_Stop();
 					break;
 				case (int)ARNum.SoundD://Sound D
-					SMC_SndD?.AR_Stop();
+					SMC_SndD?.AutoRead.AR_Stop();
 					break;
 			}
 			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStop(i);
