@@ -6,6 +6,8 @@ namespace TR
 {
 	public class ArrayDataSMemCtrler<T> : SMemCtrlerBase<List<T>>, IList<T>, IArrayDataSMemCtrler<T> where T : struct
 	{
+		public event EventHandler<ValueChangedEventArgs<T[]>> ArrValueChanged;
+
 		/// <summary></summary>
 		protected new List<T> Value
 		{
@@ -24,7 +26,7 @@ namespace TR
 
 		public ArrayDataSMemCtrler(in string name, in bool no_smem, in bool no_event) : base(name, no_smem, no_event)
 		{
-			
+			ValueChanged += (_, e) => ArrValueChanged?.Invoke(this, new(e.OldValue.ToArray(), e.NewValue.ToArray()));
 		}
 
 		void UpdateValueFromSMem() => _ = Read();

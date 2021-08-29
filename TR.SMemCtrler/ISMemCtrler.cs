@@ -33,6 +33,8 @@ namespace TR
 
 	public interface IArrayDataSMemCtrler<T> : IList<T>, ISMemCtrler<List<T>>
 	{
+		event EventHandler<ValueChangedEventArgs<T[]>> ArrValueChanged;
+
 		T Read(in int index);
 		bool TryRead(in int index, out T value);
 
