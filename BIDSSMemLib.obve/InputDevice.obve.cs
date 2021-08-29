@@ -32,7 +32,7 @@ namespace TR.BIDSSMemLib
 
     public void Config(IWin32Window owner)
     {
-      MessageBox.Show(owner, "BIDS Shared Memory Library\nOpenBVE Input Device Plugin File\nVersion : " + SMemLib.VersionNum, Assembly.GetExecutingAssembly().GetName().Name);
+      MessageBox.Show(owner, "BIDS Shared Memory Library\nOpenBVE Input Device Plugin File\nVersion : " + StaticSMemLib.VersionNum, Assembly.GetExecutingAssembly().GetName().Name);
     }
 
     public bool Load(FileSystem fileSystem)
@@ -56,7 +56,7 @@ namespace TR.BIDSSMemLib
 
       try
       {
-        SMemLib.Begin(false, true);
+        StaticSMemLib.Begin(false, true);
         return true;
       }
       catch (Exception e)
@@ -147,7 +147,7 @@ namespace TR.BIDSSMemLib
         },
         IsDoorClosed = data.DoorInterlockState == DoorInterlockStates.Locked,
         IsEnabled = true,
-        VersionNum = int.Parse(SMemLib.VersionNum),
+        VersionNum = int.Parse(StaticSMemLib.VersionNum),
         SpecData = new Spec() { B = hd.B, P = hd.P }
       };
       OpenD OD = new OpenD()
@@ -170,8 +170,8 @@ namespace TR.BIDSSMemLib
         };
       }
       else OD.PreTrain = new OpenD.PreTrainD() { IsEnabled = false };
-      SMemLib.Write(in BSMD);
-      SMemLib.Write(in OD);
+      StaticSMemLib.Write(in BSMD);
+      StaticSMemLib.Write(in OD);
     }
 
     Hand hd = new Hand();
@@ -185,9 +185,9 @@ namespace TR.BIDSSMemLib
     {
       BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
       OpenD OD = new OpenD();
-      SMemLib.Write(in BSMD);
-      SMemLib.Write(in OD);
-      //SMemLib.Dispose();//static化に伴い不要になる
+      StaticSMemLib.Write(in BSMD);
+      StaticSMemLib.Write(in OD);
+      //StaticSMemLib.Dispose();//static化に伴い不要になる
     }
   }
 }

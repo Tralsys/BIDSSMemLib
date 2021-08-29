@@ -144,11 +144,11 @@ namespace TR.BIDSSMemLib
 #if DEBUG
       MessageBox.Show("BIDSSMemLib Debug Build");
 #endif
-      SMemLib.Begin(false, true);
+      StaticSMemLib.Begin(false, true);
       BSMD.IsEnabled = true;
-      BSMD.VersionNum = SMemLib.VersionNumInt;
-      SMemLib.Write(in BSMD);
-      if (!Equals(BSMD, SMemLib.ReadBSMD())) MessageBox.Show("BIDSSMemLib DataWriting Failed");
+      BSMD.VersionNum = StaticSMemLib.VersionNumInt;
+      StaticSMemLib.Write(in BSMD);
+      if (!Equals(BSMD, StaticSMemLib.ReadBSMD())) MessageBox.Show("BIDSSMemLib DataWriting Failed");
 
       BVE_CC ??= new BVEConductorChecker();
 			BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;
@@ -166,9 +166,9 @@ namespace TR.BIDSSMemLib
     {
       BSMD = new BIDSSharedMemoryData();
       var BlankArr = new int[MaxIndex];
-      SMemLib.Write(in BSMD);
-      SMemLib.WritePanel(in BlankArr);
-      SMemLib.WriteSound(in BlankArr);
+      StaticSMemLib.Write(in BSMD);
+      StaticSMemLib.WritePanel(in BlankArr);
+      StaticSMemLib.WriteSound(in BlankArr);
       if(BVE_CC is not null)
 			{
         BVE_CC.ConductorActioned -= BVE_CC_ConductorActioned;
@@ -203,11 +203,11 @@ namespace TR.BIDSSMemLib
       BSMD.StateData = st;
       BSMD.HandleData = Handle;
       BSMD.IsDoorClosed = DoorClosed;
-      SMemLib.Write(in BSMD);
+      StaticSMemLib.Write(in BSMD);
       Marshal.Copy(Pa, PArr, 0, MaxIndex);
       Marshal.Copy(Sa, SArr, 0, MaxIndex);
-      SMemLib.WritePanel(in PArr);
-      SMemLib.WriteSound(in SArr);
+      StaticSMemLib.WritePanel(in PArr);
+      StaticSMemLib.WriteSound(in SArr);
       return Handle;
     }
 

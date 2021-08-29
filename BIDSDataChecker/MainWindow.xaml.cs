@@ -55,7 +55,7 @@ namespace BIDSDataChecker
 
     private void PDT_Tick(object sender, EventArgs e)
     {
-      int[] PDNew = SMemLib.ReadPanel();
+      int[] PDNew = StaticSMemLib.ReadPanel();
       for (int i = 0; i < 256; i++)
       {
         MakeRun(ref PRun[i], PDOld.Length > i ? PDOld[i] : 0, PDNew.Length > i ? PDNew[i] : 0);
@@ -64,7 +64,7 @@ namespace BIDSDataChecker
     }
     private void SDT_Tick(object sender, EventArgs e)
     {
-      int[] SDNew = SMemLib.ReadSound();
+      int[] SDNew = StaticSMemLib.ReadSound();
       for (int i = 0; i < 256; i++)
       {
         MakeRun(ref SRun[i], SDOld.Length > i ? SDOld[i] : 0, SDNew.Length > i ? SDNew[i] : 0);
@@ -108,8 +108,8 @@ namespace BIDSDataChecker
     TimeSpan TSOld = new TimeSpan(0);
     private void DT_Tick(object sender, EventArgs e)
     {
-      BIDSSharedMemoryData BSMDNew = SMemLib.ReadBSMD();
-      OpenD ODNew = SMemLib.ReadOpenD();
+      BIDSSharedMemoryData BSMDNew = StaticSMemLib.ReadBSMD();
+      OpenD ODNew = StaticSMemLib.ReadOpenD();
       TimeSpan TSNew = TimeSpan.FromMilliseconds(BSMDNew.StateData.T);
 
       MakeRun(ref BSMDVersionNum, BSMDOld.VersionNum, BSMDNew.VersionNum);
@@ -160,7 +160,7 @@ namespace BIDSDataChecker
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-      SMemLib.Begin(false, true);
+      StaticSMemLib.Begin(false, true);
       DT?.Start();
       PDT?.Start();
       SDT?.Start();
