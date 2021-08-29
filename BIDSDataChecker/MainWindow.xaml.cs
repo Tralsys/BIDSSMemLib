@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
+using TR;
 using TR.BIDSSMemLib;
 namespace BIDSDataChecker
 {
@@ -107,11 +108,20 @@ namespace BIDSDataChecker
 		int[] PDOld = new int[0];
 		int[] SDOld = new int[0];
 		TimeSpan TSOld = new TimeSpan(0);
+		struct ConductorActionLogStruct
+		{
+			public ConductorActionLogStruct(int time, int action) => (Time, Action) = (time, action);
+			public int Time;
+			public int Action;
+		}
+		ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog = new ArrayDataSMemCtrler<ConductorActionLogStruct>(nameof(ConductorActionLog), false, true);
+		ConductorActionLogStruct[] ConductorActionLogArr = new ConductorActionLogStruct[4];
 		private void DT_Tick(object sender, EventArgs e)
 		{
 			BIDSSharedMemoryData BSMDNew = StaticSMemLib.ReadBSMD();
 			OpenD ODNew = StaticSMemLib.ReadOpenD();
 			TimeSpan TSNew = TimeSpan.FromMilliseconds(BSMDNew.StateData.T);
+			var ConductorAction_list = ConductorActionLog.Read();
 
 			MakeRun(ref BSMDVersionNum, BSMDOld.VersionNum, BSMDNew.VersionNum);
 
@@ -152,7 +162,21 @@ namespace BIDSDataChecker
 			MakeRun(ref OpenDPreDistance, ODOld.PreTrain.Distance, ODNew.PreTrain.Distance);
 			MakeRun(ref OpenDPreSpeed, ODOld.PreTrain.Speed, ODNew.PreTrain.Speed);
 
+			ConductorActionLogStruct[] lastConductorActionLogArr = new ConductorActionLogStruct[4];
+			ConductorActionLogArr.CopyTo(lastConductorActionLogArr, 0);
+			ConductorActionLogArr[0] = ConductorAction_list.Count > 0 ? ConductorAction_list[0] : new ConductorActionLogStruct(0, -1);
+			ConductorActionLogArr[1] = ConductorAction_list.Count > 1 ? ConductorAction_list[1] : new ConductorActionLogStruct(0, -1);
+			ConductorActionLogArr[2] = ConductorAction_list.Count > 2 ? ConductorAction_list[2] : new ConductorActionLogStruct(0, -1);
+			ConductorActionLogArr[3] = ConductorAction_list.Count > 3 ? ConductorAction_list[3] : new ConductorActionLogStruct(0, -1);
 
+			MakeRun(ref Conductor_0, lastConductorActionLogArr[0].Action, ConductorActionLogArr[0].Action);
+			MakeRun(ref Conductor_1, lastConductorActionLogArr[1].Action, ConductorActionLogArr[1].Action);
+			MakeRun(ref Conductor_2, lastConductorActionLogArr[2].Action, ConductorActionLogArr[2].Action);
+			MakeRun(ref Conductor_3, lastConductorActionLogArr[3].Action, ConductorActionLogArr[3].Action);
+			MakeRun(ref Conductor_Time0, lastConductorActionLogArr[0].Time, ConductorActionLogArr[0].Time);
+			MakeRun(ref Conductor_Time1, lastConductorActionLogArr[1].Time, ConductorActionLogArr[1].Time);
+			MakeRun(ref Conductor_Time2, lastConductorActionLogArr[2].Time, ConductorActionLogArr[2].Time);
+			MakeRun(ref Conductor_Time3, lastConductorActionLogArr[3].Time, ConductorActionLogArr[3].Time);
 
 			BSMDOld = BSMDNew;
 			ODOld = ODNew;

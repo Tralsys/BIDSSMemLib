@@ -240,6 +240,41 @@
 					<Run Text="Cnst:"/>
 					<Run x:Name="CtrlCnst"/>
 				</TextBlock>
+
+
+				<TextBlock Grid.Column="0" Grid.Row="1">
+					<Run Text="Conductor[0]:"/>
+					<Run x:Name="Conductor_0"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="1">
+					<Run Text="Conductor[1]:"/>
+					<Run x:Name="Conductor_1"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="1">
+					<Run Text="Conductor[2]:"/>
+					<Run x:Name="Conductor_2"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="1">
+					<Run Text="Conductor[3]:"/>
+					<Run x:Name="Conductor_3"/>
+				</TextBlock>
+				<TextBlock Grid.Column="0" Grid.Row="2">
+					<Run Text="Time[0]:"/>
+					<Run x:Name="Conductor_Time0"/>
+				</TextBlock>
+				<TextBlock Grid.Column="1" Grid.Row="2">
+					<Run Text="Time[1]:"/>
+					<Run x:Name="Conductor_Time1"/>
+				</TextBlock>
+				<TextBlock Grid.Column="2" Grid.Row="2">
+					<Run Text="Time[2]:"/>
+					<Run x:Name="Conductor_Time2"/>
+				</TextBlock>
+				<TextBlock Grid.Column="3" Grid.Row="2">
+					<Run Text="Time[3]:"/>
+					<Run x:Name="Conductor_Time3"/>
+				</TextBlock>
+
 			</Grid>
 		</Grid>
 		<Label x:Name="FontSizeShowingLB"
