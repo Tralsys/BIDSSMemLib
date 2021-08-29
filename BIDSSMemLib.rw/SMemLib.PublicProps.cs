@@ -23,14 +23,6 @@ namespace TR.BIDSSMemLib
 			private set => SMC_OpenD?.Write(value);
 		}
 
-		///// <summary>駅情報</summary>
-		/*
-		public StaD Stations
-		{
-			get => SMC_StaD?.Data ?? default;
-			private set => SMC_StaD.Data = value;
-		}*/
-
 		/// <summary>Panel配列情報</summary>
 		[Obsolete("PanelA(int型配列)を使用してください.")]
 		public static PanelD Panels

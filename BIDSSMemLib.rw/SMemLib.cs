@@ -18,7 +18,6 @@ namespace TR.BIDSSMemLib
 		private static SMemCtrler<OpenD> SMC_OpenD = null;
 		private static SMemCtrler<int> SMC_PnlD = null;
 		private static SMemCtrler<int> SMC_SndD = null;
-		//private ArrDSMemCtrler<StaD> SMC_StaD = null;
 
 		/// <summary>SharedMemoryを初期化する。</summary>
 		/// <param name="isNoSMemMode">MmmoryMappedFileを使用したデータ共有を行うかどうか</param>

@@ -11,7 +11,6 @@ namespace TR.BIDSSMemLib
 			if (NO_SMEM_MODE) return;
 			SMC_BSMD.OnlyRead();
 			SMC_OpenD.OnlyRead();
-			//Read<StaD>();
 			SMC_PnlD.OnlyRead();
 			SMC_SndD.OnlyRead();
 		}
@@ -34,20 +33,6 @@ namespace TR.BIDSSMemLib
 			SMC_OpenD.Read(out D, DoWrite);
 			return D;
 		}
-		/*
-		/// <summary>共有メモリからデータを読み込む</summary>
-		/// <param name="D">読み込んだデータを書き込む変数</param>
-		/// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
-		public StaD Read(out StaD D, bool DoWrite = true)
-		{
-			D = new StaD();
-			using (var m = MMFS?.CreateViewAccessor())
-			{
-				m?.Read(0, out D);
-			}
-			if (DoWrite) Stations = D;
-			return D;
-		}*/
 		/// <summary>共有メモリからデータを読み込む</summary>
 		/// <param name="D">読み込んだデータを書き込む変数</param>
 		/// <param name="DoWrite">ライブラリのデータを書き換えるかどうか</param>
