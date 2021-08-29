@@ -131,7 +131,7 @@ namespace TR
 		[Test]
 		public void DoubleArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
 		{
-			string smem_name = $"{nameof(IntArrReadWriteTest)}_{random_int}";
+			string smem_name = $"{nameof(DoubleArrReadWriteTest)}_{random_int}";
 			var test_data = new double[test_data_len];
 
 			for(int i = 0; i < test_data.Length; i++)
@@ -143,7 +143,7 @@ namespace TR
 		[Test]
 		public void CustomStructArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
 		{
-			string smem_name = $"{nameof(IntArrReadWriteTest)}_{random_int}";
+			string smem_name = $"{nameof(CustomStructArrReadWriteTest)}_{random_int}";
 			var test_data = new CustomStruct[test_data_len];
 
 			for (int i = 0; i < test_data.Length; i++)
