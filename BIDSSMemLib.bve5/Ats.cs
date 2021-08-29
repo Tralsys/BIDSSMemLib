@@ -148,7 +148,7 @@ namespace TR.BIDSSMemLib
       BSMD.IsEnabled = true;
       BSMD.VersionNum = SMemLib.VersionNumInt;
       SMemLib.Write(in BSMD);
-      if (!Equals(BSMD, SMemLib.ReadBSMD(false))) MessageBox.Show("BIDSSMemLib DataWriting Failed");
+      if (!Equals(BSMD, SMemLib.ReadBSMD())) MessageBox.Show("BIDSSMemLib DataWriting Failed");
 
       BVE_CC ??= new BVEConductorChecker();
 			BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;

@@ -14,11 +14,10 @@ namespace TR.BIDSSMemLib
 		public const string MMFPn_Name = "BIDSSharedMemoryPn";
 		public const string MMFSn_Name = "BIDSSharedMemorySn";
 
-		private static SMemCtrler<BIDSSharedMemoryData> SMC_BSMD = null;
-		private static SMemCtrler<OpenD> SMC_OpenD = null;
-		private static SMemCtrler<int> SMC_PnlD = null;
-		private static SMemCtrler<int> SMC_SndD = null;
-		//private ArrDSMemCtrler<StaD> SMC_StaD = null;
+		private static ISMemCtrler<BIDSSharedMemoryData> SMC_BSMD = null;
+		private static ISMemCtrler<OpenD> SMC_OpenD = null;
+		private static IArrayDataSMemCtrler<int> SMC_PnlD = null;
+		private static IArrayDataSMemCtrler<int> SMC_SndD = null;
 
 		/// <summary>SharedMemoryを初期化する。</summary>
 		/// <param name="isNoSMemMode">MmmoryMappedFileを使用したデータ共有を行うかどうか</param>
@@ -33,10 +32,10 @@ namespace TR.BIDSSMemLib
 			NO_EVENT_MODE = isNoEventMode;
 			NO_OPT_EV_MODE = isNoOptionalEventMode;
 
-			SMC_BSMD = new SMemCtrler<BIDSSharedMemoryData>(MMFB_Name, false, isNoSMemMode, isNoEventMode);
-			SMC_OpenD = new SMemCtrler<OpenD>(MMFO_Name, false, isNoSMemMode, isNoEventMode);
-			SMC_PnlD = new SMemCtrler<int>(MMFPn_Name, true, isNoSMemMode, isNoEventMode);
-			SMC_SndD = new SMemCtrler<int>(MMFSn_Name, true, isNoSMemMode, isNoEventMode);
+			SMC_BSMD = new SMemCtrler<BIDSSharedMemoryData>(MMFB_Name, isNoSMemMode, isNoEventMode);
+			SMC_OpenD = new SMemCtrler<OpenD>(MMFO_Name, isNoSMemMode, isNoEventMode);
+			SMC_PnlD = new ArrayDataSMemCtrler<int>(MMFPn_Name, isNoSMemMode, isNoEventMode);
+			SMC_SndD = new ArrayDataSMemCtrler<int>(MMFSn_Name, isNoSMemMode, isNoEventMode);
 
 			if (!isNoOptionalEventMode)
 				SMC_BSMD.ValueChanged += Events.OnBSMDChanged;
