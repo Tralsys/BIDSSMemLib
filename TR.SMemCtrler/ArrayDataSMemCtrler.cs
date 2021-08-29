@@ -6,7 +6,7 @@ namespace TR
 {
 	public class ArrayDataSMemCtrler<T> : SMemCtrlerBase<List<T>>, IList<T>, IArrayDataSMemCtrler<T> where T : struct
 	{
-		public event EventHandler<ValueChangedEventArgs<T[]>> ArrValueChanged;
+		public event EventHandler<ValueChangedEventArgs<T[]>>? ArrValueChanged;
 
 		public T this[int index]
 		{
