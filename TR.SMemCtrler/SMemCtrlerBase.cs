@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace TR
 {
@@ -26,7 +23,7 @@ namespace TR
 
 		public bool No_Event_Mode { get; set; }
 		public string SMem_Name { get; }
-		public uint Elem_Size { get; }
+		public abstract uint Elem_Size { get; }
 
 		protected T _Value = new();
 		public T Value
@@ -64,7 +61,6 @@ namespace TR
 				throw new ArgumentOutOfRangeException("name cannot empty");
 
 			Value = new();
-			Elem_Size = (uint)Marshal.SizeOf(default(T));
 			SMem_Name = name;
 			No_SMem_Mode = no_smem; //必要に応じて, setterでMMFの初期化が行われる
 			No_Event_Mode = no_event;

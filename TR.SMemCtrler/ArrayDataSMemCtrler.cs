@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace TR
 {
@@ -16,10 +17,12 @@ namespace TR
 
 		public int Count { get => Value.Count; }
 		public bool IsReadOnly { get => false; }
+		public override uint Elem_Size { get; }
 
 		public ArrayDataSMemCtrler(in string name, in bool no_smem, in bool no_event) : base(name, no_smem, no_event)
 		{
 			ValueChanged += (_, e) => ArrValueChanged?.Invoke(this, new(e.OldValue.ToArray(), e.NewValue.ToArray()));
+			Elem_Size = (uint)Marshal.SizeOf(default(T));
 		}
 
 		void UpdateValueFromSMem() => _ = Read();
