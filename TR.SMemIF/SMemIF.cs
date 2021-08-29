@@ -312,7 +312,7 @@ namespace TR
 					MMVA = null;
 					MMF = null;
 #endif
-					semap.Dispose();
+					semap?.Dispose();
 					semap = null;
 
 					disposedValue = true;
