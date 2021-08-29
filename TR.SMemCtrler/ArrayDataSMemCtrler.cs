@@ -208,7 +208,7 @@ namespace TR
 		{
 			UpdateValueFromSMem();
 
-			if (Value.Count < index)
+			if (Value.Count <= index)
 			{
 				int last_count = Value.Count;
 				var arr = new T[last_count - index];
