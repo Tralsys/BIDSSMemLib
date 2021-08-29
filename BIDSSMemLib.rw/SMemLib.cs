@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace TR.BIDSSMemLib
 {
-	public partial class SMemLib
+	public partial class SMemLib : ISMemLib
 	{
 		public static readonly string VersionNum = VersionNumInt.ToString();
 		public static readonly int VersionNumInt = 203;
