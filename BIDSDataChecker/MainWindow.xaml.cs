@@ -5,6 +5,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
+
 using TR.BIDSSMemLib;
 namespace BIDSDataChecker
 {
@@ -34,7 +35,7 @@ namespace BIDSDataChecker
 				PanelGrid.ColumnDefinitions.Add(new ColumnDefinition());
 				SoundGrid.ColumnDefinitions.Add(new ColumnDefinition());
 			}
-			for(int i = 0; i < 256; i++)
+			for (int i = 0; i < 256; i++)
 			{
 				TextBlock TBP = new TextBlock();
 				Grid.SetRow(TBP, i / 16);
@@ -173,7 +174,7 @@ namespace BIDSDataChecker
 			{
 				case Key.Up:
 					FontSize++;
-					if(IsFSLBShowingMode) FSLBShow(0);
+					if (IsFSLBShowingMode) FSLBShow(0);
 					break;
 				case Key.Down:
 					if (FontSize > 1) FontSize--;//FontSizeは最小でも1.
