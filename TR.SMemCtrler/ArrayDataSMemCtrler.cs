@@ -253,6 +253,8 @@ namespace TR
 
 			return MMF?.Read(0, out len) ?? false;
 		}
+
+		public T[] ToArray() => Value.ToArray();
 		#endregion
 	}
 }

@@ -41,5 +41,7 @@ namespace TR
 		void Write(in T[] array);
 		void Write(in int index, in T value);
 		bool TryWrite(in int index, in T value);
+
+		T[] ToArray();
 	}
 }
