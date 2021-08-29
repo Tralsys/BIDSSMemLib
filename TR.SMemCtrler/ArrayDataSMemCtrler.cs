@@ -8,13 +8,6 @@ namespace TR
 	{
 		public event EventHandler<ValueChangedEventArgs<T[]>> ArrValueChanged;
 
-		/// <summary></summary>
-		protected new List<T> Value
-		{
-			get => _Value;
-			set => CheckAndNotifyPropertyChanged(value, false); // 常にWrite系メソッドからsetされることを想定する
-		}
-
 		public T this[int index]
 		{
 			get => Value[index];
