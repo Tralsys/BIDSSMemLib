@@ -80,7 +80,7 @@ namespace TR
 		/// <returns>読み取りに成功したかどうか</returns>
 		public override bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			if (!base.WriteArray(pos, buf, offset, count) || MMVA == IntPtr.Zero)
+			if (!base.ReadArray(pos, buf, offset, count) || MMVA == IntPtr.Zero)
 				return false;
 
 			//読み取り開始位置適用済みのポインタを取得する
@@ -157,7 +157,7 @@ namespace TR
 		/// <returns>書き込みに成功したかどうか</returns>
 		public override bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			if (!base.ReadArray(pos, buf, offset, count) || MMVA == IntPtr.Zero)
+			if (!base.WriteArray(pos, buf, offset, count) || MMVA == IntPtr.Zero)
 				return false;
 
 			IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
