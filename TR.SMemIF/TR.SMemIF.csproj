@@ -34,5 +34,6 @@ It is recommended to use through TR.SMemCtrler because this library provides onl
 	  <DebugType>pdbonly</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
 	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
+	  <Nullable>enable</Nullable>
 	</PropertyGroup>
 </Project>
