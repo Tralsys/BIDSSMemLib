@@ -74,7 +74,8 @@ namespace TR
 			if (!base.Read(pos, out buf) || MMVA == IntPtr.Zero)
 				return false;
 
-			buf = (T)Marshal.PtrToStructure(MMVA, typeof(T));
+			IntPtr ip_readFrom = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
+			buf = (T)Marshal.PtrToStructure(ip_readFrom, typeof(T));
 			return true;
 		}
 
@@ -136,7 +137,7 @@ namespace TR
 				return false;
 
 			IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
-			Marshal.StructureToPtr(buf, MMVA, false);//予め確保してた場所にStructureを書き込む
+			Marshal.StructureToPtr(buf, ip_writeTo, false);//予め確保してた場所にStructureを書き込む
 			return true;
 		}
 
