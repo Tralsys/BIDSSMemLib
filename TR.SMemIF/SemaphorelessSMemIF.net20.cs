@@ -20,16 +20,13 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SemaphorelessSMemIF(string smem_name, long capacity) : base(smem_name, capacity)
 		{
-			if (capacity > uint.MaxValue)
-				throw new ArgumentOutOfRangeException("NET35 || NET20モードでは, CapacityはUInt32.MaxValue以下である必要があります.");
-
 			//最初はOpenを試行
 			MMF = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE_VALUE, SMemName);
 
 			long newCap = (long)Math.Ceiling((float)capacity / Capacity_Step) * Capacity_Step;
 			//Openできない => つくる
 			if (MMF == IntPtr.Zero)
-				MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)newCap, SMemName);
+				MMF = CreateFileMappingA(new IntPtr(-1), IntPtr.Zero, PAGE_READWRITE | SEC_COMMIT, (uint)(newCap >> 32), (uint)newCap, SMemName);
 
 			//OpenもCreateもできなければException
 			if (MMF == IntPtr.Zero)
