@@ -27,6 +27,7 @@ namespace TR
 
 		void UpdateValueFromSMem() => _ = Read();
 
+		#region IList
 		public void Add(T item)
 		{
 			if (TryGetLengthInSMem(out var len) == true && len != Value.Count) //長さが違うなら明確にSMemの内容と手元の内容が違う
@@ -140,6 +141,7 @@ namespace TR
 		}
 
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator_T();
+		#endregion
 
 
 		#region SMemCtrler

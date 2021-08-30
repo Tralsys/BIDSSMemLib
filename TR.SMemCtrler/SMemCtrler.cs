@@ -16,6 +16,7 @@ namespace TR
 		protected override void Initialize_MMF() => MMF = new SMemIF(SMem_Name, Elem_Size);
 		
 
+		#region ISMemCtrler
 		public override T Read()
 		{
 			if (MMF is not null && MMF.Read(0, out T value))
@@ -67,6 +68,7 @@ namespace TR
 			_Value = value;
 			MMF?.Write(0, ref _Value);
 		}
+		#endregion
 	}
 
 }
