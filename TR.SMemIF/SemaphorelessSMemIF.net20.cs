@@ -10,6 +10,7 @@ namespace TR
 	{
 		const byte TRUE_VALUE = 1;
 		const byte FALSE_VALUE = 0;
+		const long Capacity_Step = 4096;
 
 		IntPtr MMF = IntPtr.Zero;//Memory Mapped File
 		IntPtr MMVA = IntPtr.Zero;//Memory Mapped View Accessor (object格納場所)
@@ -25,19 +26,20 @@ namespace TR
 			//最初はOpenを試行
 			MMF = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE_VALUE, SMemName);
 
+			long newCap = (long)Math.Ceiling((float)capacity / Capacity_Step) * Capacity_Step;
 			//Openできない => つくる
 			if (MMF == IntPtr.Zero)
-				MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)capacity, SMemName);
+				MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)newCap, SMemName);
 
 			//OpenもCreateもできなければException
 			if (MMF == IntPtr.Zero)
-				throw new FileLoadException(string.Format("SMemIF.CheckReOpen({0}) : Memory Mapped File ({1}) のCreate/Openに失敗しました.", capacity, SMemName));
+				throw new FileLoadException($"SMemIF.CheckReOpen({capacity}) : Memory Mapped File ({SMemName}) のCreate/Openに失敗しました.  newCap:{newCap}");
 
 			//Viewをつくる
 			MMVA = MapViewOfFile(MMF, FILE_MAP_ALL_ACCESS, 0, 0, 0);
 
 			//キャパシティ情報を更新
-			Capacity = capacity;
+			Capacity = newCap;
 		}
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
