@@ -14,6 +14,8 @@ namespace TR
 		static readonly long IntDataRandomRWTest_Capacity = 8;
 		static readonly int IntDataRandomRWTest_MaxPos = 0x10000;
 		static readonly int IntDataRandomRWTest_Count = 10000;
+		const int ArrCount_Max = 0x400;
+		const int ArrTest_RepeatCount = 10;
 
 		static int random_int => new Random().Next();
 		static double random_double => new Random().NextDouble();
@@ -111,7 +113,7 @@ namespace TR
 
 		#region ArrayDataReadWriteTests
 		[Test]
-		public void IntArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
+		public void IntArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(IntArrReadWriteTest)}_{random_int}";
 			var test_data = new int[test_data_len];
@@ -123,7 +125,7 @@ namespace TR
 		}
 
 		[Test]
-		public void DoubleArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
+		public void DoubleArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(DoubleArrReadWriteTest)}_{random_int}";
 			var test_data = new double[test_data_len];
@@ -135,7 +137,7 @@ namespace TR
 		}
 
 		[Test]
-		public void CustomStructArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
+		public void CustomStructArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(CustomStructArrReadWriteTest)}_{random_int}";
 			var test_data = new CustomStruct[test_data_len];
