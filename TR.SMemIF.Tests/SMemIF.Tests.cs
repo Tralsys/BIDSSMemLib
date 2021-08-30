@@ -41,6 +41,7 @@ namespace TR
 		#region OneDataReadWriteTests
 		/// <summary>int型のデータをRWするテスト</summary>
 		/// <param name="pos">書き込みを開始する位置 [バイト目]</param>
+		[Parallelizable]
 		[TestCaseSource(nameof(IntArgCases_0_32))]
 		public void IntDataReadWriteTest(int pos)
 		{
@@ -52,6 +53,7 @@ namespace TR
 
 		/// <summary>double型のデータをRWするテスト</summary>
 		/// <param name="pos">書き込みを開始する位置 [バイト目]</param>
+		[Parallelizable]
 		[TestCaseSource(nameof(IntArgCases_0_32))]
 		public void DoubleDataReadWriteTest(int pos)
 		{
@@ -75,6 +77,7 @@ namespace TR
 
 		/// <summary>任意の構造体型のデータをRWするテスト</summary>
 		/// <param name="pos">書き込みを開始する位置 [バイト目]</param>
+		[Parallelizable]
 		[TestCaseSource(nameof(IntArgCases_0_32))]
 		public void CustomStructDataReadWriteTest(int pos)
 		{
@@ -112,6 +115,7 @@ namespace TR
 		#endregion
 
 		#region ArrayDataReadWriteTests
+		[Parallelizable]
 		[Test]
 		public void IntArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
@@ -124,6 +128,7 @@ namespace TR
 			ArrDataRWTest(smem_name, 0, test_data);
 		}
 
+		[Parallelizable]
 #if NET35
 		[Test, Explicit]
 #else
@@ -140,6 +145,7 @@ namespace TR
 			ArrDataRWTest(smem_name, 0, test_data);
 		}
 
+		[Parallelizable]
 #if NET35
 		[Test, Explicit]
 #else
