@@ -159,7 +159,7 @@ namespace TR
 				$"      pos:\t{pos}\n" +
 				$"   length:\t{test_data.Length}"); //実行内容確認用の出力
 
-			long Capacity_Request = Marshal.SizeOf<T>() * test_data.Length;
+			long Capacity_Request = Marshal.SizeOf(default(T)) * test_data.Length;
 			using SMemIF target_reader = new(smem_name, Capacity_Request);
 			using SMemIF target_writer = new(smem_name, Capacity_Request);
 
