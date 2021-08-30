@@ -113,7 +113,10 @@ namespace TR
 			}
 			else
 			{
-				
+				//非効率的だけど…
+				long elemSize = getElemSize<T>();
+				for(long i = 0; i < count - offset; i++)
+					_Read(pos + (i * elemSize), out buf[i + offset]);
 			}
 			return true;
 		}
@@ -179,7 +182,12 @@ namespace TR
 				Marshal.Copy(ba2w, 0, ip_writeTo, ba2w.Length);//SMemに書き込む
 			}
 			else
-				throw new ArrayTypeMismatchException("NET35 || NET20モードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
+			{
+				//非効率的だけど…
+				long elemSize = getElemSize<T>();
+				for (long i = 0; i < count - offset; i++)
+					_Write(pos + (i * elemSize), in buf[i + offset]);
+			}
 			return true;
 		}
 
