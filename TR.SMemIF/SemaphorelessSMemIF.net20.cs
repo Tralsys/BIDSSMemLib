@@ -162,6 +162,14 @@ namespace TR
 			{
 				Marshal.Copy(iarr, offset, ip_writeTo, count);
 			}
+			else if(buf is double[] darr)
+			{
+				Marshal.Copy(darr, offset, ip_writeTo, count);
+			}
+			else if(buf is float[] farr)
+			{
+				Marshal.Copy(farr, offset, ip_writeTo, count);
+			}
 			else if (buf is bool[] barr)
 			{
 				byte[] ba2w = new byte[count];//SMemに書き込む配列
