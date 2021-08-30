@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace TR
 {
-	public class ArrayDataSMemCtrler<T> : SMemCtrlerBase<List<T>>, IList<T>, IArrayDataSMemCtrler<T> where T : struct
+	public class ArrayDataSMemCtrler<T> : SMemCtrlerBase<List<T>>, IList<T>, IArrayDataSMemCtrler<T>, IReadWriteInObject where T : struct
 	{
 		public event EventHandler<ValueChangedEventArgs<T[]>>? ArrValueChanged;
 
@@ -268,6 +268,29 @@ namespace TR
 		}
 
 		public T[] ToArray() => Value.ToArray();
+		#endregion
+
+		#region IReadWriteInObject
+		public object ReadInObject() => Read();
+
+		public bool TryReadInObject(out object obj)
+		{
+			bool result = TryRead(out List<T>? value);
+			obj = value;
+			return result;
+		}
+
+		public void WriteInObject(in object obj) => Write(value: (List<T>)obj ?? new List<T>());
+
+		public bool TryWriteInObject(in object obj)
+		{
+			var value = obj as List<T>;
+
+			if (value is null)
+				return false; //型変換に失敗している
+
+			return TryWrite(in value);
+		}
 		#endregion
 	}
 }

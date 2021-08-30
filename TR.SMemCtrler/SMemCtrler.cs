@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace TR
 {
-	public class SMemCtrler<T> : SMemCtrlerBase<T>, ISMemCtrler<T> where T : struct
+	public class SMemCtrler<T> : SMemCtrlerBase<T>, ISMemCtrler<T>, IReadWriteInObject where T : struct
 	{
 		public override uint Elem_Size { get; }
 
@@ -14,7 +14,6 @@ namespace TR
 		}
 
 		protected override void Initialize_MMF() => MMF = new SMemIF(SMem_Name, Elem_Size);
-		
 
 		#region ISMemCtrler
 		public override T Read()
@@ -68,6 +67,21 @@ namespace TR
 			_Value = value;
 			MMF?.Write(0, ref _Value);
 		}
+		#endregion
+
+		#region IReadWriteInObject
+		public object ReadInObject() => Read();
+
+		public bool TryReadInObject(out object obj)
+		{
+			bool result = TryRead(out T value);
+			obj = value;
+			return result;
+		}
+
+		public void WriteInObject(in object obj) => Write((T)obj);
+
+		public bool TryWriteInObject(in object obj) => TryWrite((T)obj);
 		#endregion
 	}
 
