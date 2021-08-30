@@ -124,7 +124,11 @@ namespace TR
 			ArrDataRWTest(smem_name, 0, test_data);
 		}
 
+#if NET35
+		[Test, Explicit]
+#else
 		[Test]
+#endif
 		public void DoubleArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(DoubleArrReadWriteTest)}_{random_int}";
@@ -136,7 +140,11 @@ namespace TR
 			ArrDataRWTest(smem_name, 0, test_data);
 		}
 
+#if NET35
+		[Test, Explicit]
+#else
 		[Test]
+#endif
 		public void CustomStructArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(CustomStructArrReadWriteTest)}_{random_int}";
@@ -177,7 +185,11 @@ namespace TR
 		}
 		#endregion
 
+#if NET35
+		[Test, Explicit]
+#else
 		[Test]
+#endif
 		public void IntDataRandomRWTest()
 		{
 			string smem_name = $"{nameof(IntDataReadWriteTest)}_{random_int}";
