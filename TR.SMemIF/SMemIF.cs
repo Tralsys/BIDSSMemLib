@@ -1,143 +1,31 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-#if NET35 || NET20
-using System.IO;
-#else
-using System.IO.MemoryMappedFiles;
-#endif
+﻿
 //ref : https://docs.microsoft.com/ja-jp/dotnet/standard/library-guidance/cross-platform-targeting
 namespace TR
 {
 	/// <summary>TargetFramework別にSharedMemoryを提供します.</summary>
-	public class SMemIF : IDisposable
+	public class SMemIF : SemaphorelessSMemIF
 	{
-		private const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
-		const byte TRUE_VALUE = 1;
-		const byte FALSE_VALUE = 0;
-		
-#if NET35 || NET20//Unmanaged
-		#region 関数のリンク
-		const string DLL_NAME = "kernel32.dll";
-		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
-		static extern IntPtr CreateFileMappingA(
-			IntPtr hFile,
-			IntPtr lpFileMappingAttributes,
-			uint flProtect,
-			uint dwMaximumSizeHigh,
-			uint dwMaximumSizeLow,
-			string lpName);
+		private RWSemap Semap { get; }
 
-		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
-		static extern IntPtr OpenFileMapping(
-			uint dwDesiredAccess,
-			byte bInheritHandle,
-			string lpName);
-
-		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
-		static extern IntPtr MapViewOfFile(
-	IntPtr hFileMappingObject,
-	uint dwDesiredAccess,
-	uint dwFileOffsetHigh,
-	uint dwFileOffsetLow,
-	uint dwNumberOfBytesToMap
-);
-		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
-		static extern byte CloseHandle(IntPtr hObject);
-
-		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
-		static extern byte UnmapViewOfFile(IntPtr lpBaseAddress);
-
-		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
-		static extern byte FlushViewOfFile(
-	IntPtr lpBaseAddress,
-	uint dwNumberOfBytesToFlush
-);
-
-		[DllImport(DLL_NAME, CharSet = CharSet.Unicode)]
-		static extern uint GetLastError();
-		#endregion
-
-		#region FileMappingまわりの定数
-		const uint ERROR_ALREADY_EXISTS = 0xB7;
-		#region flProtect
-		const uint PAGE_EXECUTE_READ = 0x20;
-		const uint PAGE_EXECUTE_READWRITE = 0x40;
-		const uint PAGE_EXECUTE_WRITECOPY = 0x80;
-		const uint PAGE_READONLY = 0x02;
-		const uint PAGE_READWRITE = 0x04;
-		const uint PAGE_WRITECOPY = 0x08;
-
-		const uint SEC_COMMIT = 0x8000000;
-		const uint SEC_IMAGE = 0x1000000;
-		const uint SEC_IMAGE_NO_EXECUTE = 0x11000000;
-		const uint SEC_LARGE_PAGES = 0x80000000;
-		const uint SEC_NOCACHE = 0x10000000;
-		const uint SEC_RESERVE = 0x4000000;
-		const uint SEC_WRITECOMBINE = 0x40000000;
-		#endregion
-
-		#region dwDesiredAccess
-		const uint FILE_MAP_ALL_ACCESS = 0xf001f;
-		const uint FILE_MAP_READ = 0x04;
-		const uint FILE_MAP_WRITE = 0x02;
-		const uint FILE_MAP_COPY = 0x01;
-		//const uint FILE_MAP_EXECUTE = 0;
-		//const uint FILE_MAP_LARGE_PAGES = 0;
-		//const uint FILE_MAP_TARGETS_INVALID = 0;
-		#endregion
-
-		#endregion
-
-
-		IntPtr MMF = IntPtr.Zero;//Memory Mapped File
-		IntPtr MMVA = IntPtr.Zero;//Memory Mapped View Accessor (object格納場所)
-#else
-		MemoryMappedFile MMF = null;
-		MemoryMappedViewAccessor MMVA = null;
-#endif
-
-		long Capacity
-#if NET35 || NET20
-		{ get; set; } = 0;
-#else
-			=> MMVA?.Capacity ?? 0;
-#endif
-
-		string SMem_Name { get; }
-		RWSemap semap = null;
-
-
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public SMemIF(string SMemName, long capacity)
+		/// <summary>インスタンスを初期化する</summary>
+		/// <param name="smem_name">共有メモリ空間の名前</param>
+		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
+		public SMemIF(string smem_name, long capacity) : base(smem_name, capacity)
 		{
-			if (string.IsNullOrEmpty(SMemName) || capacity <= 0) Dispose();
-			SMem_Name = SMemName;
-			semap = new RWSemap();
-
-			CheckReOpen(capacity);
+			Semap = new RWSemap();
 		}
 
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public bool Read<T>(long pos, out T buf) where T : struct
+		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
+		/// <typeparam name="T">読み込みたい型</typeparam>
+		/// <param name="pos">読み込む位置 [bytes]</param>
+		/// <param name="buf">読み込むデータ</param>
+		/// <returns>読み込みに成功したかどうか  (例外は捕捉されません)</returns>
+		public override bool Read<T>(long pos, out T buf) where T : struct
 		{
-			buf = default;
-			if (pos < 0) throw new ArgumentOutOfRangeException("posに負の値は使用できません.");
-			if (disposing) return false;
-
-			CheckReOpen(pos + Marshal.SizeOf(default(T)));
 			T retT = default;
-			_ = semap.Read((_) =>
-			{
-				#region SMemへの操作
-#if NET35 || NET20
-				if (MMVA == IntPtr.Zero) return;
-				retT = (T)Marshal.PtrToStructure(MMVA, typeof(T));
-#else
-				MMVA.Read(pos, out retT);
-#endif
-				#endregion
-			});
+
+			Semap.Read((_) => base.Read(pos, out retT) );
+
 			buf = retT;
 			return true;
 		}
@@ -149,62 +37,24 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">読み取りを行う数</param>
 		/// <returns>読み取りに成功したかどうか</returns>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
+		public override bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			if (disposing) return false;
-
-			long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
-			CheckReOpen(neededCap);
-			_ = semap.Read((_) =>
-				{
-					#region SMemへの操作
-#if NET35 || NET20
-					if (MMVA == IntPtr.Zero) return;
-					IntPtr ip_toRead = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
-					if (buf is int[] iarr)//int型配列にキャスト(iarrへの書き込みはbufにも反映される)
-					{
-						Marshal.Copy(ip_toRead, iarr, offset, count);//iarrにSMemの値を書き込み
-					}
-					else if(buf is bool[] barr)//bool型配列にキャスト
-					{
-						byte[] SMem_ba = new byte[sizeof(bool) * count];//SMemから読んだRAW値のキャッシュ
-
-						//ip_toReadの初めから, SMem_ba[offset]~ count個コピーする.
-						Marshal.Copy(ip_toRead, SMem_ba, 0, SMem_ba.Length);//SMemからキャッシュにコピー
-
-						for(int i = 0; i < SMem_ba.Length; i++)
-							barr[i + offset] = SMem_ba[i] == TRUE_VALUE;//読み取り結果の書き込み
-					}
-					else throw new ArrayTypeMismatchException("NET35 || NET20モードでBuildされています.  Array操作はint型/bool型のみ受け付けます.");
-
-#else
-				MMVA.ReadArray(pos, buf, offset, count);
-#endif
-					#endregion
-				});
+			Semap.Read((_) => base.ReadArray(pos, buf, offset, count));
 
 			return true;
 		}
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public bool Write<T>(long pos, ref T buf) where T : struct
+
+		/// <summary>共有メモリ空間の指定の位置に指定のデータを書き込む</summary>
+		/// <typeparam name="T">データの型</typeparam>
+		/// <param name="pos">書き込む位置 [bytes]</param>
+		/// <param name="buf">書き込むデータ</param>
+		/// <returns>書き込みに成功したかどうか</returns>
+		public override bool Write<T>(long pos, ref T buf) where T : struct
 		{
-			if (pos < 0) throw new ArgumentOutOfRangeException("posに負の値は使用できません.");
-			if (disposing) return false;
-			CheckReOpen(pos + Marshal.SizeOf(default(T)));
 			T retT = buf;
-			_ = semap.Write((_) =>
-				{
-					#region SMemへの操作
-#if NET35 || NET20
-					if (MMVA == IntPtr.Zero) return;//Viewが無効
-					IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
-					Marshal.StructureToPtr(retT, MMVA, false);//予め確保してた場所にStructureを書き込む
-#else
-				MMVA.Write(pos, ref retT);
-#endif
-					#endregion
-				});
+
+			Semap.Write((_) => base.Write(pos, ref retT) );
+
 			return true;
 		}
 
@@ -215,115 +65,30 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">書き込む要素数</param>
 		/// <returns>書き込みに成功したかどうか</returns>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
+		public override bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			if (disposing) return false;
-			long neededCap = pos + Marshal.SizeOf((T)default) * (count - offset);
-			CheckReOpen(neededCap);
-			_ = semap.Write((_) =>
-				{
-					#region SMemへの操作
-#if NET35 || NET20
-					if (MMVA == IntPtr.Zero) return;
-					IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
-					if (buf is int[] iarr)//int型配列にキャスト(iarrへの書き込みはbufにも反映される)
-					{
-						Marshal.Copy(iarr, offset, ip_writeTo, count);
-					}
-					else if(buf is bool[] barr)
-					{
-						byte[] ba2w = new byte[count];//SMemに書き込む配列
-						for (int i = 0; i < ba2w.Length; i++)
-							ba2w[i] = barr[i + offset] ? TRUE_VALUE : FALSE_VALUE;//SMemに実際に書き込む配列に, 入力された値を書き込む
+			Semap.Write((_) => base.WriteArray(pos, buf, offset, count) );
 
-						Marshal.Copy(ba2w, 0, ip_writeTo, ba2w.Length);//SMemに書き込む
-					}
-					else throw new ArrayTypeMismatchException("NET35 || NET20モードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
-#else
-				MMVA.WriteArray(pos, buf, offset, count);
-#endif
-					#endregion
-				});
 			return true;
-		}
-
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		void CheckReOpen(long capacity)
-		{
-			if (Capacity > capacity) return;//保持キャパが要求キャパより大きい
-			_ = semap.Write((_) =>
-				{
-					if (Capacity > capacity) return;//保持キャパが要求キャパより大きい 再確認
-#if NET35 || NET20
-					if (MMVA != IntPtr.Zero)
-					{
-						UnmapViewOfFile(MMVA);
-						CloseHandle(MMVA);
-					}//Viewを閉じる
-					if (MMF != IntPtr.Zero) CloseHandle(MMF);//FileハンドルをRelease
-
-					if (capacity > uint.MaxValue) throw new ArgumentOutOfRangeException("NET35 || NET20モードでは, CapacityはUInt32.MaxValue以下である必要があります.");
-
-					MMF = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE_VALUE, SMem_Name);//最初はOpenを試行
-					if (MMF == IntPtr.Zero) MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)capacity, SMem_Name);//Openできない=>つくる
-					if (MMF == IntPtr.Zero) throw new FileLoadException(string.Format("SMemIF.CheckReOpen({0}) : Memory Mapped File ({1}) のCreate/Openに失敗しました.", capacity, SMem_Name));//OpenもCreateもできなければException
-
-					MMVA = MapViewOfFile(MMF, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-					Capacity = capacity;
-#else
-				MMVA?.Dispose();
-					MMF?.Dispose();
-
-					MMF = MemoryMappedFile.CreateOrOpen(SMem_Name, capacity);
-					MMVA = MMF.CreateViewAccessor();
-#endif
-				});
 		}
 
 
 		#region IDisposable Support
-		public bool disposing = false;
-		private bool disposedValue = false;
-
-		protected virtual void Dispose(bool disposing)
+		/// <summary>保持しているリソースを解放する</summary>
+		/// <param name="disposing">Managedリソースも解放するかどうか</param>
+		protected override void Dispose(bool disposing)
 		{
 			disposing = true;
 			if (!disposedValue)
 			{
 				if (disposing)
 				{
-#if NET35 || NET20
-					if (MMVA != IntPtr.Zero)
-					{
-						UnmapViewOfFile(MMVA);
-						CloseHandle(MMVA);
-						MMVA = IntPtr.Zero;
-					}
-					if (MMF != IntPtr.Zero)
-					{
-						CloseHandle(MMF);
-						MMF = IntPtr.Zero;
-					}
-#else
-					MMVA?.Dispose();
-					MMF?.Dispose();
-
-					MMVA = null;
-					MMF = null;
-#endif
-					semap?.Dispose();
-					semap = null;
+					Semap?.Dispose();
 
 					disposedValue = true;
 				}
 			}
 		}
-#if NET35 || NET20
-		/// <summary>SMemのハンドルを閉じます.</summary>
-		~SMemIF() => Dispose(false);
-#endif
-		public void Dispose() => Dispose(true);
 #endregion
 
 	}
