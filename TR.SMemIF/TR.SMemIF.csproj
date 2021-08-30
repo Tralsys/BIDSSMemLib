@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net20;net35;net461;net5.0-windows</TargetFrameworks>
-		<LangVersion>8.0</LangVersion>
+		<LangVersion>9.0</LangVersion>
 		<AssemblyName>TR.SMemIF</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
 		<Version>1.0.0.3</Version>
@@ -34,5 +34,11 @@ It is recommended to use through TR.SMemCtrler because this library provides onl
 	  <DebugType>pdbonly</DebugType>
 	  <DebugSymbols>true</DebugSymbols>
 	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
+	  <Nullable>enable</Nullable>
+	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
+	  <PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 </Project>

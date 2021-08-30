@@ -14,6 +14,8 @@ namespace TR
 		static readonly long IntDataRandomRWTest_Capacity = 8;
 		static readonly int IntDataRandomRWTest_MaxPos = 0x10000;
 		static readonly int IntDataRandomRWTest_Count = 10000;
+		const int ArrCount_Max = 0x400;
+		const int ArrTest_RepeatCount = 10;
 
 		static int random_int => new Random().Next();
 		static double random_double => new Random().NextDouble();
@@ -39,6 +41,7 @@ namespace TR
 		#region OneDataReadWriteTests
 		/// <summary>int型のデータをRWするテスト</summary>
 		/// <param name="pos">書き込みを開始する位置 [バイト目]</param>
+		[Parallelizable]
 		[TestCaseSource(nameof(IntArgCases_0_32))]
 		public void IntDataReadWriteTest(int pos)
 		{
@@ -50,6 +53,7 @@ namespace TR
 
 		/// <summary>double型のデータをRWするテスト</summary>
 		/// <param name="pos">書き込みを開始する位置 [バイト目]</param>
+		[Parallelizable]
 		[TestCaseSource(nameof(IntArgCases_0_32))]
 		public void DoubleDataReadWriteTest(int pos)
 		{
@@ -73,6 +77,7 @@ namespace TR
 
 		/// <summary>任意の構造体型のデータをRWするテスト</summary>
 		/// <param name="pos">書き込みを開始する位置 [バイト目]</param>
+		[Parallelizable]
 		[TestCaseSource(nameof(IntArgCases_0_32))]
 		public void CustomStructDataReadWriteTest(int pos)
 		{
@@ -95,33 +100,24 @@ namespace TR
 				$"      pos:\t{pos}\n" +
 				$"test_data:\t{test_data}"); //実行内容確認用の出力
 
-			SMemIF? target_reader = null;
-			SMemIF? target_writer = null;
-			try
-			{
-				target_reader = new(smem_name, OneDataReadWriteTest_Capacity);
-				target_writer = new(smem_name, OneDataReadWriteTest_Capacity);
+			using SMemIF target_reader = new(smem_name, OneDataReadWriteTest_Capacity);
+			using SMemIF target_writer = new(smem_name, OneDataReadWriteTest_Capacity);
 
-				//書き込みに成功しているかどうか
-				Assert.IsTrue(target_writer.Write(pos, ref test_data));
+			//書き込みに成功しているかどうか
+			Assert.IsTrue(target_writer.Write(pos, ref test_data));
 
-				//読み込みに成功しているかどうか
-				Assert.IsTrue(target_reader.Read(pos, out T result));
+			//読み込みに成功しているかどうか
+			Assert.IsTrue(target_reader.Read(pos, out T result));
 
-				//読み込んだデータか書き込んだデータと一致しているかどうか
-				Assert.AreEqual(test_data, result);
-			}
-			finally
-			{
-				target_reader?.Dispose();
-				target_writer?.Dispose();
-			}
+			//読み込んだデータか書き込んだデータと一致しているかどうか
+			Assert.AreEqual(test_data, result);
 		}
 		#endregion
 
 		#region ArrayDataReadWriteTests
+		[Parallelizable]
 		[Test]
-		public void IntArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
+		public void IntArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(IntArrReadWriteTest)}_{random_int}";
 			var test_data = new int[test_data_len];
@@ -132,8 +128,13 @@ namespace TR
 			ArrDataRWTest(smem_name, 0, test_data);
 		}
 
+		[Parallelizable]
+#if NET35
+		[Test, Explicit]
+#else
 		[Test]
-		public void DoubleArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
+#endif
+		public void DoubleArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(DoubleArrReadWriteTest)}_{random_int}";
 			var test_data = new double[test_data_len];
@@ -144,8 +145,13 @@ namespace TR
 			ArrDataRWTest(smem_name, 0, test_data);
 		}
 
+		[Parallelizable]
+#if NET35
+		[Test, Explicit]
+#else
 		[Test]
-		public void CustomStructArrReadWriteTest([Random(1, 0x1000, 10)] int test_data_len)
+#endif
+		public void CustomStructArrReadWriteTest([Random(1, ArrCount_Max, ArrTest_RepeatCount)] int test_data_len)
 		{
 			string smem_name = $"{nameof(CustomStructArrReadWriteTest)}_{random_int}";
 			var test_data = new CustomStruct[test_data_len];
@@ -169,74 +175,57 @@ namespace TR
 				$"      pos:\t{pos}\n" +
 				$"   length:\t{test_data.Length}"); //実行内容確認用の出力
 
-			SMemIF? target_reader = null;
-			SMemIF? target_writer = null;
-			try
-			{
-				//Reader側はちゃんとCapacityを設定しないと読み込みに失敗するので注意
-				target_reader = new(smem_name, Marshal.SizeOf<T>() * test_data.Length);
+			long Capacity_Request = Marshal.SizeOf(default(T)) * test_data.Length;
+			using SMemIF target_reader = new(smem_name, Capacity_Request);
+			using SMemIF target_writer = new(smem_name, Capacity_Request);
 
-				//Writer側はCapacityを自動で拡張してくれる
-				target_writer = new(smem_name, OneDataReadWriteTest_Capacity);
+			//書き込みに成功しているかどうか
+			Assert.IsTrue(target_writer.WriteArray(pos, test_data, 0, test_data.Length));
 
-				//書き込みに成功しているかどうか
-				Assert.IsTrue(target_writer.WriteArray(pos, test_data, 0, test_data.Length));
+			var buf = new T[test_data.Length];
+			//読み込みに成功しているかどうか
+			Assert.IsTrue(target_reader.ReadArray(pos, buf, 0, buf.Length));
 
-				var buf = new T[test_data.Length];
-				//読み込みに成功しているかどうか
-				Assert.IsTrue(target_reader.ReadArray(pos, buf, 0, buf.Length));
-
-				//読み込んだデータか書き込んだデータと一致しているかどうか
-				CollectionAssert.AreEqual(test_data, buf);
-			}
-			finally
-			{
-				target_reader?.Dispose();
-				target_writer?.Dispose();
-			}
+			//読み込んだデータか書き込んだデータと一致しているかどうか
+			CollectionAssert.AreEqual(test_data, buf);
 		}
 		#endregion
 
+#if NET35
+		[Test, Explicit]
+#else
 		[Test]
+#endif
 		public void IntDataRandomRWTest()
 		{
 			string smem_name = $"{nameof(IntDataReadWriteTest)}_{random_int}";
 
-			SMemIF? target_reader = null;
-			SMemIF? target_writer = null;
-			try
-			{
-				//ReaderはちゃんとCapacityを設定しないと, データが大きすぎたとき(1000項目以上くらい)に正常にReadできなくなる
-				target_reader = new(smem_name, sizeof(int) * (IntDataRandomRWTest_MaxPos) + 1);
-				target_writer = new(smem_name, IntDataRandomRWTest_Capacity);
+			//ReaderはちゃんとCapacityを設定しないと, データが大きすぎたとき(1000項目以上くらい)に正常にReadできなくなる
+			long Capacity_Request = sizeof(int) * (IntDataRandomRWTest_MaxPos + 1);
+			using SMemIF target_reader = new(smem_name, Capacity_Request);
+			using SMemIF target_writer = new(smem_name, Capacity_Request);
 
-				for (int i = 0; i < IntDataRandomRWTest_Count; i++)
+			for (int i = 0; i < IntDataRandomRWTest_Count; i++)
+			{
+				long pos = new Random().Next(IntDataRandomRWTest_MaxPos);
+				var test_data = random_int;
+
+				//書き込みに成功しているかどうか
+				Assert.IsTrue(target_writer.Write(pos, ref test_data));
+
+				//読み込みに成功しているかどうか
+				Assert.IsTrue(target_reader.Read(pos, out int result));
+
+				try
 				{
-					long pos = new Random().Next(IntDataRandomRWTest_MaxPos);
-					var test_data = random_int;
-
-					//書き込みに成功しているかどうか
-					Assert.IsTrue(target_writer.Write(pos, ref test_data));
-
-					//読み込みに成功しているかどうか
-					Assert.IsTrue(target_reader.Read(pos, out int result));
-
-					try
-					{
-						//読み込んだデータか書き込んだデータと一致しているかどうか
-						Assert.AreEqual(test_data, result);
-					}
-					catch (AssertionException)
-					{
-						TestContext.WriteLine($"i:{i}, pos:{pos}");
-						throw;
-					}
+					//読み込んだデータか書き込んだデータと一致しているかどうか
+					Assert.AreEqual(test_data, result);
 				}
-			}
-			finally
-			{
-				target_reader?.Dispose();
-				target_writer?.Dispose();
+				catch (AssertionException)
+				{
+					TestContext.WriteLine($"i:{i}, pos:{pos}");
+					throw;
+				}
 			}
 		}
 
