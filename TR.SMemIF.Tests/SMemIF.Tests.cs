@@ -159,11 +159,8 @@ namespace TR
 				$"      pos:\t{pos}\n" +
 				$"   length:\t{test_data.Length}"); //実行内容確認用の出力
 
-			//Reader側はちゃんとCapacityを設定しないと読み込みに失敗するので注意
 			using SMemIF target_reader = new(smem_name, Marshal.SizeOf<T>() * test_data.Length);
-
-			//Writer側はCapacityを自動で拡張してくれる
-			using SMemIF target_writer = new(smem_name, OneDataReadWriteTest_Capacity);
+			using SMemIF target_writer = new(smem_name, Marshal.SizeOf<T>() * test_data.Length);
 
 			//書き込みに成功しているかどうか
 			Assert.IsTrue(target_writer.WriteArray(pos, test_data, 0, test_data.Length));
