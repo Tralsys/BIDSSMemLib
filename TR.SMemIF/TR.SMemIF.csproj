@@ -35,5 +35,6 @@ It is recommended to use through TR.SMemCtrler because this library provides onl
 	  <DebugSymbols>true</DebugSymbols>
 	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
 	  <Nullable>enable</Nullable>
+	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 </Project>
