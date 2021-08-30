@@ -19,50 +19,29 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SemaphorelessSMemIF(string smem_name, long capacity) : base(smem_name, capacity)
 		{
+			if (capacity > uint.MaxValue)
+				throw new ArgumentOutOfRangeException("NET35 || NET20モードでは, CapacityはUInt32.MaxValue以下である必要があります.");
+
+			//最初はOpenを試行
+			MMF = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE_VALUE, SMemName);
+
+			//Openできない => つくる
+			if (MMF == IntPtr.Zero)
+				MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)capacity, SMemName);
+
+			//OpenもCreateもできなければException
+			if (MMF == IntPtr.Zero)
+				throw new FileLoadException(string.Format("SMemIF.CheckReOpen({0}) : Memory Mapped File ({1}) のCreate/Openに失敗しました.", capacity, SMemName));
+
+			//Viewをつくる
+			MMVA = MapViewOfFile(MMF, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+
+			//キャパシティ情報を更新
+			Capacity = capacity;
 		}
 
-		private long _Capacity = 0;
 		/// <summary>共有メモリ空間のキャパシティ</summary>
-		/// <remarks>キャパシティ変更には大きなコストが伴うので注意  (メモリ空間を開き直すため)</remarks>
-		public override long Capacity
-		{
-			get => _Capacity;
-			set
-			{
-				//Viewを閉じる
-				if (MMVA != IntPtr.Zero)
-				{
-					UnmapViewOfFile(MMVA);
-					CloseHandle(MMVA);
-					MMVA = IntPtr.Zero;
-				}
-
-				if (MMF != IntPtr.Zero)
-				{
-					CloseHandle(MMF);//FileハンドルをRelease
-					MMF = IntPtr.Zero;
-				}
-
-				if (value > uint.MaxValue) throw new ArgumentOutOfRangeException("NET35 || NET20モードでは, CapacityはUInt32.MaxValue以下である必要があります.");
-
-				//最初はOpenを試行
-				MMF = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE_VALUE, SMemName);
-
-				//Openできない => つくる
-				if (MMF == IntPtr.Zero)
-					MMF = CreateFileMappingA(unchecked((IntPtr)(int)0xFFFFFFFF), IntPtr.Zero, PAGE_READWRITE, 0, (uint)value, SMemName);
-
-				//OpenもCreateもできなければException
-				if (MMF == IntPtr.Zero)
-					throw new FileLoadException(string.Format("SMemIF.CheckReOpen({0}) : Memory Mapped File ({1}) のCreate/Openに失敗しました.", value, SMemName));
-
-				//Viewをつくる
-				MMVA = MapViewOfFile(MMF, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-
-				//キャパシティ情報を更新
-				_Capacity = value;
-			}
-		}
+		public override long Capacity { get; }
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
 		/// <typeparam name="T">読み込みたい型</typeparam>
@@ -166,7 +145,8 @@ namespace TR
 
 				Marshal.Copy(ba2w, 0, ip_writeTo, ba2w.Length);//SMemに書き込む
 			}
-			else throw new ArrayTypeMismatchException("NET35 || NET20モードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
+			else
+				throw new ArrayTypeMismatchException("NET35 || NET20モードでBuildされています.  Array操作はint/bool型のみ受け付けます.");
 			return true;
 		}
 
@@ -209,16 +189,6 @@ namespace TR
 		}
 		#endregion
 
-
-		/// <summary>共有メモリ空間を再度開く必要があるかどうかを確認する</summary>
-		/// <param name="needed_capacity">必要なキャパシティ</param>
-		protected override void CheckReOpen(long needed_capacity)
-		{
-			if (Capacity > needed_capacity)
-				return;//保持キャパが要求キャパより大きいなら, 再度開く必要はない
-
-			Capacity = needed_capacity;
-		}
 
 		#region 関数のリンク
 		const string DLL_NAME = "kernel32.dll";

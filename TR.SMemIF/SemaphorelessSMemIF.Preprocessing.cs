@@ -14,7 +14,7 @@ namespace TR
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
 		/// <remarks>setterにてキャパシティの増減機能を実装する</remarks>
-		public abstract long Capacity { get; set; }
+		public abstract long Capacity { get; }
 
 		/// <summary>与えられた型が使用する領域のサイズを計算する</summary>
 		/// <typeparam name="T">領域を計算する型</typeparam>
@@ -39,8 +39,6 @@ namespace TR
 				throw new ArgumentOutOfRangeException(nameof(capacity), "capacity cannot be 0 or less");
 
 			SMemName = smem_name;
-
-			Capacity = capacity;
 		}
 
 		/// <summary>リソースの解放を行う</summary>
@@ -55,12 +53,7 @@ namespace TR
 		{
 			buf = default;
 
-			if (disposingValue)
-				return false; //解放が開始したら実行しない
-
-			CheckReOpen(getNeededCapacity<T>(pos));
-
-			return true;
+			return !disposingValue;
 		}
 
 		/// <summary>SMemから連続的に値を読み取ります</summary>
@@ -70,30 +63,14 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">読み取りを行う数</param>
 		/// <returns>読み取りに成功したかどうか</returns>
-		public virtual bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
-		{
-			if (disposingValue)
-				return false; //解放が開始したら実行しない
-
-			CheckReOpen(getNeededCapacity<T>(pos));
-
-			return true;
-		}
+		public virtual bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct => !disposingValue;
 
 		/// <summary>共有メモリ空間の指定の位置に指定のデータを書き込む</summary>
 		/// <typeparam name="T">データの型</typeparam>
 		/// <param name="pos">書き込む位置 [bytes]</param>
 		/// <param name="buf">書き込むデータ</param>
 		/// <returns>書き込みに成功したかどうか</returns>
-		public virtual bool Write<T>(long pos, ref T buf) where T : struct
-		{
-			if (disposingValue)
-				return false; //解放が開始したら実行しない
-
-			CheckReOpen(getNeededCapacity<T>(pos));
-
-			return true;
-		}
+		public virtual bool Write<T>(long pos, ref T buf) where T : struct => !disposingValue;
 
 		/// <summary>SMemに連続した値を書き込みます</summary>
 		/// <typeparam name="T">書き込む値の型</typeparam>
@@ -102,18 +79,6 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">書き込む要素数</param>
 		/// <returns>書き込みに成功したかどうか</returns>
-		public virtual bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
-		{
-			if (disposingValue)
-				return false; //解放が開始したら実行しない
-
-			CheckReOpen(getNeededCapacity<T>(pos));
-
-			return true;
-		}
-
-		/// <summary>共有メモリ空間を再度開く必要があるかどうかを確認する</summary>
-		/// <param name="needed_capacity">必要なキャパシティ</param>
-		protected abstract void CheckReOpen(long needed_capacity);
+		public virtual bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct => !disposingValue;
 	}
 }

@@ -19,30 +19,17 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SemaphorelessSMemIF(string smem_name, long capacity) : base(smem_name, capacity)
 		{
+			long newCap = (long)Math.Ceiling((float)capacity / Capacity_Step) * Capacity_Step;
+
+			MMF = MemoryMappedFile.CreateOrOpen(SMemName, newCap);
+
+			MMVA = MMF.CreateViewAccessor(0, newCap);
 		}
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
 		/// <remarks>キャパシティ変更には大きなコストが伴うので注意  (メモリ空間を開き直すため)</remarks>
-		public override long Capacity
-		{
-			get => MMVA?.Capacity ?? 0;
-			set
-			{
-				MMVA?.Dispose();
-				MMF?.Dispose();
-
-				if (value <= 0)
-					throw new ArgumentOutOfRangeException(nameof(value), "Capacity cannot be 0 or less");
-
-				long newCap = (long)Math.Ceiling((float)value / Capacity_Step) * Capacity_Step;
-
-				MMF = MemoryMappedFile.CreateOrOpen(SMemName, newCap);
-
-				//sizeに0を指定すると, 最大サイズで取得することができる
-				//…はずだけど, 0にすると正常に取得できなくてpositionがOutOfRangeだよって言われる
-				MMVA = MMF.CreateViewAccessor(0, newCap);
-			}
-		}
+		public override long Capacity => MMVA?.Capacity ?? 0;
+		
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
 		/// <typeparam name="T">読み込みたい型</typeparam>
@@ -151,17 +138,6 @@ namespace TR
 			GC.SuppressFinalize(this);
 		}
 		#endregion
-
-
-		/// <summary>共有メモリ空間を再度開く必要があるかどうかを確認する</summary>
-		/// <param name="needed_capacity">必要なキャパシティ</param>
-		protected override void CheckReOpen(long needed_capacity)
-		{
-			if (Capacity > needed_capacity)
-				return;//保持キャパが要求キャパより大きいなら, 再度開く必要はない
-
-			Capacity = needed_capacity;
-		}
 	}
 }
 #endif

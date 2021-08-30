@@ -15,8 +15,7 @@ namespace TR
 		string SMemName { get; }
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
-		/// <remarks>キャパシティの変更には大きなコストが伴うので注意  (メモリ空間を開き直すため)</remarks>
-		long Capacity { get; set; }
+		long Capacity { get; }
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
 		/// <typeparam name="T">読み込みたい型</typeparam>
@@ -42,7 +41,7 @@ namespace TR
 		string SMemName { get; }
 		/// <summary>共有メモリ空間のキャパシティ</summary>
 		/// <remarks>減少方向への操作には大きなコストが伴うので注意  (メモリ空間を開き直すため)</remarks>
-		long Capacity { get; set; }
+		long Capacity { get; }
 
 		/// <summary>共有メモリ空間の指定の位置に指定のデータを書き込む</summary>
 		/// <typeparam name="T">データの型</typeparam>
