@@ -39,6 +39,8 @@ namespace TR
 				throw new ArgumentOutOfRangeException(nameof(capacity), "capacity cannot be 0 or less");
 
 			SMemName = smem_name;
+
+			Capacity = capacity;
 		}
 
 		/// <summary>リソースの解放を行う</summary>
