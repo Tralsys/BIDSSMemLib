@@ -4,6 +4,15 @@ using System.ComponentModel;
 
 namespace TR
 {
+	/// <summary>すべての型引数で共通したRW機能を提供するためのインターフェイス</summary>
+	public interface IReadWriteInObject : IDisposable
+	{
+		object ReadInObject();
+		bool TryReadInObject(out object obj);
+		void WriteInObject(in object obj);
+		bool TryWriteInObject(in object obj);
+	}
+
 	public interface ISMemCtrler<T> : IDisposable, INotifyPropertyChanged
 	{
 		IAutoReadSupporter<T> AutoRead { get; }
