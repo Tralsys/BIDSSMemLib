@@ -55,9 +55,20 @@ namespace TR
 			if (!base.Read(pos, out buf) || MMVA == IntPtr.Zero)
 				return false;
 
-			IntPtr ip_readFrom = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
-			buf = (T)Marshal.PtrToStructure(ip_readFrom, typeof(T));
+			_Read(pos, out buf);
 			return true;
+		}
+
+		/// <summary>値の読み込み機能のコア機能</summary>
+		/// <typeparam name="T">型</typeparam>
+		/// <param name="pos">読み込む位置 [bytes]</param>
+		/// <param name="buf">読み込んだデータの書き込み先</param>
+		private void _Read<T>(in long pos, out T buf) where T : struct
+		{
+			//読み取り開始位置適用済みのポインタ
+			IntPtr ip_readFrom = new IntPtr(MMVA.ToInt64() + pos);
+
+			buf = (T) Marshal.PtrToStructure(ip_readFrom, typeof(T));
 		}
 
 		/// <summary>SMemから連続的に値を読み取ります</summary>
@@ -117,9 +128,21 @@ namespace TR
 			if (!base.Write(pos, ref buf) || MMVA == IntPtr.Zero)
 				return false;
 
-			IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);//読み取り開始位置適用済みのポインタ
-			Marshal.StructureToPtr(buf, ip_writeTo, false);//予め確保してた場所にStructureを書き込む
+			_Write(pos, in buf);
 			return true;
+		}
+
+		/// <summary>値の書き込み機能のコア部分</summary>
+		/// <typeparam name="T">型</typeparam>
+		/// <param name="pos">書き込む位置 [bytes]</param>
+		/// <param name="buf">書き込むデータ</param>
+		private void _Write<T>(in long pos, in T buf) where T : struct
+		{
+			//読み取り開始位置適用済みのポインタ
+			IntPtr ip_writeTo = new IntPtr(MMVA.ToInt64() + pos);
+
+			//予め確保してた場所にStructureを書き込む
+			Marshal.StructureToPtr(buf, ip_writeTo, false);
 		}
 
 		/// <summary>SMemに連続した値を書き込みます</summary>
