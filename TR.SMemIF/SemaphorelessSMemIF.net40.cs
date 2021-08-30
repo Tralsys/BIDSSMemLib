@@ -12,6 +12,7 @@ namespace TR
 		MemoryMappedViewAccessor? MMVA = null;
 
 		const long Capacity_Step = 4096;
+		const long CanWriteInOneTime_Bytes = 4096;
 
 		/// <summary>インスタンスを初期化します</summary>
 		/// <param name="smem_name">共有メモリ空間の名前</param>
@@ -100,7 +101,21 @@ namespace TR
 			if (!base.WriteArray(pos, buf, offset, count) || MMVA?.CanWrite != true)
 				return false;
 
-			MMVA.WriteArray(pos, buf, offset, count);
+			long elemBytes = getElemSize<T>();
+			int canWriteInOneTime = (int)(CanWriteInOneTime_Bytes / elemBytes);
+			long posStep = elemBytes * canWriteInOneTime;
+
+			while (count > 0)
+			{
+				int write_count = count > canWriteInOneTime ? canWriteInOneTime : count;
+
+				MMVA.WriteArray(pos, buf, offset, write_count);
+
+				offset += canWriteInOneTime;
+				count -= canWriteInOneTime;
+				pos += posStep;
+			}
+
 			return true;
 		}
 
