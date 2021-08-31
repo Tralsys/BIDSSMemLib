@@ -6,11 +6,10 @@ namespace TR
 {
 	public class SMemCtrler<T> : SMemCtrlerBase<T>, ISMemCtrler<T>, IReadWriteInObject where T : struct
 	{
-		public override uint Elem_Size { get; }
+		public override uint Elem_Size { get; } = (uint)Marshal.SizeOf(default(T));
 
 		public SMemCtrler(in string name, in bool no_smem, in bool no_event) : base(name,no_smem,no_event)
 		{
-			Elem_Size = (uint)Marshal.SizeOf(default(T));
 		}
 
 		protected override void Initialize_MMF() => MMF = new SMemIF(SMem_Name, Elem_Size);
