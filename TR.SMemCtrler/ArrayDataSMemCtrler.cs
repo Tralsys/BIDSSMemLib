@@ -64,12 +64,6 @@ namespace TR
 				array[arrayIndex + i] = Value[i];
 		}
 
-		public override void Dispose()
-		{
-			AutoRead.Dispose();
-			MMF?.Dispose();
-		}
-
 		protected IEnumerator<T> GetEnumerator_T()
 		{
 			UpdateValueFromSMem();
