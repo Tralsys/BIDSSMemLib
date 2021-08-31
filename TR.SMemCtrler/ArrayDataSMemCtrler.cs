@@ -35,7 +35,7 @@ namespace TR
 		/// <param name="no_smem">共有メモリを使用せず, キャッシュ管理のみを行うモードで起動するかどうか</param>
 		/// <param name="no_event">イベントを発火させないモードで使用するかどうか</param>
 		/// <param name="maxCount">書き込む最大要素数 (既に他のプロセスによって共有メモリが作成されていた場合, そこで設定されたキャパシティが使用されます)</param>
-		public ArrayDataSMemCtrler(in string name, in bool no_smem, in bool no_event, in int maxCount) : base(name, no_smem, no_event, Marshal.SizeOf(default(T)) * maxCount)
+		public ArrayDataSMemCtrler(in string name, in bool no_smem, in bool no_event, in int maxCount) : base(name, no_smem, no_event, sizeof(int) + (Marshal.SizeOf(default(T)) * maxCount))
 		{
 			ValueChanged += (_, e) => ArrValueChanged?.Invoke(this, new(e.OldValue.ToArray(), e.NewValue.ToArray()));
 		}
