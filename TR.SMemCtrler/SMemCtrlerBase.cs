@@ -49,7 +49,7 @@ namespace TR
 			T oldValue = Value;
 			_Value = newValue;
 
-			if (doWriteToSMem)
+			if (!No_SMem_Mode && doWriteToSMem)
 				Write(newValue);
 
 			if (!No_Event_Mode)

@@ -15,15 +15,19 @@ namespace TR
 		#region ISMemCtrler
 		public override T Read()
 		{
-			if (MMF is not null && MMF.Read(0, out T value))
+			if (MMF is not null && !No_SMem_Mode && MMF.Read(0, out T value))
+			{
+				//共有メモリから読み込むモードであり, かつ読み込みに成功した場合のみ値の更新チェックを行う
+				//CheckAndNotifyPropertyChangedメソッド内でValueの更新は行われる
 				CheckAndNotifyPropertyChanged(value);
+			}
 
 			return Value;
 		}
 
 		public override bool TryRead(out T value)
 		{
-			if(MMF is null)
+			if(MMF is null || !No_SMem_Mode)
 			{
 				value = Value;
 				return true;
@@ -62,7 +66,9 @@ namespace TR
 		public override void Write(in T value)
 		{
 			_Value = value;
-			MMF?.Write(0, ref _Value);
+
+			if (!No_SMem_Mode)
+				MMF?.Write(0, ref _Value);
 		}
 		#endregion
 
