@@ -75,11 +75,28 @@ namespace TR
 			AutoRead = new AutoReadSupporter<T>(this);
 		}
 
-		public virtual void Dispose()
+		#region IDisposable Support
+		protected virtual void Dispose(bool disposing)
 		{
-			AutoRead.Dispose();
-			MMF?.Dispose();
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					AutoRead.Dispose();
+				}
+
+				MMF?.Dispose();
+				MMF = null;
+				disposedValue = true;
+			}
 		}
+
+		public void Dispose()
+		{
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
+		}
+		#endregion
 
 		public abstract T Read();
 
