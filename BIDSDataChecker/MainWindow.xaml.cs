@@ -114,7 +114,9 @@ namespace BIDSDataChecker
 			public int Time;
 			public int Action;
 		}
-		ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog = new ArrayDataSMemCtrler<ConductorActionLogStruct>(nameof(ConductorActionLog), false, true);
+		static readonly int ConductorActionLog_MaxCount = 16;
+		static readonly int ConductorActionLog_CapacityCount = ConductorActionLog_MaxCount + 4;
+		ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog = new ArrayDataSMemCtrler<ConductorActionLogStruct>(nameof(ConductorActionLog), false, true, ConductorActionLog_CapacityCount);
 		ConductorActionLogStruct[] ConductorActionLogArr = new ConductorActionLogStruct[4];
 		private void DT_Tick(object sender, EventArgs e)
 		{

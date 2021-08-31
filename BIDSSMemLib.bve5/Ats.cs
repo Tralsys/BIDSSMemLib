@@ -161,7 +161,8 @@ namespace TR.BIDSSMemLib
       public int Action;
 		}
     static readonly int ConductorActionLog_MaxCount = 16;
-    static ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog { get; } = new(CustomDataNames.ConductorActionLog, false, true);
+    static readonly int ConductorActionLog_CapacityCount = ConductorActionLog_MaxCount + 4;
+    static ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog { get; } = new(CustomDataNames.ConductorActionLog, false, true, ConductorActionLog_CapacityCount);
 		private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
 		{
       ConductorActionLog.Add(new(BSMD.StateData.T, (int)e.ActionType));

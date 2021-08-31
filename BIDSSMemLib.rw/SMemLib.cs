@@ -30,8 +30,8 @@ namespace TR.BIDSSMemLib
 
 			SMC_BSMD = new SMemCtrler<BIDSSharedMemoryData>(MMFB_Name, isNoSMemMode, isNoEventMode);
 			SMC_OpenD = new SMemCtrler<OpenD>(MMFO_Name, isNoSMemMode, isNoEventMode);
-			SMC_PnlD = new ArrayDataSMemCtrler<int>(MMFPn_Name, isNoSMemMode, isNoEventMode);
-			SMC_SndD = new ArrayDataSMemCtrler<int>(MMFSn_Name, isNoSMemMode, isNoEventMode);
+			SMC_PnlD = new ArrayDataSMemCtrler<int>(MMFPn_Name, isNoSMemMode, isNoEventMode, 256);
+			SMC_SndD = new ArrayDataSMemCtrler<int>(MMFSn_Name, isNoSMemMode, isNoEventMode, 256);
 
 			//OptionalEventは削除した
 		}
