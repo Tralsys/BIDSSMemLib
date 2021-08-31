@@ -63,8 +63,8 @@ namespace TR
 
 			try
 			{
-				reader = new ArrayDataSMemCtrler<T>(smem_name, false, true);
-				writer = new ArrayDataSMemCtrler<T>(smem_name, false, true);
+				reader = new ArrayDataSMemCtrler<T>(smem_name, false, true, count);
+				writer = new ArrayDataSMemCtrler<T>(smem_name, false, true, count);
 
 				writer.WriteInObject(value);
 				object result = reader.ReadInObject();
