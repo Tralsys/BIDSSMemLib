@@ -5,7 +5,7 @@ namespace TR
 {
 	public abstract class SMemCtrlerBase<T> : ISMemCtrler<T> where T : new()
 	{
-		protected SMemIF? MMF { get; set; } = null;
+		protected SMemIF? MMF { get; private set; } = null;
 
 		public IAutoReadSupporter<T> AutoRead { get; }
 		private bool _No_SMem_Mode = false;
