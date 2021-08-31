@@ -12,8 +12,6 @@ namespace TR
 		{
 		}
 
-		protected override void Initialize_MMF(in long capacityRequest) => MMF = new SMemIF(SMem_Name, capacityRequest);
-
 		#region ISMemCtrler
 		public override T Read()
 		{

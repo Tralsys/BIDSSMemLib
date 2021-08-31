@@ -260,8 +260,6 @@ namespace TR
 
 		public void Write(in T[] array) => Write(new List<T>(array));
 
-		protected override void Initialize_MMF(in long capacityRequest) => MMF = new SMemIF(SMem_Name, capacityRequest);
-
 		private bool TryGetLengthInSMem(out int len)
 		{
 			len = 0;

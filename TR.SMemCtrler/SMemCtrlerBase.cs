@@ -17,7 +17,10 @@ namespace TR
 				_No_SMem_Mode = value;
 
 				if (MMF is null && !value)
-					Initialize_MMF(Capacity); //一度インスタンスを取得したのであれば, それを解放せずに使いまわす
+				{
+					//一度インスタンスを取得したのであれば, それを解放せずに使いまわす
+					MMF = new(SMem_Name, Capacity);
+				}
 			}
 		}
 
@@ -71,8 +74,6 @@ namespace TR
 
 			AutoRead = new AutoReadSupporter<T>(this);
 		}
-
-		protected abstract void Initialize_MMF(in long capacityRequest);
 
 		public virtual void Dispose()
 		{
