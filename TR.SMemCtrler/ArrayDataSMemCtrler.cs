@@ -207,8 +207,7 @@ namespace TR
 				return false;
 		}
 
-		public bool TryWrite(in int index, in T value) => TryWrite(index, value);
-		public bool TryWrite(in int index, T value)
+		public bool TryWrite(in int index, in T value)
 		{
 			UpdateValueFromSMem();
 
@@ -230,7 +229,10 @@ namespace TR
 			Value[index] = value;
 
 			if (!No_SMem_Mode)
-				_ = (MMF?.Write(sizeof(int) + (Elem_Size * index), ref value));
+			{
+				T copied_value = value;
+				_ = (MMF?.Write(sizeof(int) + (Elem_Size * index), ref copied_value));
+			}
 
 			return true;
 		}
