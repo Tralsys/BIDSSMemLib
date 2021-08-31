@@ -8,6 +8,8 @@ namespace TR
 	public class ArrayDataSMemCtrler_RWInObjTests
 	{
 		const int ARRLEN_MAX = 0x400;
+		const int ARRLEN_DOUBLE_MAX = 0x200;
+		const int ARRLEN_CUSTOMSTRUCT_MAX = 0xA9;
 		const int TESTCASE_COUNT = 10;
 		static Random random = new();
 		static int rand_int => random.Next();
@@ -24,7 +26,7 @@ namespace TR
 
 		[Parallelizable]
 		[Test]
-		public void DoubleListRWTest([Random(1, ARRLEN_MAX, TESTCASE_COUNT)] int count)
+		public void DoubleListRWTest([Random(1, ARRLEN_DOUBLE_MAX, TESTCASE_COUNT)] int count)
 		{
 			string smem_name = $"{nameof(DoubleListRWTest)}_{rand_int}";
 
@@ -44,7 +46,7 @@ namespace TR
 
 		[Parallelizable]
 		[Test]
-		public void CustomStructListRWTest([Random(1, ARRLEN_MAX, TESTCASE_COUNT)] int count)
+		public void CustomStructListRWTest([Random(1, ARRLEN_CUSTOMSTRUCT_MAX, TESTCASE_COUNT)] int count)
 		{
 			string smem_name = $"{nameof(CustomStructListRWTest)}_{count}";
 
