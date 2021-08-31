@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace TR
 {
@@ -59,7 +58,8 @@ namespace TR
 			IReadWriteInObject? writer = null;
 
 			List<T> value = new();
-			_ = Parallel.For(0, count, i => value.Add(generator.Invoke(i)));
+			for (int i = 0; i < count; i++)
+				value.Add(generator.Invoke(i));
 
 			try
 			{
