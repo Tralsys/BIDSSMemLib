@@ -8,6 +8,7 @@ namespace TR
 	{
 		static int rand_int => new Random().Next();
 
+		[Parallelizable]
 		[Test]
 		public void IntDataRWTest([Random(10)]int value)
 		{
@@ -16,6 +17,7 @@ namespace TR
 			RunTest(smem_name, value);
 		}
 
+		[Parallelizable]
 		[Test]
 		public void DoubleDataRWTest([Random(10)] double value)
 		{
@@ -36,6 +38,7 @@ namespace TR
 
 		}
 
+		[Parallelizable]
 		[Test]
 		public void CustomStructDataRWTest([Random(3)] float A, [Random(3)] int B, [Random(3)] double C)
 		{

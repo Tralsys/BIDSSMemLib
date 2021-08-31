@@ -13,6 +13,7 @@ namespace TR
 		static int rand_int => random.Next();
 		static double rand_double => random.NextDouble();
 
+		[Parallelizable]
 		[Test]
 		public void IntListRWTest([Random(1, ARRLEN_MAX, TESTCASE_COUNT)] int count)
 		{
@@ -21,6 +22,7 @@ namespace TR
 			RunTest(smem_name, count, i => i);
 		}
 
+		[Parallelizable]
 		[Test]
 		public void DoubleListRWTest([Random(1, ARRLEN_MAX, TESTCASE_COUNT)] int count)
 		{
@@ -40,6 +42,7 @@ namespace TR
 				=> $"A(float):{A},\tB(int):{B},\tC(double):{C},\tD(bool):{D}";
 		}
 
+		[Parallelizable]
 		[Test]
 		public void CustomStructListRWTest([Random(1, ARRLEN_MAX, TESTCASE_COUNT)] int count)
 		{
