@@ -115,16 +115,8 @@ namespace TR
 
 			int index = Value.IndexOf(item);
 
-			Value.RemoveAt(index);
+			_RemoveAt(index);
 
-			if (!No_SMem_Mode)
-			{
-				int newLength = Value.Count;
-
-				_ = (MMF?.Write(0, ref newLength)); //長さ情報更新
-
-				_ = (MMF?.WriteArray(sizeof(int) + (Elem_Size * index), Value.ToArray(), index, Value.Count - index));
-			}
 			return true;
 		}
 
@@ -134,6 +126,11 @@ namespace TR
 			if (Count <= index)
 				throw new IndexOutOfRangeException($"Array Length in SMem was {Count} (Your order is {index})");
 
+			_RemoveAt(index);
+		}
+
+		private void _RemoveAt(in int index)
+		{
 			Value.RemoveAt(index);
 
 			if (!No_SMem_Mode)
