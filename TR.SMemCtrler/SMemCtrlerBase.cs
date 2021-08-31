@@ -5,10 +5,10 @@ namespace TR
 {
 	/// <summary>共有メモリへの簡単なアクセスを提供するクラスの基底となるクラス</summary>
 	/// <typeparam name="T">このクラスて使用する型情報</typeparam>
-	public abstract class SMemCtrlerBase<T> : ISMemCtrler<T> where T : new()
+	public abstract class SMemCtrlerBase<T> : ISMemCtrler<T>, IContainsSMemIF where T : new()
 	{
 		/// <summary>使用する共有メモリ</summary>
-		protected SMemIF? MMF { get; private set; } = null;
+		public SMemIF? MMF { get; private set; } = null;
 
 		/// <summary>自動読み取り機能を提供するクラスのインスタンス</summary>
 		public IAutoReadSupporter<T> AutoRead { get; }
