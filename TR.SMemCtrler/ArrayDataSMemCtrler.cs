@@ -75,13 +75,12 @@ namespace TR
 				array[arrayIndex + i] = Value[i];
 		}
 
-		protected IEnumerator<T> GetEnumerator_T()
+		public IEnumerator<T> GetEnumerator()
 		{
 			UpdateValueFromSMem();
 
 			return Value.GetEnumerator();
 		}
-		public IEnumerator<T> GetEnumerator() => GetEnumerator_T();
 
 		public int IndexOf(T item) => IndexOf(in item);
 		public int IndexOf(in T item)
@@ -146,7 +145,7 @@ namespace TR
 			}
 		}
 
-		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator_T();
+		IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 		#endregion
 
 
