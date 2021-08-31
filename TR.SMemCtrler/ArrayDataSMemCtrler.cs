@@ -27,7 +27,9 @@ namespace TR
 		void UpdateValueFromSMem() => _ = Read();
 
 		#region IList
-		public void Add(T item)
+		public void Add(T item) => Add(in item);
+
+		public void Add(in T item)
 		{
 			if (TryGetLengthInSMem(out var len) == true && len != Value.Count) //長さが違うなら明確にSMemの内容と手元の内容が違う
 				UpdateValueFromSMem(); //SMemから手元にコピー
@@ -37,8 +39,15 @@ namespace TR
 			if (!No_SMem_Mode)
 			{
 				int newLen = Value.Count;
-				_ = (MMF?.Write(0, ref newLen)); //長さ情報の更新
-				_ = (MMF?.Write(sizeof(int) + (Elem_Size * (Value.Count - 1)), ref item)); //配列にデータを追加
+
+				//コピーの必要が出てはじめてコピーをする
+				T copied_item = item;
+
+				//長さ情報の更新
+				_ = (MMF?.Write(0, ref newLen));
+
+				//配列にデータを追加
+				_ = (MMF?.Write(sizeof(int) + (Elem_Size * (Value.Count - 1)), ref copied_item));
 			}
 		}
 
@@ -49,7 +58,9 @@ namespace TR
 			Write(Value);//空のリストを書き込むことで消去扱い
 		}
 
-		public bool Contains(T item)
+		public bool Contains(T item) => Contains(in item);
+
+		public bool Contains(in T item)
 		{
 			UpdateValueFromSMem(); //SMemから手元にコピーする
 
@@ -80,7 +91,9 @@ namespace TR
 			return Value.IndexOf(item);
 		}
 
-		public void Insert(int index, T item)
+		public void Insert(int index, T item) => Insert(in index, in item);
+
+		public void Insert(in int index, in T item)
 		{
 			UpdateValueFromSMem();
 
