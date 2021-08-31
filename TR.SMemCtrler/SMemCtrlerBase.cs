@@ -17,13 +17,16 @@ namespace TR
 				_No_SMem_Mode = value;
 
 				if (MMF is null && !value)
-					Initialize_MMF(); //一度インスタンスを取得したのであれば, それを解放せずに使いまわす
+					Initialize_MMF(Capacity); //一度インスタンスを取得したのであれば, それを解放せずに使いまわす
 			}
 		}
 
 		public bool No_Event_Mode { get; set; }
 		public string SMem_Name { get; }
 		public abstract uint Elem_Size { get; }
+
+		private long RequestedCapacity { get; } = 0;
+		public long Capacity { get => MMF?.Capacity ?? RequestedCapacity; }
 
 		protected T _Value = new();
 		public T Value
@@ -53,7 +56,7 @@ namespace TR
 			}
 		}
 
-		public SMemCtrlerBase(in string name, in bool no_smem, in bool no_event)
+		public SMemCtrlerBase(in string name, in bool no_smem, in bool no_event, in long capacityRequest)
 		{
 			if (name is null)
 				throw new ArgumentNullException("name cannot null");
@@ -61,6 +64,7 @@ namespace TR
 				throw new ArgumentOutOfRangeException("name cannot empty");
 
 			Value = new();
+			RequestedCapacity = capacityRequest;
 			SMem_Name = name;
 			No_SMem_Mode = no_smem; //必要に応じて, setterでMMFの初期化が行われる
 			No_Event_Mode = no_event;
@@ -68,7 +72,7 @@ namespace TR
 			AutoRead = new AutoReadSupporter<T>(this);
 		}
 
-		protected abstract void Initialize_MMF();
+		protected abstract void Initialize_MMF(in long capacityRequest);
 
 		public virtual void Dispose()
 		{

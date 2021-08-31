@@ -8,11 +8,11 @@ namespace TR
 	{
 		public override uint Elem_Size { get; } = (uint)Marshal.SizeOf(default(T));
 
-		public SMemCtrler(in string name, in bool no_smem, in bool no_event) : base(name,no_smem,no_event)
+		public SMemCtrler(in string name, in bool no_smem, in bool no_event) : base(name, no_smem, no_event, Marshal.SizeOf(default(T)))
 		{
 		}
 
-		protected override void Initialize_MMF() => MMF = new SMemIF(SMem_Name, Elem_Size);
+		protected override void Initialize_MMF(in long capacityRequest) => MMF = new SMemIF(SMem_Name, capacityRequest);
 
 		#region ISMemCtrler
 		public override T Read()

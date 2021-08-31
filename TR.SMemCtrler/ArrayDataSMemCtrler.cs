@@ -19,7 +19,7 @@ namespace TR
 		public bool IsReadOnly { get => false; }
 		public override uint Elem_Size { get; } = (uint)Marshal.SizeOf(default(T));
 
-		public ArrayDataSMemCtrler(in string name, in bool no_smem, in bool no_event) : base(name, no_smem, no_event)
+		public ArrayDataSMemCtrler(in string name, in bool no_smem, in bool no_event, in int maxCount) : base(name, no_smem, no_event, Marshal.SizeOf(default(T)) * maxCount)
 		{
 			ValueChanged += (_, e) => ArrValueChanged?.Invoke(this, new(e.OldValue.ToArray(), e.NewValue.ToArray()));
 		}
@@ -255,7 +255,7 @@ namespace TR
 
 		public void Write(in T[] array) => Write(new List<T>(array));
 
-		protected override void Initialize_MMF() => MMF = new SMemIF(SMem_Name, sizeof(int));
+		protected override void Initialize_MMF(in long capacityRequest) => MMF = new SMemIF(SMem_Name, capacityRequest);
 
 		private bool TryGetLengthInSMem(out int len)
 		{

@@ -29,6 +29,9 @@ namespace TR
 		/// <summary>要素のサイズ</summary>
 		uint Elem_Size { get; }
 
+		/// <summary>共有メモリのキャパシティ</summary>
+		long Capacity { get; }
+
 		event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
 
 		T Value { get; set; }
