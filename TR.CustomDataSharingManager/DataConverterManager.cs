@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -34,21 +35,45 @@ namespace TR
 			UsingScriptOptions = ScriptOptions.Default.WithAllowUnsafe(true).WithImports(ScriptsImports);
 		}
 
-		public void LoadScripts(in string[] scriptFilePathArr)
+		public void LoadScriptsFromFilePathArray(in string[] scriptFilePathArr)
 		{
 			foreach(var path in scriptFilePathArr)
 			{
 				string extension = Path.GetExtension(path);
+
+				//相対パスは絶対パスに変換する
+				string nPath = path;
+				if (!Path.IsPathRooted(nPath))
+					nPath = CurrentDllLocation + nPath;
+
 				if(ScriptsExtensions.Contains(extension))
 				{
-					using StreamReader reader = new StreamReader(path);
+					using StreamReader reader = new(nPath);
 					Runners.Add(GetActionFromScriptString(reader.ReadToEnd()));
 				}
 				else
 				{
 					//IScriptingModuleを実装したクラスをロードする
+					Assembly asm = Assembly.LoadFrom(nPath);
+
+					LoadScriptsFromAssembly(asm);
 				}
 			}
+		}
+		public void LoadScriptsFromAssembly(in Assembly asm)
+		{
+			foreach (var type in asm.GetTypes())
+				CheckIScriptingModuleAndAddToRunners(type);
+		}
+
+		public void CheckIScriptingModuleAndAddToRunners(in Type type)
+		{
+			//IScriptingModuleインターフェイスを実装しているか
+			//実装しているなら引数なしコンストラクタを実行し, 本当にIScriptingModuleにキャストできるか確認
+			if (typeof(IScriptingModule).IsAssignableFrom(type)
+				&& type.GetConstructor(Array.Empty<Type>())?.Invoke(Array.Empty<object>()) is IScriptingModule scriptingModule)
+				//キャスト出来たら, それに含まれるメソッドをAdd
+				Runners.Add(scriptingModule.RunAsync);
 		}
 
 
