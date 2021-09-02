@@ -49,7 +49,7 @@ namespace TR
 				if(ScriptsExtensions.Contains(extension))
 				{
 					using StreamReader reader = new(nPath);
-					Runners.Add(GetActionFromScriptString(reader.ReadToEnd()));
+					Runners.Add(CreateActionFromScriptString(reader.ReadToEnd()));
 				}
 				else
 				{
@@ -77,7 +77,7 @@ namespace TR
 		}
 
 
-		public static Func<DataForConverter, Task> GetActionFromScriptString(in string scriptString)
+		public static Func<DataForConverter, Task> CreateActionFromScriptString(in string scriptString)
 		{
 			var scriptRunner = CSharpScript.Create(scriptString, UsingScriptOptions, typeof(DataForConverter));
 
