@@ -13,7 +13,7 @@ namespace TR
 {
 	public class DataConverterManager : IDisposable
 	{
-		static readonly string CurrentDllLocation = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? string.Empty;
+		static readonly string CurrentDllLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
 
 		static ScriptOptions UsingScriptOptions { get; }
 		static string[] ScriptsImports { get; } = new string[]
