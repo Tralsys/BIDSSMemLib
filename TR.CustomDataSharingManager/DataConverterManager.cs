@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace TR
 {
-	public class DataConverterManager : IDisposable
+	public class DataConverterManager : IDisposable, IScriptingModule
 	{
 		static readonly string CurrentDllLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty;
 
@@ -33,6 +33,17 @@ namespace TR
 		static DataConverterManager()
 		{
 			UsingScriptOptions = ScriptOptions.Default.WithAllowUnsafe(true).WithImports(ScriptsImports);
+		}
+
+
+		public Task RunAsync(DataForConverter data)
+		{
+			List<Task> taskList = new();
+
+			foreach (var i in Runners)
+				taskList.Add(i.Invoke(data));
+
+			return Task.WhenAll(taskList);
 		}
 
 		public void LoadScriptsFromFilePathArray(in string[] scriptFilePathArr)
