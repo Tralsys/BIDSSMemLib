@@ -29,7 +29,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.SMemIF.Mock", "TR.SMemIF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.CustomDataSharingManager", "TR.CustomDataSharingManager\TR.CustomDataSharingManager.csproj", "{21458AD4-968B-4899-9C06-3CE5D9A52C07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.SMemCtrler.Tests", "TR.SMemCtrler.Tests\TR.SMemCtrler.Tests.csproj", "{B76D5B02-2F27-4A68-8D86-82CC4A669CCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TR.SMemCtrler.Tests", "TR.SMemCtrler.Tests\TR.SMemCtrler.Tests.csproj", "{B76D5B02-2F27-4A68-8D86-82CC4A669CCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.CustomDataSharingManager.Tests", "TR.CustomDataSharingManager.Tests\TR.CustomDataSharingManager.Tests.csproj", "{31453983-8901-432B-95EF-5460DB8ABC71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +211,18 @@ Global
 		{B76D5B02-2F27-4A68-8D86-82CC4A669CCB}.Release|x64.Build.0 = Release|Any CPU
 		{B76D5B02-2F27-4A68-8D86-82CC4A669CCB}.Release|x86.ActiveCfg = Release|Any CPU
 		{B76D5B02-2F27-4A68-8D86-82CC4A669CCB}.Release|x86.Build.0 = Release|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Debug|x64.Build.0 = Debug|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Debug|x86.Build.0 = Debug|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|x64.ActiveCfg = Release|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|x64.Build.0 = Release|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|x86.ActiveCfg = Release|Any CPU
+		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
