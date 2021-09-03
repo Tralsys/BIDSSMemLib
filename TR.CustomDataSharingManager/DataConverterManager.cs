@@ -35,7 +35,7 @@ namespace TR
 
 		static DataConverterManager()
 		{
-			UsingScriptOptions = ScriptOptions.Default.WithAllowUnsafe(true).WithImports(ScriptsImports);
+			UsingScriptOptions = ScriptOptions.Default.WithAllowUnsafe(true).WithImports(ScriptsImports).AddReferences(Assembly.GetAssembly(typeof(SMemCtrler<int>)), Assembly.GetAssembly(typeof(CustomDataSharingManager)));
 		}
 
 
