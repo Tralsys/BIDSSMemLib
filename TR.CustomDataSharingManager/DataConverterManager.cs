@@ -95,6 +95,8 @@ namespace TR
 		{
 			var scriptRunner = CSharpScript.Create(scriptString, UsingScriptOptions, typeof(DataForConverter));
 
+			scriptRunner.Compile();
+
 			return (value) => scriptRunner.RunAsync(value);
 		}
 
