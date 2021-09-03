@@ -26,6 +26,10 @@ namespace TR
 		{
 			".cs", ".cscript", ".csx"
 		};
+		static IReadOnlyList<string> AssemblyExtensions { get; } = new List<string>()
+		{
+			".dll"
+		};
 
 		private List<Func<DataForConverter, Task>> Runners { get; } = new();
 
@@ -61,7 +65,7 @@ namespace TR
 					using StreamReader reader = new(nPath);
 					Runners.Add(CreateActionFromScriptString(reader.ReadToEnd()));
 				}
-				else
+				else if(AssemblyExtensions.Contains(extension))
 				{
 					//IScriptingModuleを実装したクラスをロードする
 					Assembly asm = Assembly.LoadFrom(nPath);
