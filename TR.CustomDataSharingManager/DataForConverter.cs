@@ -13,16 +13,22 @@ namespace TR
 		CustomDataSharingManager DataSharingManager { get; }
 	}
 
-	public interface IDataForConverter_Panel_Sound
+	public interface IDataForConverter_Panel_Sound_IntPtr
 	{
-		IntPtr Panel { get; }
-		IntPtr Sound { get; }
+		IntPtr PanelIntPtr { get; }
+		IntPtr SoundIntPtr { get; }
+	}
+
+	public unsafe interface IDataForConverter_Panel_Sound
+	{
+		int* Panel { get; }
+		int* Sound { get; }
 	}
 
 	public record DataForConverter(
 		CustomDataSharingManager DataSharingManager,
-		IntPtr Panel,
-		IntPtr Sound,
+		IntPtr PanelIntPtr,
+		IntPtr SoundIntPtr,
 		double Location,
 		float Speed,
 		TimeSpan Time,
@@ -42,5 +48,23 @@ namespace TR
 		int CurrentPowerPos,
 		int CurrentReverserPos) :
 		IContainsCustomDataSharingManager,
-		IDataForConverter_Panel_Sound;
+		IDataForConverter_Panel_Sound_IntPtr,
+		IDataForConverter_Panel_Sound
+	{
+		public unsafe int* Panel => (int*)PanelIntPtr;
+		public unsafe int* Sound => (int*)SoundIntPtr;
+	}
 }
+
+#if NETFRAMEWORK
+// ref : https://ufcpp.net/blog/2020/6/cs9vs16_7p3/
+// IsExternalInit属性
+
+namespace System.Runtime.CompilerServices
+{
+	internal class IsExternalInit
+	{
+
+	}
+}
+#endif

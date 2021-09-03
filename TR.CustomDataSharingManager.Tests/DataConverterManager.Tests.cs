@@ -26,7 +26,7 @@ namespace TR
 		}
 
 		const int NumberInTestScript = 12345;
-		static readonly string TestScript = $"pPanel[0] = {NumberInTestScript};";
+		static readonly string TestScript = $"unsafe {{ Panel[0] = {NumberInTestScript}; }}";
 		[Test]
 		public async Task CreateActionFromScriptStringTest()
 		{
@@ -36,7 +36,7 @@ namespace TR
 
 			using CustomDataSharingManager cdsManager = new();
 
-			DataForConverter data = CreateEmptyDataForConverter(cdsManager) with { Panel = panelPtr };
+			DataForConverter data = CreateEmptyDataForConverter(cdsManager) with { PanelIntPtr = panelPtr };
 
 			await func.Invoke(data);
 
