@@ -39,7 +39,9 @@ namespace TR
 		/// <returns>試行結果</returns>
 		public override bool TryRead(out T value)
 		{
-			if(MMF is null || !No_SMem_Mode)
+			//MMFがnull => SMemに読み書き不可
+			//No_SMem_Mode => SMemから読み込まなくてOK
+			if(MMF is null || No_SMem_Mode)
 			{
 				value = Value;
 				return true;
