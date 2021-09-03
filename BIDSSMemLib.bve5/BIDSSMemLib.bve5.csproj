@@ -37,6 +37,35 @@
     <AssemblyName>TR.BIDSSMemLib.bve5.x86</AssemblyName>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Mackoy.IInputDevice, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files\mackoy\BveTs6\Mackoy.IInputDevice.DLL</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" Condition="'$(TargetFramework)' != 'net35'">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" Condition="'$(TargetFramework)' == 'net35'">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\System.Windows.Forms.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DllExport" Version="1.7.4" />
+    <PackageReference Include="ilmerge">
+      <Version>3.0.41</Version>
+    </PackageReference>
+    <PackageReference Include="TR.BVEConductorChecker" Version="1.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <LibFilesToMerge>IAtsPI.dll TR.BIDSSMemLib.rw.dll TR.BIDSSMemLib.structs.dll TR.BVEConductorChecker.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll</LibFilesToMerge>
+    <ILMergeTargetPlatform Condition="'$(TargetFramework)' == 'net35'">TargetPlatform=/targetplatform:v2,C:/Windows/Microsoft.NET/Framework64/v2.0.50727</ILMergeTargetPlatform>
+  </PropertyGroup>
   <PropertyGroup Label="8337224c9ad9e356:PreProc">
     <DebugType Condition="'$(DebugType)'!='full' And '$(DebugType)'!='pdbonly'" Label="8337224c9ad9e356:PreProc">pdbonly</DebugType>
   </PropertyGroup>
@@ -59,41 +88,10 @@
     <DllExportILMerge>TR.IAtsPI.dll</DllExportILMerge>
     <DllExportPostProcType>0</DllExportPostProcType>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Mackoy.IInputDevice, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\mackoy\BveTs6\Mackoy.IInputDevice.DLL</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" Condition="'$(TargetFramework)' != 'net35'">
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.Windows.Forms.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" Condition="'$(TargetFramework)' == 'net35'">
-      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\System.Windows.Forms.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="DllExport" Version="1.7.4" />
-    <PackageReference Include="ilmerge">
-      <Version>3.0.41</Version>
-    </PackageReference>
-	<PackageReference Include="TR.BVEConductorChecker" Version="1.0.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
-  </ItemGroup>
-	<PropertyGroup>
-		<LibFilesToMerge>IAtsPI.dll TR.BIDSSMemLib.rw.dll TR.BIDSSMemLib.structs.dll TR.BVEConductorChecker.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll</LibFilesToMerge>
-		<ILMergeTargetPlatform Condition="'$(TargetFramework)' == 'net35'">TargetPlatform=/targetplatform:v2,C:/Windows/Microsoft.NET/Framework64/v2.0.50727</ILMergeTargetPlatform>
-	</PropertyGroup>
-	<!--nuget package path ref : https://docs.microsoft.com/ja-jp/nuget/consume-packages/package-references-in-project-files#generatepathproperty -->
-  <Target Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'x64'" Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
-		<Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
-		<!--net35 target ref : https://github.com/dotnet/ILMerge/issues/42 -->
-		<Exec Command="$(ILMergeConsolePath) /target:dll $(ILMergeTargetPlatform) /lib:$(TargetDir) $(TargetFileName) $(LibFilesToMerge) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="false" />
-    <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="false" />
+  <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
+    <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
+    <Exec Command="$(ILMergeConsolePath) TR.IAtsPI.dll $(TargetFileName) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+    <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
     <Delete Files="$(TargetDir)$(DllExportMetaLibName)" ContinueOnError="true" />
   </Target>
   <Target Name="DllExportPreProcAfter" AfterTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
@@ -119,4 +117,5 @@
   <Target Name="DllExportRPkgDynamicImport" BeforeTargets="PostBuildEvent" DependsOnTargets="GetFrameworkPaths" Condition="'$(DllExportModImported)' != 'true' And '$(DllExportRPkgDyn)' != 'false'">
     <MSBuild BuildInParallel="true" UseResultsCache="true" Projects="$(MSBuildProjectFullPath)" Properties="DllExportRPkgDyn=true" Targets="Build" />
   </Target>
+  <!--nuget package path ref : https://docs.microsoft.com/ja-jp/nuget/consume-packages/package-references-in-project-files#generatepathproperty -->
 </Project>
