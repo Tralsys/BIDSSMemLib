@@ -89,9 +89,7 @@ namespace TR
 
 		public static Func<DataForConverter, Task> CreateActionFromScriptString(in string scriptString)
 		{
-			string scriptStringWithUnsafeBlock = $"unsafe {{ int *pPanel = (int*)Panel; int *pSound = (int*)Sound; {scriptString} }}";
-
-			var scriptRunner = CSharpScript.Create(scriptStringWithUnsafeBlock, UsingScriptOptions, typeof(DataForConverter));
+			var scriptRunner = CSharpScript.Create(scriptString, UsingScriptOptions, typeof(DataForConverter));
 
 			return (value) => scriptRunner.RunAsync(value);
 		}
