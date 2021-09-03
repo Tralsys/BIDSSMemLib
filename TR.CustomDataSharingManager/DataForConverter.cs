@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace TR
@@ -13,22 +14,16 @@ namespace TR
 		CustomDataSharingManager DataSharingManager { get; }
 	}
 
-	public interface IDataForConverter_Panel_Sound_IntPtr
-	{
-		IntPtr PanelIntPtr { get; }
-		IntPtr SoundIntPtr { get; }
-	}
-
 	public unsafe interface IDataForConverter_Panel_Sound
 	{
-		int* Panel { get; }
-		int* Sound { get; }
+		UnmanagedArray Panel { get; }
+		UnmanagedArray Sound { get; }
 	}
 
 	public record DataForConverter(
 		CustomDataSharingManager DataSharingManager,
-		IntPtr PanelIntPtr,
-		IntPtr SoundIntPtr,
+		UnmanagedArray Panel,
+		UnmanagedArray Sound,
 		double Location,
 		float Speed,
 		TimeSpan Time,
@@ -48,11 +43,15 @@ namespace TR
 		int CurrentPowerPos,
 		int CurrentReverserPos) :
 		IContainsCustomDataSharingManager,
-		IDataForConverter_Panel_Sound_IntPtr,
-		IDataForConverter_Panel_Sound
+		IDataForConverter_Panel_Sound;
+
+	public record UnmanagedArray(IntPtr IntPtr)
 	{
-		public unsafe int* Panel => (int*)PanelIntPtr;
-		public unsafe int* Sound => (int*)SoundIntPtr;
+		public int this[int index]
+		{
+			get => Marshal.ReadInt32(IntPtr, index * sizeof(int));
+			set => Marshal.WriteInt32(IntPtr, index * sizeof(int), value);
+		}
 	}
 }
 
