@@ -30,6 +30,21 @@ T GetValue<T>(Dictionary<string, object> objectHolder, in string SMemName) where
 		return default;
 }
 
+bool TryGetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, out T dst) where T : struct
+{
+	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
+	{
+		//キーが存在しなければ新規に作成する
+		obj = new CustomDataSharingManager();
+		objectHolder[CustomDataSharing] = obj;
+	}
+
+	if (obj is CustomDataSharingManager manager)
+		return manager.CreateOneDataSharing<T>(SMemName).TryRead(out dst);
+	else
+		return default;
+}
+
 void SetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, in T value) where T : struct
 {
 	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
