@@ -67,7 +67,9 @@ namespace TR
 				if(ScriptsExtensions.Contains(extension))
 				{
 					using StreamReader reader = new(nPath);
-					Runners.Add(CreateActionFromScriptString(reader.ReadToEnd()));
+					var runner = CreateActionFromScriptString(reader.ReadToEnd());
+					if (runner is not null)
+						Runners.Add(runner);
 				}
 				else if(AssemblyExtensions.Contains(extension))
 				{
@@ -95,13 +97,27 @@ namespace TR
 		}
 
 
-		public static Func<DataForConverter, Task> CreateActionFromScriptString(in string scriptString)
+		public static Func<DataForConverter, Task>? CreateActionFromScriptString(in string scriptString)
+			=> CreateActionFromScriptString(scriptString);
+		public static Func<DataForConverter, Task>? CreateActionFromScriptString(in string scriptString, in string scriptFilePath)
+			=> CreateActionFromScriptString(scriptString, UsingScriptOptions.WithFilePath(scriptFilePath));
+		public static Func<DataForConverter, Task>? CreateActionFromScriptString(in string scriptString, ScriptOptions options)
 		{
-			var scriptRunner = CSharpScript.Create(scriptString, UsingScriptOptions, typeof(DataForConverter));
+			var scriptRunner = CSharpScript.Create(
+				scriptString,
+				options,
+				typeof(DataForConverter));
 
-			scriptRunner.Compile();
+			var compileResults = scriptRunner.Compile();
+			foreach (var i in compileResults)
+				if (i.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
+					return null;
 
-			return (value) => scriptRunner.RunAsync(value);
+			var createdDelegate = scriptRunner.CreateDelegate();
+			if (createdDelegate is null)
+				return null;
+			else
+				return (value) => createdDelegate(value);
 		}
 
 		#region IDisposable Support
