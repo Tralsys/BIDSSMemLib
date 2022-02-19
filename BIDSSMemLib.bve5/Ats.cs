@@ -106,6 +106,8 @@ namespace TR.BIDSSMemLib
   static public class Ats
   {
     static string ExecutingAssemblyLocation { get; } = Assembly.GetExecutingAssembly().Location;
+    static string ExecutingAssemblyDirectory { get; } = Path.GetDirectoryName(ExecutingAssemblyLocation);
+    static string ExecutingAssemblyFileNameWithoutExtension { get; } = Path.GetFileNameWithoutExtension(ExecutingAssemblyLocation);
     static XDocument Doc { get; }
     static Ats()
     {
@@ -113,6 +115,25 @@ namespace TR.BIDSSMemLib
       if (!Debugger.IsAttached)
         Debugger.Launch();
 #endif
+
+      AppDomain.CurrentDomain.AssemblyResolve += (s, e) =>
+      {
+        if (e.RequestingAssembly is null)
+          return null;
+
+        AssemblyName targetAsmName = new(e.Name);
+        string targetAsmLocation = Path.Combine(ExecutingAssemblyDirectory, targetAsmName.Name + ".dll");
+
+        if (File.Exists(targetAsmLocation))
+          return Assembly.LoadFrom(targetAsmLocation);
+
+        targetAsmLocation = Path.Combine(ExecutingAssemblyDirectory, ExecutingAssemblyFileNameWithoutExtension, targetAsmName.Name + ".dll");
+        if (File.Exists(targetAsmLocation))
+          return Assembly.LoadFrom(targetAsmLocation);
+        else
+          return null;
+      };
+
       //Load setting
       try
       {
