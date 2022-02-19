@@ -10,9 +10,9 @@ using System.Xml.Linq;
 
 namespace TR.BIDSSMemLib
 {
-	#region Constant Values
-	/// <summary>レバーサー位置</summary>
-	public static class Reverser
+  #region Constant Values
+  /// <summary>レバーサー位置</summary>
+  public static class Reverser
   {
     /// <summary>後進</summary>
     public const int B = -1;
@@ -99,7 +99,7 @@ namespace TR.BIDSSMemLib
     /// <summary>ATSKey_L (Default : D0)</summary>
     public const int L = 15;
   }
-	#endregion
+  #endregion
 
 
   /// <summary>処理を実装するクラス</summary>
@@ -107,7 +107,7 @@ namespace TR.BIDSSMemLib
   {
     static XDocument doc { get; }
     static Ats()
-		{
+    {
 #if DEBUG
       if (!Debugger.IsAttached)
         Debugger.Launch();
@@ -117,12 +117,12 @@ namespace TR.BIDSSMemLib
       {
         doc = XDocument.Load(Assembly.GetExecutingAssembly().Location + ".xml");
         Version = int.Parse(doc.Element("AtsPISetting").Element("Version").Value);
-			}
-			catch (Exception e)
-			{
+      }
+      catch (Exception e)
+      {
         Debug.WriteLine("[BIDSSMemLib AtsPI IF] Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message);
-			}
-		}
+      }
+    }
     private static readonly int Version = 0x00020000;
     public const CallingConvention CalCnv = CallingConvention.StdCall;
     const int MaxIndex = 256;
@@ -151,29 +151,29 @@ namespace TR.BIDSSMemLib
       if (!Equals(BSMD, StaticSMemLib.ReadBSMD())) MessageBox.Show("BIDSSMemLib DataWriting Failed");
 
       BVE_CC ??= new BVEConductorChecker();
-			BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;
+      BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;
     }
 
     struct ConductorActionLogStruct
-		{
+    {
       public ConductorActionLogStruct(int time, int action) => (Time, Action) = (time, action);
       public int Time;
       public int Action;
-		}
+    }
     static readonly int ConductorActionLog_MaxCount = 16;
     static readonly int ConductorActionLog_CapacityCount = ConductorActionLog_MaxCount + 4;
     static ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog { get; } = new(CustomDataNames.ConductorActionLog, false, true, ConductorActionLog_CapacityCount);
-		private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
-		{
+    private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
+    {
       ConductorActionLog.Add(new(BSMD.StateData.T, (int)e.ActionType));
 
       while (ConductorActionLog.Count > ConductorActionLog_MaxCount)
         ConductorActionLog.RemoveAt(0);
-		}
+    }
 
 
-		/// <summary>Called when this plugin is unloaded</summary>
-		[DllExport(CallingConvention = CalCnv)]
+    /// <summary>Called when this plugin is unloaded</summary>
+    [DllExport(CallingConvention = CalCnv)]
     public static void Dispose()
     {
       BSMD = new BIDSSharedMemoryData();
@@ -183,7 +183,7 @@ namespace TR.BIDSSMemLib
       StaticSMemLib.WriteSound(in BlankArr);
       ConductorActionLog.Dispose();
       if(BVE_CC is not null)
-			{
+      {
         BVE_CC.ConductorActioned -= BVE_CC_ConductorActioned;
         BVE_CC.Dispose();
         BVE_CC = null;
