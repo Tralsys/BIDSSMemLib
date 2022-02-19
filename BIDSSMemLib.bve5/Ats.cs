@@ -157,7 +157,12 @@ namespace TR.BIDSSMemLib
 
     struct ConductorActionLogStruct
     {
-      public ConductorActionLogStruct(int time, int action) => (Time, Action) = (time, action);
+      public ConductorActionLogStruct(int time, int action)
+      {
+        Time = time;
+        Action = action;
+      }
+
       public int Time;
       public int Action;
     }
