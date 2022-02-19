@@ -63,7 +63,6 @@
     <ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
   </ItemGroup>
   <PropertyGroup>
-    <LibFilesToMerge>IAtsPI.dll TR.BIDSSMemLib.rw.dll TR.BIDSSMemLib.structs.dll TR.BVEConductorChecker.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll</LibFilesToMerge>
     <ILMergeTargetPlatform Condition="'$(TargetFramework)' == 'net35'">TargetPlatform=/targetplatform:v2,C:/Windows/Microsoft.NET/Framework64/v2.0.50727</ILMergeTargetPlatform>
   </PropertyGroup>
   <PropertyGroup Label="8337224c9ad9e356:PreProc">
@@ -85,12 +84,12 @@
     <DllExportPeCheck>2</DllExportPeCheck>
     <DllExportPatches>0</DllExportPatches>
     <DllExportPreProcType>25</DllExportPreProcType>
-    <DllExportILMerge>TR.IAtsPI.dll</DllExportILMerge>
+    <DllExportILMerge>IAtsPI.dll TR.BIDSSMemLib.structs.dll TR.BIDSSMemLib.rw.dll TR.BVEConductorChecker.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll</DllExportILMerge>
     <DllExportPostProcType>0</DllExportPostProcType>
   </PropertyGroup>
   <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
     <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
-    <Exec Command="$(ILMergeConsolePath) TR.IAtsPI.dll $(TargetFileName) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
+    <Exec Command="$(ILMergeConsolePath) $(DllExportILMerge) $(TargetFileName) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
     <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
     <Delete Files="$(TargetDir)$(DllExportMetaLibName)" ContinueOnError="true" />
   </Target>
