@@ -105,6 +105,7 @@ namespace TR.BIDSSMemLib
   /// <summary>処理を実装するクラス</summary>
   static public class Ats
   {
+    static string ExecutingAssemblyLocation { get; } = Assembly.GetExecutingAssembly().Location;
     static XDocument Doc { get; }
     static Ats()
     {
@@ -115,7 +116,7 @@ namespace TR.BIDSSMemLib
       //Load setting
       try
       {
-        Doc = XDocument.Load(Assembly.GetExecutingAssembly().Location + ".xml");
+        Doc = XDocument.Load(ExecutingAssemblyLocation + ".xml");
         Version = int.Parse(Doc.Element("AtsPISetting").Element("Version").Value);
       }
       catch (Exception e)
