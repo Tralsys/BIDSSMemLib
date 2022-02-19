@@ -105,7 +105,7 @@ namespace TR.BIDSSMemLib
   /// <summary>処理を実装するクラス</summary>
   static public class Ats
   {
-    static XDocument doc { get; }
+    static XDocument Doc { get; }
     static Ats()
     {
 #if DEBUG
@@ -115,8 +115,8 @@ namespace TR.BIDSSMemLib
       //Load setting
       try
       {
-        doc = XDocument.Load(Assembly.GetExecutingAssembly().Location + ".xml");
-        Version = int.Parse(doc.Element("AtsPISetting").Element("Version").Value);
+        Doc = XDocument.Load(Assembly.GetExecutingAssembly().Location + ".xml");
+        Version = int.Parse(Doc.Element("AtsPISetting").Element("Version").Value);
       }
       catch (Exception e)
       {
@@ -133,9 +133,9 @@ namespace TR.BIDSSMemLib
     /// <summary>Current Key State</summary>
     public static bool[] IsKeyDown { get; set; } = new bool[16];
 
-    static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
-    static int[] PArr = new int[MaxIndex];
-    static int[] SArr = new int[MaxIndex];
+    static BIDSSharedMemoryData BSMD = new();
+    static readonly int[] PArr = new int[MaxIndex];
+    static readonly int[] SArr = new int[MaxIndex];
     static BVEConductorChecker BVE_CC = null;
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
@@ -201,9 +201,9 @@ namespace TR.BIDSSMemLib
     public static void SetVehicleSpec(Spec s) => BSMD.SpecData = s;
 
     /// <summary>Called when car is put</summary>
-    /// <param name="s">Default Brake Position (Refer to InitialPos class)</param>
+    /// <param name="_">Default Brake Position (Refer to InitialPos class)</param>
     [DllExport(CallingConvention = CalCnv)]
-    public static void Initialize(int s) { }
+    public static void Initialize(int _) { }
 
     /// <summary>Called in every refleshing the display</summary>
     /// <param name="st">State</param>
@@ -256,9 +256,9 @@ namespace TR.BIDSSMemLib
     }
 
     /// <summary>Called when the Horn is Blown</summary>
-    /// <param name="h">Blown Horn Number</param>
+    /// <param name="_">Blown Horn Number</param>
     [DllExport(CallingConvention = CalCnv)]
-    static public void HornBlow(int h) { }
+    static public void HornBlow(int _) { }
 
     /// <summary>Called when Door is opened</summary>
     [DllExport(CallingConvention = CalCnv)]
@@ -271,14 +271,14 @@ namespace TR.BIDSSMemLib
 
 
     /// <summary>Called when the Signal Showing Number is changed</summary>
-    /// <param name="s">Signal Showing Number</param>
+    /// <param name="_">Signal Showing Number</param>
     [DllExport(CallingConvention = CalCnv)]
-    static public void SetSignal(int s) { }
+    static public void SetSignal(int _) { }
 
     /// <summary>Called when passed above the Beacon</summary>
-    /// <param name="b">Beacon info</param>
+    /// <param name="_">Beacon info</param>
     [DllExport(CallingConvention = CalCnv)]
-    static public void SetBeaconData(Beacon b) { }
+    static public void SetBeaconData(Beacon _) { }
 
 
   }
