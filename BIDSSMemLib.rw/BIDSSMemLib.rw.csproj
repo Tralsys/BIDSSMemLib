@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net20;net35;net461;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net20;net35;net48</TargetFrameworks>
 		<LangVersion>9.0</LangVersion>
     <AssemblyName>TR.BIDSSMemLib.rw</AssemblyName>
     <RootNamespace>TR.BIDSSMemLib</RootNamespace>
