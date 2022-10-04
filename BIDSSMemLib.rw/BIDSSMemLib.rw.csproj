@@ -18,7 +18,9 @@
     <Description>It provides easy access to the BIDS bus.</Description>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
-    <PackageReleaseNotes># 2.0.0
+    <PackageReleaseNotes># 2.1.0
+Functions to non-static
+# 2.0.0
 Add net20/net5.0 Support
 SMemlib change to static class
 # 1.0.2
