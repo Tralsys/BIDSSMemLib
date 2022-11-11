@@ -4,4 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+	</ItemGroup>
 </Project>
