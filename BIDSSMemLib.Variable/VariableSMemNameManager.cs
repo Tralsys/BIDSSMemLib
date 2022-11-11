@@ -5,7 +5,7 @@ using System.Text;
 
 using TR;
 
-namespace BIDSSMemLib.Variable;
+namespace TR.BIDSSMemLib;
 
 /// <summary>
 /// 共有メモリ名を管理する共有メモリを操作するクラス
