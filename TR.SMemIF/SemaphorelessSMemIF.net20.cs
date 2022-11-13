@@ -74,7 +74,7 @@ namespace TR
 			//読み取り開始位置適用済みのポインタ
 			IntPtr ip_readFrom = new IntPtr(MMVA.ToInt64() + pos);
 
-			buf = (T) Marshal.PtrToStructure(ip_readFrom, typeof(T));
+			buf = (T)Marshal.PtrToStructure(ip_readFrom, typeof(T));
 		}
 
 		/// <summary>SMemから連続的に値を読み取ります</summary>
@@ -97,11 +97,11 @@ namespace TR
 			{
 				Marshal.Copy(ip_toRead, iarr, offset, count);//iarrにSMemの値を書き込み
 			}
-			else if(buf is double[] darr)
+			else if (buf is double[] darr)
 			{
 				Marshal.Copy(ip_toRead, darr, offset, count);//darrにSMemの値を書き込み
 			}
-			else if(buf is float[] farr)
+			else if (buf is float[] farr)
 			{
 				Marshal.Copy(ip_toRead, farr, offset, count);//farrにSMemの値を書き込み
 			}
@@ -121,7 +121,7 @@ namespace TR
 			{
 				//非効率的だけど…
 				long elemSize = getElemSize<T>();
-				for(long i = 0; i < count - offset; i++)
+				for (long i = 0; i < count - offset; i++)
 					_Read(pos + (i * elemSize), out buf[i + offset]);
 			}
 			return true;
@@ -171,11 +171,11 @@ namespace TR
 			{
 				Marshal.Copy(iarr, offset, ip_writeTo, count);
 			}
-			else if(buf is double[] darr)
+			else if (buf is double[] darr)
 			{
 				Marshal.Copy(darr, offset, ip_writeTo, count);
 			}
-			else if(buf is float[] farr)
+			else if (buf is float[] farr)
 			{
 				Marshal.Copy(farr, offset, ip_writeTo, count);
 			}

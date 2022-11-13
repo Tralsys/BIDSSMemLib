@@ -68,7 +68,7 @@ namespace TR
 		/// <summary>共有メモリ空間のキャパシティ</summary>
 		/// <remarks>キャパシティ変更には大きなコストが伴うので注意  (メモリ空間を開き直すため)</remarks>
 		public override long Capacity => MMVA?.Capacity ?? 0;
-		
+
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
 		/// <typeparam name="T">読み込みたい型</typeparam>
