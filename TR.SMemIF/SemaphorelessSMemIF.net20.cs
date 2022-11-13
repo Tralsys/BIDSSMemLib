@@ -26,11 +26,20 @@ namespace TR
 			long newCap = (long)Math.Ceiling((float)capacity / Capacity_Step) * Capacity_Step;
 			//Openできない => つくる
 			if (MMF == IntPtr.Zero)
+			{
 				MMF = CreateFileMappingA(new IntPtr(-1), IntPtr.Zero, PAGE_READWRITE | SEC_COMMIT, (uint)(newCap >> 32), (uint)newCap, SMemName);
+				IsNewlyCreated = true;
 
-			//OpenもCreateもできなければException
-			if (MMF == IntPtr.Zero)
-				throw new FileLoadException($"SMemIF.CheckReOpen({capacity}) : Memory Mapped File ({SMemName}) のCreate/Openに失敗しました.  newCap:{newCap}");
+				//OpenもCreateもできなければException
+				if (MMF == IntPtr.Zero)
+					throw new FileLoadException($"SMemIF.CheckReOpen({capacity}) : Memory Mapped File ({SMemName}) のCreate/Openに失敗しました.  newCap:{newCap}");
+
+				IsNewlyCreated = true;
+			}
+			else
+			{
+				IsNewlyCreated = false;
+			}
 
 			//Viewをつくる
 			MMVA = MapViewOfFile(MMF, FILE_MAP_ALL_ACCESS, 0, 0, 0);

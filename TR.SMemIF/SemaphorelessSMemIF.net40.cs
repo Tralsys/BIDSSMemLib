@@ -1,6 +1,7 @@
 ﻿#if NET40_OR_GREATER || NETCOREAPP || NETSTANDARD
 
 using System;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 
 namespace TR
@@ -14,16 +15,54 @@ namespace TR
 		const long Capacity_Step = 4096;
 		const long CanWriteInOneTime_Bytes = 4096;
 
+		static long calcNewCapacity(in long inputCapacity)
+			=> (long)Math.Ceiling((float)inputCapacity / Capacity_Step) * Capacity_Step;
+
 		/// <summary>インスタンスを初期化します</summary>
 		/// <param name="smem_name">共有メモリ空間の名前</param>
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
-		public SemaphorelessSMemIF(string smem_name, long capacity) : base(smem_name, capacity)
+		public SemaphorelessSMemIF(string smem_name, long capacity)
+			: this(
+					MemoryMappedFile.CreateOrOpen(smem_name, calcNewCapacity(capacity)),
+					smem_name,
+					capacity
+				)
+		{
+		}
+
+		public SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity) : base(smem_name, capacity)
+		{
+			MMF = mmf;
+
+			MMVA = MMF.CreateViewAccessor(0, capacity);
+		}
+
+		private SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity, bool isNewlyCreated) : base(smem_name, capacity)
+		{
+			IsNewlyCreated = isNewlyCreated;
+
+			MMF = mmf;
+
+			MMVA = MMF.CreateViewAccessor(0, capacity);
+		}
+
+		public static SemaphorelessSMemIF CreateOrOpen(string smem_name, long capacity, out bool isNewlyCreated)
 		{
 			long newCap = (long)Math.Ceiling((float)capacity / Capacity_Step) * Capacity_Step;
 
-			MMF = MemoryMappedFile.CreateOrOpen(SMemName, newCap);
+			MemoryMappedFile mmf;
+			try
+			{
+				mmf = MemoryMappedFile.OpenExisting(smem_name);
+				isNewlyCreated = false;
+			}
+			catch (FileNotFoundException)
+			{
+				mmf = MemoryMappedFile.CreateNew(smem_name, capacity);
+				isNewlyCreated = true;
+			}
 
-			MMVA = MMF.CreateViewAccessor(0, newCap);
+			return new(mmf, smem_name, capacity, isNewlyCreated);
 		}
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
