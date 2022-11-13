@@ -16,6 +16,9 @@ namespace TR
 		/// <remarks>setterにてキャパシティの増減機能を実装する</remarks>
 		public abstract long Capacity { get; }
 
+		/// <summary>新規に作成された共有メモリかどうか</summary>
+		public bool IsNewlyCreated { get; protected set; }
+
 		/// <summary>与えられた型が使用する領域のサイズを計算する</summary>
 		/// <typeparam name="T">領域を計算する型</typeparam>
 		/// <returns>サイズ [bytes]</returns>
