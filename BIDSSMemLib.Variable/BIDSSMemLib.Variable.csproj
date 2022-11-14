@@ -10,4 +10,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
 	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BIDS.Parser.Variable" Version="1.0.0" />
+	</ItemGroup>
 </Project>
