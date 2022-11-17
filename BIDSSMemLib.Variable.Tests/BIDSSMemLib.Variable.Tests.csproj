@@ -21,5 +21,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\BIDSSMemLib.Variable\BIDSSMemLib.Variable.csproj" />
+		<ProjectReference Include="..\TR.SMemIF.Mock\TR.SMemIF.Mock.csproj" />
 	</ItemGroup>
 </Project>
