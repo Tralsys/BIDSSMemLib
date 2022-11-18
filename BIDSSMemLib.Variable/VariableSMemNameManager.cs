@@ -206,7 +206,7 @@ public class VariableSMemNameManager : IDisposable, IEnumerable<VariableSMemName
 		return new SMemName(
 			Position: position,
 			Capacity: capacity,
-			Name: DefaultEncoding.GetString(name)
+			Name: name[0] == 0 ? string.Empty : DefaultEncoding.GetString(name)
 		);
 	}
 
