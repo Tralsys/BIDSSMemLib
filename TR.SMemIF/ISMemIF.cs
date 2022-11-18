@@ -2,21 +2,19 @@
 
 namespace TR
 {
-	/// <summary>.net4.0未満かそれ以上かを気にすることなく共有メモリ空間にアクセスする機能を提供するクラスのインターフェイス</summary>
-	public interface ISMemIF : ISMemIF_Reader, ISMemIF_Writer
-	{
-
-	}
-
-	/// <summary>SMemIFの読み込み機能を提供する際のインターフェイス</summary>
-	public interface ISMemIF_Reader : IDisposable
+	/// <summary>SMemIFの基底インターフェイス</summary>
+	public interface ISMemIFBase : IDisposable
 	{
 		/// <summary>共有メモリ空間の名前</summary>
 		string SMemName { get; }
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
 		long Capacity { get; }
+	}
 
+	/// <summary>SMemIFの読み込み機能を提供する際のインターフェイス</summary>
+	public interface ISMemIF_Reader : ISMemIFBase
+	{
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
 		/// <typeparam name="T">読み込みたい型</typeparam>
 		/// <param name="pos">読み込む位置 [bytes]</param>
@@ -35,14 +33,8 @@ namespace TR
 	}
 
 	/// <summary>SMemIFの書き込み機能を提供する際のインターフェイス</summary>
-	public interface ISMemIF_Writer : IDisposable
+	public interface ISMemIF_Writer : ISMemIFBase
 	{
-		/// <summary>共有メモリ空間の名前</summary>
-		string SMemName { get; }
-		/// <summary>共有メモリ空間のキャパシティ</summary>
-		/// <remarks>減少方向への操作には大きなコストが伴うので注意  (メモリ空間を開き直すため)</remarks>
-		long Capacity { get; }
-
 		/// <summary>共有メモリ空間の指定の位置に指定のデータを書き込む</summary>
 		/// <typeparam name="T">データの型</typeparam>
 		/// <param name="pos">書き込む位置 [bytes]</param>
@@ -58,5 +50,10 @@ namespace TR
 		/// <param name="count">書き込む要素数</param>
 		/// <returns>書き込みに成功したかどうか</returns>
 		public bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct;
+	}
+
+	/// <summary>.net4.0未満かそれ以上かを気にすることなく共有メモリ空間にアクセスする機能を提供するクラスのインターフェイス</summary>
+	public interface ISMemIF : ISMemIF_Reader, ISMemIF_Writer
+	{
 	}
 }
