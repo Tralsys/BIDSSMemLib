@@ -31,7 +31,7 @@ public class SMemIFMock : ISmemIF
 	public bool Read<T>(long pos, out T buf) where T : struct
 	{
 		if (int.MaxValue < pos)
-			throw new ArgumentOutOfRangeException("must be in the range of int", nameof(buf));
+			throw new ArgumentOutOfRangeException("must be in the range of int", nameof(pos));
 
 		buf = (T)Read<T>((int)pos);
 
@@ -41,7 +41,7 @@ public class SMemIFMock : ISmemIF
 	public object Read<T>(long pos) where T : struct
 	{
 		if (int.MaxValue < pos)
-			throw new ArgumentOutOfRangeException("must be in the range of int", nameof(buf));
+			throw new ArgumentOutOfRangeException("must be in the range of int", nameof(pos));
 
 		return Read<T>(pos);
 	}
@@ -85,7 +85,7 @@ public class SMemIFMock : ISmemIF
 	public bool Write<T>(long pos, ref T buf) where T : struct
 	{
 		if (int.MaxValue < pos)
-			throw new ArgumentOutOfRangeException("must be in the range of int", nameof(buf));
+			throw new ArgumentOutOfRangeException("must be in the range of int", nameof(pos));
 
 		byte[] bytes = buf switch
 		{
