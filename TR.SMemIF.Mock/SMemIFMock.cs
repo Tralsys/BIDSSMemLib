@@ -11,6 +11,8 @@ public class SMemIFMock : ISMemIF
 
 	public byte[] Memory { get; }
 
+	public bool IsNewlyCreated { get; } = true;
+
 	public SMemIFMock(string smemName, long capacity)
 	{
 		if (string.IsNullOrWhiteSpace(SMemName))

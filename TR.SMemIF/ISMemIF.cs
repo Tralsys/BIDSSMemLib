@@ -10,6 +10,9 @@ namespace TR
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
 		long Capacity { get; }
+
+		/// <summary>新規に作成された共有メモリかどうか</summary>
+		bool IsNewlyCreated { get; }
 	}
 
 	/// <summary>SMemIFの読み込み機能を提供する際のインターフェイス</summary>
