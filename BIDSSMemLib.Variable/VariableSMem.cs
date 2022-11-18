@@ -14,7 +14,7 @@ namespace TR.BIDSSMemLib;
 /// </summary>
 public class VariableSMem
 {
-	SMemIF SMemIF { get; }
+	ISMemIF SMemIF { get; }
 
 	public VariableStructure Structure { get; }
 
@@ -24,24 +24,32 @@ public class VariableSMem
 	readonly List<VariableStructure.IDataRecord> _Members;
 	public IReadOnlyList<VariableStructure.IDataRecord> Members => _Members;
 
-	public VariableSMem(string Name, long Capacity, VariableStructure structure)
+	public VariableSMem(string Name, long Capacity, VariableStructure structure) : this(new SMemIF(Name, Capacity), structure)
 	{
-		SMemIF = new(Name, Capacity);
-
-		Structure = structure;
-
-		_Members = Members.ToList();
-
-		ContentAreaOffset = InitSMem();
 	}
 
-	public VariableSMem(Type type, string Name, long Capacity)
+	public VariableSMem(Type type, string Name, long Capacity) : this(new SMemIF(Name, Capacity), type)
 	{
-		SMemIF = new(Name, Capacity);
+	}
+
+	public VariableSMem(ISMemIF smemIF, Type type)
+	{
+		SMemIF = smemIF;
 
 		_Members = type.ToVariableDataRecordList();
 
 		Structure = new(-1, _Members);
+
+		ContentAreaOffset = InitSMem();
+	}
+
+	public VariableSMem(ISMemIF smemIF, VariableStructure structure)
+	{
+		SMemIF = smemIF;
+
+		Structure = structure;
+
+		_Members = Members.ToList();
 
 		ContentAreaOffset = InitSMem();
 	}

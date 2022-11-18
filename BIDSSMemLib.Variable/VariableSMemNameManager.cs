@@ -53,7 +53,7 @@ public class VariableSMemNameManager : IDisposable, IEnumerable<VariableSMemName
 	/// <summary>
 	/// 共有メモリを操作できるインターフェイスクラス
 	/// </summary>
-	SMemIF SMemIF { get; }
+	ISMemIF SMemIF { get; }
 
 	#region Constructors
 	/// <summary>
@@ -76,19 +76,25 @@ public class VariableSMemNameManager : IDisposable, IEnumerable<VariableSMemName
 	/// </summary>
 	/// <param name="managerAreaSMemName">使用する共有メモリ名</param>
 	/// <param name="capacity_Bytes">共有メモリのキャパシティ</param>
-	public VariableSMemNameManager(string? managerAreaSMemName, long capacity_Bytes)
+	public VariableSMemNameManager(string? managerAreaSMemName, long capacity_Bytes) : this(
+			new SMemIF(
+				string.IsNullOrWhiteSpace(managerAreaSMemName)
+					? DefaultManagerAreaSMemName
+					: managerAreaSMemName,
+				capacity_Bytes <= 0
+					? DefaultCapacity_Bytes
+					: capacity_Bytes
+			)
+		)
 	{
-		ManagerAreaSMemName
-			= string.IsNullOrWhiteSpace(managerAreaSMemName)
-			? DefaultManagerAreaSMemName
-			: managerAreaSMemName;
+	}
 
-		Capacity_Bytes
-			= capacity_Bytes <= 0
-			? DefaultCapacity_Bytes
-			: capacity_Bytes;
+	public VariableSMemNameManager(ISMemIF _SMemIF)
+	{
+		ManagerAreaSMemName = _SMemIF.SMemName;
+		Capacity_Bytes = _SMemIF.Capacity;
 
-		SMemIF = new(ManagerAreaSMemName, capacity_Bytes);
+		SMemIF = _SMemIF;
 	}
 	#endregion
 
