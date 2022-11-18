@@ -15,7 +15,7 @@ public class SMemIFMock : ISMemIF
 
 	public SMemIFMock(string smemName, long capacity)
 	{
-		if (string.IsNullOrWhiteSpace(SMemName))
+		if (string.IsNullOrWhiteSpace(smemName))
 			throw new ArgumentException("SMemName cannot be null, empty or only whitespace", nameof(SMemName));
 		if (capacity <= 0)
 			throw new ArgumentOutOfRangeException("Capacity cannot be 0 or less", nameof(capacity));
