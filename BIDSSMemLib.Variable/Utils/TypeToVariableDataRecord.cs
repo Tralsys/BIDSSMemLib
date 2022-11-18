@@ -3,9 +3,7 @@ using System.Reflection;
 
 using BIDS.Parser.Variable;
 
-using TR.BIDSSMemLib.Variable;
-
-namespace TR.BIDSSMemLib;
+namespace TR.BIDSSMemLib.Variable;
 
 public static partial class Utils
 {

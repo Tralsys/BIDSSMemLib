@@ -5,7 +5,7 @@ using System.Reflection;
 
 using BIDS.Parser.Variable;
 
-namespace TR.BIDSSMemLib;
+namespace TR.BIDSSMemLib.Variable;
 
 public static partial class Utils
 {

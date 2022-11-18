@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-using TR;
-
 namespace TR.BIDSSMemLib;
 
 /// <summary>
