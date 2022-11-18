@@ -3,7 +3,7 @@
 namespace TR
 {
 	/// <summary>.net4.0未満かそれ以上かを気にすることなく共有メモリ空間にアクセスする機能を提供するクラスのインターフェイス</summary>
-	public interface ISmemIF : ISMemIF_Reader, ISMemIF_Writer
+	public interface ISMemIF : ISMemIF_Reader, ISMemIF_Writer
 	{
 
 	}

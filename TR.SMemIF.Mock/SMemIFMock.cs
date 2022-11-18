@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace TR.SMemIF.Mock;
 
-public class SMemIFMock : ISmemIF
+public class SMemIFMock : ISMemIF
 {
 	public string SMemName { get; }
 

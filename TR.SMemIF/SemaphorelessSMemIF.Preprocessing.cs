@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace TR
 {
 	/// <summary>セマフォレスに共有メモリ空間へのアクセスを提供する各処理の前処理を実装したクラス</summary>
-	public abstract class SemaphorelessSMemIF_Preprocessing : ISmemIF
+	public abstract class SemaphorelessSMemIF_Preprocessing : ISMemIF
 	{
 		/// <summary>リソースの解放中, あるいは解放に完了しているかどうか</summary>
 		protected bool disposingValue { get; set; } = false;
