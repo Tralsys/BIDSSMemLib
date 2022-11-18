@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace TR.SMemIF.Mock;
+namespace TR;
 
 public class SMemIFMock : ISMemIF
 {
