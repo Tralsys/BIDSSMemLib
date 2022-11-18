@@ -232,7 +232,8 @@ public class VariableSMemNameManager : IDisposable, IEnumerable<VariableSMemName
 
 		while (ReadName(position) is SMemName name)
 		{
-			yield return name;
+			if (!string.IsNullOrEmpty(name.Name))
+				yield return name;
 
 			position += (sizeof(ushort) + name.Capacity);
 		}
