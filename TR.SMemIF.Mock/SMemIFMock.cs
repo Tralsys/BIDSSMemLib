@@ -45,7 +45,7 @@ public class SMemIFMock : ISMemIF
 		if (int.MaxValue < pos)
 			throw new ArgumentOutOfRangeException("must be in the range of int", nameof(pos));
 
-		return Read<T>(pos);
+		return Read<T>((int)pos);
 	}
 
 	public object Read<T>(int pos) where T : struct
