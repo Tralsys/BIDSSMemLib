@@ -66,11 +66,18 @@ public class VariableSMem
 	{
 		SMemIF = smemIF;
 
-		Structure = structure ?? new VariableStructure(-1, members);
-
-		Debug.Assert(Structure.Records == members, "`members` and `structure.Records` must be same instance`");
-
 		_Members = members.ToList();
+		if (structure is null)
+		{
+			Structure = new(-1, _Members);
+		}
+		else
+		{
+			Structure = structure with
+			{
+				Records = _Members
+			};
+		}
 
 		ContentAreaOffset = InitSMem();
 	}
