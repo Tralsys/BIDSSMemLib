@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 using BIDS.Parser.Variable;
 
@@ -16,6 +17,8 @@ namespace TR.BIDSSMemLib;
 /// </summary>
 public class VariableSMem
 {
+	public static Encoding DefaultEncoding { get; } = Encoding.UTF8;
+
 	ISMemIF SMemIF { get; }
 
 	public VariableStructure Structure { get; }
@@ -233,6 +236,19 @@ public class VariableSMem
 		{
 			if (memberDataRecord is not VariableStructure.ArrayStructure arrayStructure)
 				throw new Exception("Type mismatch (Given member was array, but dataRecord was not ArrayStructure)");
+
+			if (memberType == typeof(string))
+			{
+				if (value is not string s)
+					throw new Exception($"Given Value is not string or null (GivenType: {memberType})");
+
+				// TODO: Boxingによりパフォーマンス的に好ましくないはず。極力Boxingなしにできるように書き直す
+				// Maybe?: Array型が適切...?
+				return arrayStructure with
+				{
+					ValueArray = DefaultEncoding.GetBytes(s).Cast<object>().ToArray()
+				};
+			}
 
 			// elementの型チェック
 			if (memberType.GetElementType() is not Type elemType)
