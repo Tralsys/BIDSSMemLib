@@ -193,4 +193,8 @@ public class VariableSMem<T> : VariableSMem
 	public VariableSMem(string Name, long Capacity) : base(typeof(T), Name, Capacity)
 	{
 	}
+
+	public VariableSMem(ISMemIF SMemIF) : base(SMemIF, typeof(T))
+	{
+	}
 }
