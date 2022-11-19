@@ -214,7 +214,7 @@ public class VariableSMem<T> : VariableSMem
 	{
 	}
 
-	public VariableSMem(ISMemIF SMemIF) : base(SMemIF, typeof(T))
+	public VariableSMem(ISMemIF SMemIF) : base(typeof(T), SMemIF)
 	{
 	}
 }
