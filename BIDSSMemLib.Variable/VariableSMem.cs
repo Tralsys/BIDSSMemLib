@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -24,32 +25,51 @@ public class VariableSMem
 	readonly List<VariableStructure.IDataRecord> _Members;
 	public IReadOnlyList<VariableStructure.IDataRecord> Members => _Members;
 
-	public VariableSMem(string Name, long Capacity, VariableStructure structure) : this(new SMemIF(Name, Capacity), structure)
+	public VariableSMem(string Name, long Capacity, VariableStructure structure) : this(
+		new SMemIF(Name, Capacity),
+		structure.Records,
+		structure
+	)
 	{
 	}
 
-	public VariableSMem(Type type, string Name, long Capacity) : this(new SMemIF(Name, Capacity), type)
+	public VariableSMem(Type type, string Name, long Capacity) : this(
+		new SMemIF(Name, Capacity),
+		type.ToVariableDataRecordList(),
+		null
+	)
 	{
 	}
 
-	public VariableSMem(ISMemIF smemIF, Type type)
+	public VariableSMem(ISMemIF smemIF, VariableStructure structure) : this(
+		smemIF,
+		structure.Records,
+		structure
+	)
+	{
+	}
+
+	public VariableSMem(Type type, ISMemIF smemIF) : this(
+		smemIF,
+		type.ToVariableDataRecordList(),
+		null
+	)
+	{
+	}
+
+	protected VariableSMem(
+		ISMemIF smemIF,
+		IReadOnlyList<VariableStructure.IDataRecord> members,
+		VariableStructure? structure
+	)
 	{
 		SMemIF = smemIF;
 
-		_Members = type.ToVariableDataRecordList();
+		Debug.Assert(structure is not null && structure.Records == members);
 
-		Structure = new(-1, _Members);
+		Structure = structure ?? new VariableStructure(-1, members);
 
-		ContentAreaOffset = InitSMem();
-	}
-
-	public VariableSMem(ISMemIF smemIF, VariableStructure structure)
-	{
-		SMemIF = smemIF;
-
-		Structure = structure;
-
-		_Members = structure.Records.ToList();
+		_Members = members.ToList();
 
 		ContentAreaOffset = InitSMem();
 	}
