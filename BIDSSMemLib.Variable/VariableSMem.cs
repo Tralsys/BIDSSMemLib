@@ -288,4 +288,6 @@ public class VariableSMem<T> : VariableSMem
 	public VariableSMem(ISMemIF SMemIF) : base(typeof(T), SMemIF)
 	{
 	}
+
+	// TODO: `WriteToSMem`をoverrideして書く
 }
