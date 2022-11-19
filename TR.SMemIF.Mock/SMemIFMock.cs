@@ -26,6 +26,15 @@ public class SMemIFMock : ISMemIF
 		Memory = new byte[Capacity];
 	}
 
+	public SMemIFMock(SMemIFMock otherInstance)
+	{
+		SMemName = otherInstance.SMemName;
+		Capacity = otherInstance.Capacity;
+
+		Memory = otherInstance.Memory;
+		IsNewlyCreated = false;
+	}
+
 	public void Dispose()
 	{
 	}
