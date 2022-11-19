@@ -65,9 +65,9 @@ public class VariableSMem
 	{
 		SMemIF = smemIF;
 
-		Debug.Assert(structure is not null && structure.Records == members);
-
 		Structure = structure ?? new VariableStructure(-1, members);
+
+		Debug.Assert(Structure.Records == members);
 
 		_Members = members.ToList();
 
