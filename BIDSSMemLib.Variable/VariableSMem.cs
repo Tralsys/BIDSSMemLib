@@ -200,10 +200,9 @@ public class VariableSMem
 			if (arrayStructure.ElemType != elemVDType)
 				throw new Exception($"Type mismatch (given: {elemVDType} / Initialized with: {arrayStructure.ElemType})");
 
-			// TODO: 正常にキャストできているかどうかチェック (object[]へのキャストでうまくいってる?)
 			return arrayStructure with
 			{
-				ValueArray = value as object[]
+				ValueArray = (value as Array)?.Cast<object>().ToArray()
 			};
 		}
 		else
