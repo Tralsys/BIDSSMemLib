@@ -1,5 +1,5 @@
 namespace BIDSSMemLib.Variable.Tests;
 
-public class VariableSMemTests
+public partial class VariableSMemTests
 {
 }
