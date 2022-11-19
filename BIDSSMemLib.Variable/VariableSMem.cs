@@ -49,7 +49,7 @@ public class VariableSMem
 
 		Structure = structure;
 
-		_Members = Members.ToList();
+		_Members = structure.Records.ToList();
 
 		ContentAreaOffset = InitSMem();
 	}
