@@ -214,6 +214,10 @@ public class VariableSMem
 			else
 				continue;
 		}
+
+		byte[] bytes = Structure.GetBytes().ToArray();
+		if (!SMemIF.WriteArray(ContentAreaOffset, bytes, 0, bytes.Length))
+			throw new AccessViolationException("Write to SMem failed");
 	}
 
 	internal static object? GetValueObjectFromDataRecord(VariableStructure.IDataRecord dataRecord)
