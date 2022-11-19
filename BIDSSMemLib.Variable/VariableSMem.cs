@@ -21,6 +21,7 @@ public class VariableSMem
 
 	public long StructureAreaOffset { get; } = 16;
 	public long ContentAreaOffset { get; }
+	public static long PaddingBetweenStructreAndContent { get; } = 16;
 
 	readonly List<VariableStructure.IDataRecord> _Members;
 	public IReadOnlyList<VariableStructure.IDataRecord> Members => _Members;
@@ -82,7 +83,10 @@ public class VariableSMem
 	{
 		byte[] structureBytes = Structure.GetStructureBytes().ToArray();
 
-		long contentAreaOffset = StructureAreaOffset + structureBytes.Length + 256;
+		long contentAreaOffset
+			= StructureAreaOffset
+			+ structureBytes.Length
+			+ PaddingBetweenStructreAndContent;
 		if (SMemIF.IsNewlyCreated)
 		{
 			if (!SMemIF.Write(0, ref contentAreaOffset)
