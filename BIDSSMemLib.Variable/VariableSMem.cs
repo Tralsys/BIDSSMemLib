@@ -86,7 +86,7 @@ public class VariableSMem
 		if (SMemIF.IsNewlyCreated)
 		{
 			if (!SMemIF.Write(0, ref contentAreaOffset)
-				|| SMemIF.WriteArray(StructureAreaOffset, structureBytes, 0, structureBytes.Length))
+				|| !SMemIF.WriteArray(StructureAreaOffset, structureBytes, 0, structureBytes.Length))
 				throw new AccessViolationException("Write to SMem failed");
 		}
 		else
