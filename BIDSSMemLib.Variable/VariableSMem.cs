@@ -19,7 +19,7 @@ public class VariableSMem
 
 	public VariableStructure Structure { get; }
 
-	public long StructureAreaOffset { get; } = 16;
+	public static long StructureAreaOffset { get; } = 16;
 	public long ContentAreaOffset { get; }
 	public static long PaddingBetweenStructreAndContent { get; } = 16;
 
