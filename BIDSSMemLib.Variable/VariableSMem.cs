@@ -7,6 +7,7 @@ using System.Reflection;
 using BIDS.Parser.Variable;
 
 using TR.BIDSSMemLib.Variable;
+using TR.BIDSSMemLib.Variable.Exceptions;
 
 namespace TR.BIDSSMemLib;
 
@@ -117,6 +118,47 @@ public class VariableSMem
 		}
 
 		return contentAreaOffset;
+	}
+
+	/// <summary>
+	/// 型情報を共有メモリから読み取ってインスタンスを初期化する
+	/// </summary>
+	/// <param name="Name">共有メモリの名前</param>
+	/// <param name="Capacity">初期化に使用するキャパシティ (<c>null</c>でデフォルト値 = 4096 Bytes)</param>
+	/// <returns>作成したインスタンス</returns>
+	/// <exception cref="NotInitializedException">共有メモリが作成されていなかった</exception>
+	public static VariableSMem CreateWithoutType(string Name, long? Capacity = null)
+		=> CreateWithoutType(new SMemIF(Name, Capacity ?? 0x1000));
+
+	/// <summary>
+	/// 型情報を共有メモリから読み取ってインスタンスを初期化する
+	/// </summary>
+	/// <param name="SMemIF">共有メモリを操作するインターフェイスを持つインスタンス</param>
+	/// <returns></returns>
+	/// <returns>作成したインスタンス</returns>
+	/// <exception cref="NotInitializedException">共有メモリが作成されていなかった</exception>
+	public static VariableSMem CreateWithoutType(ISMemIF SMemIF)
+	{
+		if (SMemIF.IsNewlyCreated)
+			throw new NotInitializedException(nameof(SMemIF.SMemName));
+
+		if (!SMemIF.Read(0, out long contentAreaOffset))
+			throw new AccessViolationException("Read from SMem failed");
+
+		if (contentAreaOffset <= (StructureAreaOffset + PaddingBetweenStructreAndContent))
+			throw new FormatException($"Invalid Structure in SMem (too less size = {contentAreaOffset} bytes)");
+
+		byte[] structureBytes = new byte[
+			contentAreaOffset
+			- StructureAreaOffset
+			- PaddingBetweenStructreAndContent
+		];
+
+		if (!SMemIF.ReadArray(StructureAreaOffset, structureBytes, 0, structureBytes.Length))
+			throw new AccessViolationException("Read from SMem failed");
+
+		// TODO: `VariableDataParser.ParseDataTypeRegisterCommand`をPublicにして、それを利用してParseする
+		throw new NotImplementedException("This feature is currently not implemented");
 	}
 
 	public VariableStructurePayload ReadFromSMem()
