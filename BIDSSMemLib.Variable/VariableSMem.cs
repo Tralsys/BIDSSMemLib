@@ -67,7 +67,7 @@ public class VariableSMem
 
 		Structure = structure ?? new VariableStructure(-1, members);
 
-		Debug.Assert(Structure.Records == members);
+		Debug.Assert(Structure.Records == members, "`members` and `structure.Records` must be same instance`");
 
 		_Members = members.ToList();
 
