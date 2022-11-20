@@ -15,7 +15,7 @@ public partial class VariableSMem
 {
 	public static Encoding DefaultEncoding { get; } = Encoding.UTF8;
 
-	ISMemIF SMemIF { get; }
+	protected ISMemIF SMemIF { get; }
 
 	public VariableStructure Structure { get; }
 
@@ -23,7 +23,7 @@ public partial class VariableSMem
 	public long ContentAreaOffset { get; }
 	public static long PaddingBetweenStructreAndContent { get; } = 16;
 
-	readonly List<VariableStructure.IDataRecord> _Members;
+	protected readonly List<VariableStructure.IDataRecord> _Members;
 	public IReadOnlyList<VariableStructure.IDataRecord> Members => _Members;
 
 	public VariableSMem(string Name, long Capacity, VariableStructure structure) : this(
