@@ -29,5 +29,14 @@ public partial class VariableSMemTests
 		public int[]? vInt32Arr;
 		public static readonly VariableStructure.ArrayStructure Expected_vInt32Arr
 			= new(VariableDataType.Int32, "vInt32Arr");
+
+		public override bool Equals(object? obj)
+			=> obj is SampleClass v
+			&& vUInt16 == v.vUInt16
+			&& vInt32 == v.vInt32
+			&& vInt64 == v.vInt64
+			&& vFloat64 == v.vFloat64
+			&& vString == v.vString
+			&& Enumerable.SequenceEqual(vInt32Arr ?? Array.Empty<int>(), v.vInt32Arr ?? Array.Empty<int>());
 	}
 }
