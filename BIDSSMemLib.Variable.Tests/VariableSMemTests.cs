@@ -278,4 +278,36 @@ public partial class VariableSMemTests
 
 		Assert.That(actual.ValueArray, Is.EquivalentTo(expectedArray));
 	}
+
+	[Test]
+	public void ReadFromSMemTest_WriteToInstance()
+	{
+		SMemIFMock SMemIF = new("test", SMemCapacity);
+
+		VariableSMem<SampleClass> variableSMem = new(SMemIF);
+		VariableSMem<SampleClass> variableSMem1 = new(new SMemIFMock(SMemIF));
+
+		SampleClass SampleData = new()
+		{
+			vUInt16 = 2,
+			vInt32 = -2,
+			vInt64 = 0x7FFFFFFF12,
+			vFloat64 = 1.23456789,
+			vString = "testString😀",
+			vInt32Arr = new int[]
+			{
+				1,
+				2,
+				3
+			}
+		};
+
+		variableSMem.WriteToSMem(SampleData);
+
+		object ActualData = new SampleClass();
+
+		variableSMem1.ReadFromSMem(ref ActualData);
+
+		Assert.That(ActualData, Is.EqualTo(SampleData));
+	}
 }
