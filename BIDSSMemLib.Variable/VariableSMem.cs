@@ -140,11 +140,11 @@ public partial class VariableSMem
 		{
 			if (targetType.GetProperty(data.Name) is PropertyInfo propInfo)
 			{
-				propInfo.SetValue(target, GetValueObjectFromDataRecord(data));
+				propInfo.SetValue(target, GetValueObjectFromDataRecord(data, propInfo.PropertyType == typeof(string)));
 			}
 			else if (targetType.GetField(data.Name) is FieldInfo fieldInfo)
 			{
-				fieldInfo.SetValue(target, GetValueObjectFromDataRecord(data));
+				fieldInfo.SetValue(target, GetValueObjectFromDataRecord(data, fieldInfo.FieldType == typeof(string)));
 			}
 		}
 	}

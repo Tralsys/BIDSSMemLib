@@ -51,11 +51,14 @@ public partial class VariableSMem
 		throw new NotImplementedException("This feature is currently not implemented");
 	}
 
-	internal static object? GetValueObjectFromDataRecord(VariableStructure.IDataRecord dataRecord)
+	internal static object? GetValueObjectFromDataRecord(VariableStructure.IDataRecord dataRecord, bool isString)
 		=> dataRecord switch
 		{
 			VariableStructure.DataRecord v => v.Value,
-			VariableStructure.ArrayStructure v => v.ValueArray,
+			VariableStructure.ArrayStructure v =>
+				(isString && v.ValueArray is byte[] arr)
+				? DefaultEncoding.GetString(arr)
+				: v.ValueArray,
 
 			_ => throw new ArgumentException($"The Type {dataRecord?.GetType()} is currently not supported", nameof(dataRecord)),
 		};
