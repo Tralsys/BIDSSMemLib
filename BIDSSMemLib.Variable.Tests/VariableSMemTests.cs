@@ -310,4 +310,16 @@ public partial class VariableSMemTests
 
 		Assert.That(ActualData, Is.EqualTo(SampleData));
 	}
+
+	[Test]
+	public void CreateWithoutTypeTest()
+	{
+		SMemIFMock SMemIF = new("test", SMemCapacity);
+
+		VariableSMem<SampleClass> variableSMem = new(SMemIF);
+
+		VariableSMem variableSMem1 = VariableSMem.CreateWithoutType(new SMemIFMock(SMemIF));
+
+		Assert.That(variableSMem1.Members, Is.EquivalentTo(variableSMem.Members));
+	}
 }
