@@ -89,6 +89,10 @@ public class VariableSMemNameManager : IDisposable, IEnumerable<VariableSMemName
 	{
 	}
 
+	/// <summary>
+	/// 指定の共有メモリ操作用インスタンスを用いてインスタンスを初期化する
+	/// </summary>
+	/// <param name="_SMemIF">共有メモリ操作用インスタンス</param>
 	public VariableSMemNameManager(ISMemIF _SMemIF)
 	{
 		ManagerAreaSMemName = _SMemIF.SMemName;

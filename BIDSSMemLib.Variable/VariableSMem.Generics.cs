@@ -7,6 +7,10 @@ using BIDS.Parser.Variable;
 
 namespace TR.BIDSSMemLib;
 
+/// <summary>
+/// 可変構造(可変長)な共有メモリを使用するためのクラス
+/// </summary>
+/// <typeparam name="T">使用する型</typeparam>
 public class VariableSMem<T> : VariableSMem
 {
 	Type TargetType { get; } = typeof(T);
@@ -15,14 +19,28 @@ public class VariableSMem<T> : VariableSMem
 
 	// TODO: VariableStructure.DataRecord等を継承した専用クラスを用意し、そこに`GetValue` / `SetValue`メソッドを記録できるようにする
 
+	/// <summary>
+	/// インスタンスを初期化する
+	/// </summary>
+	/// <param name="Name">共有メモリ名</param>
+	/// <param name="Capacity">共有メモリの初期化に使用するキャパシティ [bytes]</param>
 	public VariableSMem(string Name, long Capacity) : base(typeof(T), Name, Capacity)
 	{
 	}
 
+	/// <summary>
+	/// インスタンスを初期化する
+	/// </summary>
+	/// <param name="SMemIF">共有メモリの操作に使用するインスタンス</param>
 	public VariableSMem(ISMemIF SMemIF) : base(typeof(T), SMemIF)
 	{
 	}
 
+	/// <summary>
+	/// 共有メモリからデータを読み取り、指定のインスタンスに値を書き込む
+	/// </summary>
+	/// <param name="target">値を書き込む先のインスタンス</param>
+	/// <exception cref="AccessViolationException">共有メモリの操作に失敗した</exception>
 	public void ReadFromSMem(ref T target)
 	{
 		VariableStructurePayload payload = ReadFromSMem();
@@ -40,6 +58,11 @@ public class VariableSMem<T> : VariableSMem
 		}
 	}
 
+	/// <summary>
+	/// 共有メモリにデータを書き込む
+	/// </summary>
+	/// <param name="data">書き込むデータ</param>
+	/// <exception cref="AccessViolationException">共有メモリの操作に失敗した</exception>
 	public void WriteToSMem(in T data)
 	{
 		for (int i = 0; i < _Members.Count; i++)

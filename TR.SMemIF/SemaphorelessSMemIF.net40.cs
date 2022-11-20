@@ -30,6 +30,12 @@ namespace TR
 		{
 		}
 
+		/// <summary>
+		/// インスタンスを初期化します
+		/// </summary>
+		/// <param name="mmf">使用する<see cref="MemoryMappedFile"/>インスタンス</param>
+		/// <param name="smem_name">共有メモリ名</param>
+		/// <param name="capacity">共有メモリのキャパシティ</param>
 		public SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity) : base(smem_name, capacity)
 		{
 			MMF = mmf;
@@ -46,6 +52,14 @@ namespace TR
 			MMVA = MMF.CreateViewAccessor(0, capacity);
 		}
 
+		/// <summary>
+		/// 共有メモリを新規作成し、<see cref="SemaphorelessSMemIF"/>インスタンスを初期化します。
+		/// もしくは、共有メモリが既に存在する場合は、それを開いて<see cref="SemaphorelessSMemIF"/>インスタンスを初期化します。
+		/// </summary>
+		/// <param name="smem_name">共有メモリ名</param>
+		/// <param name="capacity">共有メモリのキャパシティ</param>
+		/// <param name="isNewlyCreated">共有メモリが新規に作成されたかどうか</param>
+		/// <returns></returns>
 		public static SemaphorelessSMemIF CreateOrOpen(string smem_name, long capacity, out bool isNewlyCreated)
 		{
 			long newCap = (long)Math.Ceiling((float)capacity / Capacity_Step) * Capacity_Step;

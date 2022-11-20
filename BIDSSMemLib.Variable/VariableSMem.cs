@@ -13,19 +13,55 @@ namespace TR.BIDSSMemLib;
 /// </summary>
 public partial class VariableSMem
 {
+	/// <summary>
+	/// デフォルトで使用されるエンコーディング
+	/// </summary>
 	public static Encoding DefaultEncoding { get; } = Encoding.UTF8;
 
+	/// <summary>
+	/// 共有メモリの操作に使用するインターフェイスを持つインスタンス
+	/// </summary>
 	protected ISMemIF SMemIF { get; }
 
+	/// <summary>
+	/// 可変構造データの構造情報
+	/// </summary>
 	public VariableStructure Structure { get; }
 
+	/// <summary>
+	/// 構造情報が記録されているメモリ領域のオフセット [bytes]
+	/// </summary>
 	public static long StructureAreaOffset { get; } = 16;
+
+	/// <summary>
+	/// コンテンツデータが記録されているメモリ領域のオフセット [bytes]
+	/// </summary>
 	public long ContentAreaOffset { get; }
+
+	/// <summary>
+	/// 構造情報とコンテンツデータの間のパディング [bytes]
+	/// </summary>
 	public static long PaddingBetweenStructreAndContent { get; } = 16;
 
+	/// <summary>
+	/// 共有メモリに書き込まれているデータを管理するためのリスト
+	/// </summary>
+	/// <remarks>
+	/// メモリのコンテンツ領域の先頭から、このリストの順に書き込まれている
+	/// </remarks>
 	protected readonly List<VariableStructure.IDataRecord> _Members;
+
+	/// <summary>
+	/// 共有メモリに書き込まれているデータを確認できるリスト
+	/// </summary>
 	public IReadOnlyList<VariableStructure.IDataRecord> Members => _Members;
 
+	/// <summary>
+	/// インスタンスを初期化する
+	/// </summary>
+	/// <param name="Name">共有メモリ名</param>
+	/// <param name="Capacity">共有メモリの初期化に使用するキャパシティ [bytes]</param>
+	/// <param name="structure">データの構造情報</param>
 	public VariableSMem(string Name, long Capacity, VariableStructure structure) : this(
 		new SMemIF(Name, Capacity),
 		structure.Records,
@@ -34,6 +70,12 @@ public partial class VariableSMem
 	{
 	}
 
+	/// <summary>
+	/// インスタンスを初期化する
+	/// </summary>
+	/// <param name="type">構造情報を取得する型</param>
+	/// <param name="Name">共有メモリ名</param>
+	/// <param name="Capacity">共有メモリの初期化に使用するキャパシティ [bytes]</param>
 	public VariableSMem(Type type, string Name, long Capacity) : this(
 		new SMemIF(Name, Capacity),
 		type.ToVariableDataRecordList(),
@@ -42,6 +84,11 @@ public partial class VariableSMem
 	{
 	}
 
+	/// <summary>
+	/// インスタンスを初期化する
+	/// </summary>
+	/// <param name="smemIF">共有メモリの操作に使用するインスタンス</param>
+	/// <param name="structure">データの構造情報</param>
 	public VariableSMem(ISMemIF smemIF, VariableStructure structure) : this(
 		smemIF,
 		structure.Records,
@@ -50,6 +97,11 @@ public partial class VariableSMem
 	{
 	}
 
+	/// <summary>
+	/// インスタンスを初期化する
+	/// </summary>
+	/// <param name="type">構造情報を取得する型</param>
+	/// <param name="smemIF">共有メモリの操作に使用するインスタンス</param>
 	public VariableSMem(Type type, ISMemIF smemIF) : this(
 		smemIF,
 		type.ToVariableDataRecordList(),
@@ -58,6 +110,12 @@ public partial class VariableSMem
 	{
 	}
 
+	/// <summary>
+	/// インスタンスを初期化する
+	/// </summary>
+	/// <param name="smemIF">共有メモリの操作に使用するインスタンス</param>
+	/// <param name="members">データの各要素が順に記録されたリスト</param>
+	/// <param name="structure">データの構造情報</param>
 	protected VariableSMem(
 		ISMemIF smemIF,
 		IReadOnlyList<VariableStructure.IDataRecord> members,
@@ -119,6 +177,11 @@ public partial class VariableSMem
 		return contentAreaOffset;
 	}
 
+	/// <summary>
+	/// 共有メモリからデータを読み取る
+	/// </summary>
+	/// <returns>読み取ったデータ</returns>
+	/// <exception cref="AccessViolationException">共有メモリの操作に失敗した</exception>
 	public VariableStructurePayload ReadFromSMem()
 	{
 		if (!SMemIF.Read(ContentAreaOffset, out long contentDataLength))
@@ -131,6 +194,11 @@ public partial class VariableSMem
 		return Structure.With(content);
 	}
 
+	/// <summary>
+	/// 共有メモリからデータを読み取り、指定のインスタンスに値を書き込む
+	/// </summary>
+	/// <param name="target">値を書き込む先のインスタンス</param>
+	/// <exception cref="AccessViolationException">共有メモリの操作に失敗した</exception>
 	public void ReadFromSMem(ref object target)
 	{
 		VariableStructurePayload payload = ReadFromSMem();
@@ -149,6 +217,11 @@ public partial class VariableSMem
 		}
 	}
 
+	/// <summary>
+	/// 共有メモリにデータを書き込む
+	/// </summary>
+	/// <param name="data">書き込むデータ</param>
+	/// <exception cref="AccessViolationException">共有メモリの操作に失敗した</exception>
 	public virtual void WriteToSMem(in object data)
 	{
 		Type type = data.GetType();
