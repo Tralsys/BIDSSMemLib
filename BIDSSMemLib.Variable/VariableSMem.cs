@@ -249,7 +249,7 @@ public class VariableSMem
 				// Maybe?: Array型が適切...?
 				return arrayStructure with
 				{
-					ValueArray = DefaultEncoding.GetBytes(s).Cast<object>().ToArray()
+					ValueArray = DefaultEncoding.GetBytes(s)
 				};
 			}
 
@@ -263,7 +263,7 @@ public class VariableSMem
 
 			return arrayStructure with
 			{
-				ValueArray = (value as Array)?.Cast<object>().ToArray()
+				ValueArray = value as Array
 			};
 		}
 		else
