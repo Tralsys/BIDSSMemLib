@@ -38,5 +38,10 @@ public partial class VariableSMemTests
 			&& vFloat64 == v.vFloat64
 			&& vString == v.vString
 			&& Enumerable.SequenceEqual(vInt32Arr ?? Array.Empty<int>(), v.vInt32Arr ?? Array.Empty<int>());
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
 	}
 }
