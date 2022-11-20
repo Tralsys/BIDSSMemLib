@@ -9,7 +9,7 @@ namespace TR
 	public class SMemIFTests
 	{
 		static readonly long CreateDisposeTest_Capacity = 16;
-		static readonly long OneDataReadWriteTest_Capacity = 32;
+		static readonly long OneDataReadWriteTest_Capacity = 1024;
 
 		static readonly long IntDataRandomRWTest_Capacity = 8;
 		static readonly int IntDataRandomRWTest_MaxPos = 0x10000;
