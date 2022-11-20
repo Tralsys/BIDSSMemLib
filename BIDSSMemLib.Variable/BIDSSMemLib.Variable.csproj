@@ -4,9 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<RootNamespace>TR.BIDSSMemLib</RootNamespace>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(TargetFramework)|$(Platform)' == 'Release|net6.0|AnyCPU' ">
-		<DocumentationFile>bin\Release\net6.0\BIDSSMemLib.Variable.xml</DocumentationFile>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
