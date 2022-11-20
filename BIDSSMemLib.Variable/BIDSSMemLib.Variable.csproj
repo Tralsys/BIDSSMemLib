@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<RootNamespace>TR.BIDSSMemLib</RootNamespace>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BIDS.Parser.Variable" Version="1.0.2" />
+	</ItemGroup>
+</Project>

@@ -1,11 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net20;net35;net48</TargetFrameworks>
 		<LangVersion>9.0</LangVersion>
+		<Nullable>enable</Nullable>
 		<AssemblyName>TR.SMemIF</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
-		<Version>1.0.0.3</Version>
+		<Version>1.0.1.0</Version>
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>
 		<Product>BIDS Project</Product>
@@ -28,17 +29,6 @@ published to nuget.org</PackageReleaseNotes>
 It is recommended to use through TR.SMemCtrler because this library provides only low-level operations.</Description>
 		<GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-	</PropertyGroup>
-
-	<PropertyGroup>
-	  <DebugType>pdbonly</DebugType>
-	  <DebugSymbols>true</DebugSymbols>
-	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
-	  <Nullable>enable</Nullable>
-	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Platform)'=='AnyCPU'">
-	  <PlatformTarget>AnyCPU</PlatformTarget>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 </Project>

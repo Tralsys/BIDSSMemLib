@@ -1,0 +1,44 @@
+name: Unit Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        dotnet-version:
+          - '6.0.x'
+        project:
+          - BIDSSMemLib.Variable.Tests
+        include:
+          - os: windows-latest
+            project: TR.SMemIF.Tests
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Install dependencies
+        run: dotnet restore ${{ matrix.project }}
+
+      - name: Build ${{ matrix.project }}
+        run: dotnet build ${{ matrix.project }} -c Release --no-restore
+      - name: Test ${{ matrix.project }}
+        run: dotnet test ${{ matrix.project }} -c Release --no-build -v normal

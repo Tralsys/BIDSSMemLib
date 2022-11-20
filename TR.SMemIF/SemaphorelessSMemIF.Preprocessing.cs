@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace TR
 {
 	/// <summary>セマフォレスに共有メモリ空間へのアクセスを提供する各処理の前処理を実装したクラス</summary>
-	public abstract class SemaphorelessSMemIF_Preprocessing : ISmemIF
+	public abstract class SemaphorelessSMemIF_Preprocessing : ISMemIF
 	{
 		/// <summary>リソースの解放中, あるいは解放に完了しているかどうか</summary>
 		protected bool disposingValue { get; set; } = false;
@@ -15,6 +15,9 @@ namespace TR
 		/// <summary>共有メモリ空間のキャパシティ</summary>
 		/// <remarks>setterにてキャパシティの増減機能を実装する</remarks>
 		public abstract long Capacity { get; }
+
+		/// <summary>新規に作成された共有メモリかどうか</summary>
+		public bool IsNewlyCreated { get; protected set; }
 
 		/// <summary>与えられた型が使用する領域のサイズを計算する</summary>
 		/// <typeparam name="T">領域を計算する型</typeparam>
