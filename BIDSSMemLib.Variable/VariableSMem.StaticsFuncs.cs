@@ -47,8 +47,9 @@ public partial class VariableSMem
 		if (!SMemIF.ReadArray(StructureAreaOffset, structureBytes, 0, structureBytes.Length))
 			throw new AccessViolationException("Read from SMem failed");
 
-		// TODO: `VariableDataParser.ParseDataTypeRegisterCommand`をPublicにして、それを利用してParseする
-		throw new NotImplementedException("This feature is currently not implemented");
+		VariableStructure structure = VariableCmdParser.ParseDataTypeRegisterCommand(structureBytes);
+
+		return new VariableSMem(SMemIF, structure);
 	}
 
 	internal static object? GetValueObjectFromDataRecord(VariableStructure.IDataRecord dataRecord, bool isString)
