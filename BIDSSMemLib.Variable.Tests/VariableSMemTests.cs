@@ -96,8 +96,8 @@ public partial class VariableSMemTests
 		// (Content部分のみ)
 		byte[] expectedBytes = new byte[]
 		{
-			// Content Length = 60 bytes
-			0x3C,
+			// Content Length = 56 bytes
+			0x38,
 			0x00,
 			0x00,
 			0x00,
@@ -105,12 +105,6 @@ public partial class VariableSMemTests
 			0x00,
 			0x00,
 			0x00,
-
-			// (Data Id = (Int32)-1)
-			0xFF,
-			0xFF,
-			0xFF,
-			0xFF,
 
 			// vUInt16 = 2
 			0x02,

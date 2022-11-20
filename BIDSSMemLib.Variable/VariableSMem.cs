@@ -170,7 +170,8 @@ public partial class VariableSMem
 				continue;
 		}
 
-		byte[] bytes = Structure.GetBytes().ToArray();
+		// DataType IDはStructure側で既に書き込んであるため、Content側には含めない
+		byte[] bytes = Structure.GetBytes().Skip(sizeof(int)).ToArray();
 		long contentLength = bytes.LongLength;
 		if (!SMemIF.Write(ContentAreaOffset, ref contentLength)
 			|| !SMemIF.WriteArray(ContentAreaOffset + sizeof(long), bytes, 0, bytes.Length))
