@@ -215,7 +215,9 @@ public class VariableSMem
 		}
 
 		byte[] bytes = Structure.GetBytes().ToArray();
-		if (!SMemIF.WriteArray(ContentAreaOffset, bytes, 0, bytes.Length))
+		long contentLength = bytes.LongLength;
+		if (!SMemIF.Write(ContentAreaOffset, ref contentLength)
+			|| !SMemIF.WriteArray(ContentAreaOffset + sizeof(long), bytes, 0, bytes.Length))
 			throw new AccessViolationException("Write to SMem failed");
 	}
 
