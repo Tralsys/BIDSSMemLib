@@ -23,6 +23,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Get Version
+      id: get-version
+      shell: pwsh
+      run: |
+        $Version = $(([xml](Get-Content ./${{ inputs.project }}/${{ inputs.project }}.csproj)).Project.PropertyGroup.Version)
+        if([string]::IsNullOrEmpty($Version))
+        {
+          echo "Default version was set"
+          $Version = '1.0.0'
+        }
+        echo "Version ... '$Version'"
+        echo "VERSION=$Version" >> $env:GITHUB_OUTPUT
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
@@ -36,18 +49,6 @@ jobs:
 
     - name: Pack
       run: dotnet pack ${{ inputs.project }} -c Release --no-build -o dst
-
-    - name: Get Version
-      id: get-version
-      run: |
-        $Version = $(([xml](Get-Content ./${{ inputs.project }}/${{ inputs.project }}.csproj)).Project.PropertyGroup.Version)
-        if([string]::IsNullOrEmpty($Version))
-        {
-          echo "Default version was set"
-          $Version = '1.0.0'
-        }
-        echo "Version ... `$Version`"
-        echo "VERSION=$Version" >> $GITHUB_OUTPUT
 
     - name: publish to nuget.org
       run: >
