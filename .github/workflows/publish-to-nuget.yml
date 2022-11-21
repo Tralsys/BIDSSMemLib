@@ -1,0 +1,44 @@
+name: Publish to nuget
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'project name to publish'
+        required: true
+        type: choice
+        options:
+          - BIDSSMemLib.rw
+          - BIDSSMemLib.structs
+          - BIDSSMemLib.Variable
+          - TR.MyTask
+          - TR.SMemCtrler
+          - TR.SMemIF
+          - TR.SMemIF.Mock
+
+jobs:
+  publish-nuget:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Install dependencies
+      run: dotnet restore ${{ inputs.project }}
+
+    - name: Build
+      run: dotnet build ${{ inputs.project }} -c Release --no-restore
+
+    - name: Pack
+      run: dotnet pack ${{ input.project }} -c Release --no-build -o dst
+    
+    - name: publish to nuget.org
+      run: >
+        dotnet nuget push dst/${{ input.project }}.*.nupkg
+        --source https://api.nuget.org/v3/index.json
+        --api-key ${{ secrets.NUGET_API_KEY }}
