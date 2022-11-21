@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
+		<Assemblyname>TR.BIDSSMemLib.Variable</Assemblyname>
 		<RootNamespace>TR.BIDSSMemLib</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
