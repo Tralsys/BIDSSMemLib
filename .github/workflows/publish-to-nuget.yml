@@ -36,9 +36,20 @@ jobs:
 
     - name: Pack
       run: dotnet pack ${{ inputs.project }} -c Release --no-build -o dst
-    
+
+    - name: Get Version
+      id: get-version
+      run: |
+        $Version = $(([xml](Get-Content ./${{ inputs.project }}/${{ inputs.project }}.csproj)).Project.PropertyGroup.Version)
+        if([string]::IsNullOrEmpty($Version))
+        {
+          $Version = '1.0.0'
+        }
+        echo "Version=$Version" >> $GITHUB_OUTPUT
+
     - name: publish to nuget.org
       run: >
-        dotnet nuget push dst/${{ inputs.project }}.*.nupkg
+        dotnet nuget push
+        dst/${{ inputs.project }}.${{ steps.get-version.outputs.Version }}.nupkg
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.NUGET_API_KEY }}
