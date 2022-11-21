@@ -43,13 +43,15 @@ jobs:
         $Version = $(([xml](Get-Content ./${{ inputs.project }}/${{ inputs.project }}.csproj)).Project.PropertyGroup.Version)
         if([string]::IsNullOrEmpty($Version))
         {
+          echo "Default version was set"
           $Version = '1.0.0'
         }
-        echo "Version=$Version" >> $GITHUB_OUTPUT
+        echo "Version ... `$Version`"
+        echo "VERSION=$Version" >> $GITHUB_OUTPUT
 
     - name: publish to nuget.org
       run: >
         dotnet nuget push
-        dst/${{ inputs.project }}.${{ steps.get-version.outputs.Version }}.nupkg
+        dst/${{ inputs.project }}.${{ steps.get-version.outputs.VERSION }}.nupkg
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.NUGET_API_KEY }}
