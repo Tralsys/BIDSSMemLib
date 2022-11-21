@@ -24,11 +24,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Get Version
-      id: get-version
+    - name: Get Project Info
+      id: get-project-info
       shell: pwsh
       run: |
-        $Version = $(([xml](Get-Content ./${{ inputs.project }}/${{ inputs.project }}.csproj)).Project.PropertyGroup.Version)
+        $csproj = [xml](Get-Content ./${{ inputs.project }}/${{ inputs.project }}.csproj)
+
+        $Version = $csproj.Project.PropertyGroup.Version
         if([string]::IsNullOrEmpty($Version))
         {
           echo "Default version was set"
@@ -61,6 +63,15 @@ jobs:
         echo "Version ... '$Version'"
         echo "VERSION=$Version" >> $env:GITHUB_OUTPUT
 
+        $AssemblyName = $csproj.Project.PropertyGroup.AssemblyName
+        if([string]::IsNullOrEmpty($AssemblyName))
+        {
+          $AssemblyName = '${{ inputs.project }}'
+        }
+
+        echo "Assembly Name ... '$AssemblyName'"
+        echo "ASSEMBLY_NAME=$Assemblyname" >> $env:GITHUB_OUTPUT
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -78,13 +89,13 @@ jobs:
     - name: publish to nuget.org
       run: >
         dotnet nuget push
-        dst/${{ inputs.project }}.${{ steps.get-version.outputs.VERSION }}.nupkg
+        dst/${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}.${{ steps.get-project-info.outputs.VERSION }}.nupkg
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.NUGET_API_KEY }}
 
     - name: show version to summary
       run: |
         echo "### Publish Success :rocket:" >> $env:GITHUB_STEP_SUMMARY
-        echo "The project ``${{ inputs.project }}`` (version: ``${{ steps.get-version.outputs.VERSION }}``) was successfully published to nuget.org" >> $env:GITHUB_STEP_SUMMARY
+        echo "The project ``${{ inputs.project }}`` (version: ``${{ steps.get-project-info.outputs.VERSION }}``) was successfully published to nuget.org" >> $env:GITHUB_STEP_SUMMARY
         echo "" >> $env:GITHUB_STEP_SUMMARY
-        echo "see: https://www.nuget.org/packages/${{ inputs.project }}/${{ steps.get-version.outputs.VERSION }}" >> $env:GITHUB_STEP_SUMMARY
+        echo "see: https://www.nuget.org/packages/${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}/${{ steps.get-project-info.outputs.VERSION }}" >> $env:GITHUB_STEP_SUMMARY
