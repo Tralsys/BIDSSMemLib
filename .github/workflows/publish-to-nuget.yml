@@ -81,3 +81,10 @@ jobs:
         dst/${{ inputs.project }}.${{ steps.get-version.outputs.VERSION }}.nupkg
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.NUGET_API_KEY }}
+
+    - name: show version to summary
+      run: |
+        echo "### Publish Success :rocket:" >> $env:GITHUB_STEP_SUMMARY
+        echo "The project `${{ inputs.project }}` (version: `${{ steps.get-version.outputs.VERSION }}`) was successfully published to nuget.org" >> $env:GITHUB_STEP_SUMMARY
+        echo "" >> $env:GITHUB_STEP_SUMMARY
+        echo "see: https://www.nuget.org/packages/${{ inputs.project }}/${{ steps.get-version.outputs.VERSION }}" >> $env:GITHUB_STEP_SUMMARY
