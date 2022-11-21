@@ -35,10 +35,10 @@ jobs:
       run: dotnet build ${{ inputs.project }} -c Release --no-restore
 
     - name: Pack
-      run: dotnet pack ${{ input.project }} -c Release --no-build -o dst
+      run: dotnet pack ${{ inputs.project }} -c Release --no-build -o dst
     
     - name: publish to nuget.org
       run: >
-        dotnet nuget push dst/${{ input.project }}.*.nupkg
+        dotnet nuget push dst/${{ inputs.project }}.*.nupkg
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.NUGET_API_KEY }}
