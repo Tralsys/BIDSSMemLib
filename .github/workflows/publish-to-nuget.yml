@@ -12,7 +12,6 @@ on:
           - BIDSSMemLib.rw
           - BIDSSMemLib.structs
           - BIDSSMemLib.Variable
-          - TR.MyTask
           - TR.SMemCtrler
           - TR.SMemIF
           - TR.SMemIF.Mock
