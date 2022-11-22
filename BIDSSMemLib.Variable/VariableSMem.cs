@@ -127,7 +127,8 @@ public partial class VariableSMem
 		_Members = members.ToList();
 		if (structure is null)
 		{
-			Structure = new(-1, _Members);
+			// Structure Nameは、共有メモリにおいてはSMemNameで代替できるため、記録しない
+			Structure = new(-1, string.Empty, _Members);
 		}
 		else
 		{

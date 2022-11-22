@@ -32,6 +32,9 @@ public partial class VariableSMemTests
 				// Data ID
 				.Concat(BitConverter.GetBytes((int)-1))
 
+				// Structure Name (= string.Empty)
+				.Concat(new byte[] { 0 })
+
 				// Structure
 				.Concat(SampleClass.Expected_vUInt16.GetStructureBytes())
 				.Concat(SampleClass.Expected_vInt32.GetStructureBytes())
