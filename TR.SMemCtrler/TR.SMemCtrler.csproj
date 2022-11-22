@@ -34,7 +34,6 @@ published to nuget.org</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\TR.MyTask\TR.MyTask.csproj" />
 	  <ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
 	</ItemGroup>
 
