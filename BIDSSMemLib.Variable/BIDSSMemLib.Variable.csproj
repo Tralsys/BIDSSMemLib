@@ -12,6 +12,6 @@
 		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="BIDS.Parser.Variable" Version="1.1.0-beta1" />
+		<PackageReference Include="BIDS.Parser.Variable" Version="1.2.0" />
 	</ItemGroup>
 </Project>
