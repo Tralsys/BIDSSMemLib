@@ -251,4 +251,31 @@ public partial class VariableSMem
 			|| !SMemIF.WriteArray(ContentAreaOffset + sizeof(long), bytes, 0, bytes.Length))
 			throw new AccessViolationException("Write to SMem failed");
 	}
+
+	public void WriteToSMemFromPayload(in VariableStructurePayload payload)
+	{
+		for (int i = 0; i < _Members.Count; i++)
+		{
+			VariableStructure.IDataRecord iDataRecord = _Members[i];
+			if (!payload.TryGetValue(iDataRecord.Name, out VariableStructure.IDataRecord? gotData))
+				continue;
+
+			if (iDataRecord.Type != gotData.Type)
+				continue;
+			if (gotData is VariableStructure.ArrayStructure v1
+				&& iDataRecord is VariableStructure.ArrayStructure v2
+				&& v1.ElemType != v2.ElemType)
+				continue;
+
+			_Members[i] = gotData;
+		}
+
+
+		// DataType IDはStructure側で既に書き込んであるため、Content側には含めない
+		byte[] bytes = Structure.GetBytes().Skip(sizeof(int)).ToArray();
+		long contentLength = bytes.LongLength;
+		if (!SMemIF.Write(ContentAreaOffset, ref contentLength)
+			|| !SMemIF.WriteArray(ContentAreaOffset + sizeof(long), bytes, 0, bytes.Length))
+			throw new AccessViolationException("Write to SMem failed");
+	}
 }
