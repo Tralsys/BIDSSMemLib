@@ -33,6 +33,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TR.SMemCtrler.Tests", "TR.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.CustomDataSharingManager.Tests", "TR.CustomDataSharingManager.Tests\TR.CustomDataSharingManager.Tests.csproj", "{31453983-8901-432B-95EF-5460DB8ABC71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.CustomDataSharingManager.Core", "TR.CustomDataSharingManager.Core\TR.CustomDataSharingManager.Core.csproj", "{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +225,18 @@ Global
 		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|x64.Build.0 = Release|Any CPU
 		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|x86.ActiveCfg = Release|Any CPU
 		{31453983-8901-432B-95EF-5460DB8ABC71}.Release|x86.Build.0 = Release|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Debug|x64.Build.0 = Debug|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Debug|x86.Build.0 = Debug|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Release|x64.ActiveCfg = Release|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Release|x64.Build.0 = Release|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Release|x86.ActiveCfg = Release|Any CPU
+		{13E2C2A5-1CD9-436D-B0B1-CC0F6F39F5C9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
