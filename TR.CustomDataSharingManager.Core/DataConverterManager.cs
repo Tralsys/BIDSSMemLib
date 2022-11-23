@@ -98,7 +98,7 @@ namespace TR
 
 
 		public static Func<DataForConverter, Task>? CreateActionFromScriptString(in string scriptString)
-			=> CreateActionFromScriptString(scriptString);
+			=> CreateActionFromScriptString(scriptString, UsingScriptOptions);
 		public static Func<DataForConverter, Task>? CreateActionFromScriptString(in string scriptString, in string scriptFilePath)
 			=> CreateActionFromScriptString(scriptString, UsingScriptOptions.WithFilePath(scriptFilePath));
 		public static Func<DataForConverter, Task>? CreateActionFromScriptString(in string scriptString, ScriptOptions options)
