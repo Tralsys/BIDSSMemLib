@@ -55,7 +55,7 @@ namespace TR
 	}
 }
 
-#if NETFRAMEWORK
+#if NETFRAMEWORK || NETSTANDARD
 // ref : https://ufcpp.net/blog/2020/6/cs9vs16_7p3/
 // IsExternalInit属性
 

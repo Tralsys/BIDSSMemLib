@@ -38,13 +38,12 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="DllExport" Version="1.7.4" />
-    <PackageReference Include="ilmerge">
-      <Version>3.0.41</Version>
+    <PackageReference Include="ilmerge" Version="3.0.41">
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.11.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
+    <ProjectReference Include="..\TR.CustomDataSharingManager.Core\TR.CustomDataSharingManager.Core.csproj" />
   </ItemGroup>
   <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc" Condition="'$(Platform)' != 'AnyCPU'">
     <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />

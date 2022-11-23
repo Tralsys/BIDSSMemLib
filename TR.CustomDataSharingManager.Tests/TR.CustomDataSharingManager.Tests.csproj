@@ -14,7 +14,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\TR.CustomDataSharingManager\TR.CustomDataSharingManager.csproj" />
+		<ProjectReference Include="..\TR.CustomDataSharingManager.Core\TR.CustomDataSharingManager.Core.csproj" />
 	</ItemGroup>
 
 </Project>
