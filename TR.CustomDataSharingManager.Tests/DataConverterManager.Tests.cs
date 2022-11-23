@@ -23,7 +23,7 @@ namespace TR
 
 			var testArg = CreateEmptyDataForConverter(cdsManager) with { Panel = new(panelPtr) };
 
-			//‚±‚±‚ÅAssert.Pass‚ª“ü‚é
+			//ã“ã“ã§Assert.PassãŒå…¥ã‚‹
 			await manager.RunAsync(testArg);
 
 			Assert.AreEqual(TestingWithIScriptingModule.TestData, testArg.Panel[0]);
