@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 
 namespace TR
 {
@@ -13,6 +14,10 @@ namespace TR
 		const long Capacity_Step = 4096;
 		const long CanWriteInOneTime_Bytes = 4096;
 
+		public static string DefaultSMemDirectoryOnUnixLikeOS { get; set; } = Path.Combine(Path.GetTempPath(), "TR.SMemIF.SharedMemory.bin");
+
+		public string PathToSMemFileOnUnixLikeOS { get; } = "";
+
 		static long calcNewCapacity(in long inputCapacity)
 			=> (long)Math.Ceiling((float)inputCapacity / Capacity_Step) * Capacity_Step;
 
@@ -21,9 +26,11 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SemaphorelessSMemIF(string smem_name, long capacity)
 			: this(
-					MemoryMappedFile.CreateOrOpen(smem_name, calcNewCapacity(capacity)),
+					CreateOrOpenMemoryMappedFile(smem_name, calcNewCapacity(capacity), out bool isNewlyCreated, out string filePath),
 					smem_name,
-					capacity
+					capacity,
+					isNewlyCreated,
+					filePath
 				)
 		{
 		}
@@ -41,9 +48,10 @@ namespace TR
 			MMVA = MMF.CreateViewAccessor(0, capacity);
 		}
 
-		private SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity, bool isNewlyCreated) : base(smem_name, capacity)
+		private SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity, bool isNewlyCreated, string filePath) : base(smem_name, capacity)
 		{
 			IsNewlyCreated = isNewlyCreated;
+			PathToSMemFileOnUnixLikeOS = filePath;
 
 			MMF = mmf;
 
@@ -59,22 +67,57 @@ namespace TR
 		/// <param name="isNewlyCreated">共有メモリが新規に作成されたかどうか</param>
 		/// <returns></returns>
 		public static SemaphorelessSMemIF CreateOrOpen(string smem_name, long capacity, out bool isNewlyCreated)
-		{
-			long newCap = (long)Math.Ceiling((float)capacity / Capacity_Step) * Capacity_Step;
+			=> new SemaphorelessSMemIF(
+				CreateOrOpenMemoryMappedFile(smem_name, capacity, out isNewlyCreated, out string filePath),
+				smem_name,
+				capacity,
+				isNewlyCreated,
+				filePath
+			);
 
-			MemoryMappedFile mmf;
+
+		private static MemoryMappedFile CreateOrOpenMemoryMappedFile(string smem_name, long capacity, out bool isNewlyCreated, out string filePath)
+			=> RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+				? CreateOrOpenMemoryMappedFileOnWindows(smem_name, capacity, out isNewlyCreated, out filePath)
+				: CreateOrOpenMemoryMappedFileOnLinuxOrMac(smem_name, capacity, out isNewlyCreated, out filePath);
+
+		private static MemoryMappedFile CreateOrOpenMemoryMappedFileOnWindows(string smem_name, long capacity, out bool isNewlyCreated, out string filePath)
+		{
+			filePath = string.Empty;
 			try
 			{
-				mmf = MemoryMappedFile.OpenExisting(smem_name);
 				isNewlyCreated = false;
+				return MemoryMappedFile.OpenExisting(smem_name);
 			}
 			catch (FileNotFoundException)
 			{
-				mmf = MemoryMappedFile.CreateNew(smem_name, capacity);
 				isNewlyCreated = true;
+				return MemoryMappedFile.CreateNew(smem_name, capacity);
 			}
+		}
 
-			return new(mmf, smem_name, capacity, isNewlyCreated);
+		private static MemoryMappedFile CreateOrOpenMemoryMappedFileOnLinuxOrMac(string smem_name, long capacity, out bool isNewlyCreated, out string filePath)
+		{
+			if (int.MaxValue < capacity)
+				throw new ArgumentOutOfRangeException(nameof(capacity), "argument cannot be more than `int.MaxValue`");
+
+			if (!Directory.Exists(DefaultSMemDirectoryOnUnixLikeOS))
+				Directory.CreateDirectory(DefaultSMemDirectoryOnUnixLikeOS);
+
+			filePath = Path.Combine(DefaultSMemDirectoryOnUnixLikeOS, smem_name);
+
+			// ファイルが存在するなら、作成済みのものを開くことになる
+			// ファイルが存在しないなら、新規に作成することになる
+			isNewlyCreated = !File.Exists(filePath);
+
+			FileStream stream =
+				isNewlyCreated
+				? File.Create(filePath, (int)capacity, FileOptions.RandomAccess)
+				: File.Open(filePath, FileMode.Truncate);
+
+			Console.WriteLine($"isNewlyCreated: {isNewlyCreated}");
+
+			return MemoryMappedFile.CreateFromFile(stream, null, capacity, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, false);
 		}
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
