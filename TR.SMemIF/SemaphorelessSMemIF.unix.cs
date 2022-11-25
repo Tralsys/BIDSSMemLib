@@ -1,18 +1,29 @@
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
-using System.Runtime.InteropServices;
 
 namespace TR
 {
 	/// <summary>共有メモリにアクセスする際に, セマフォによる排他制御を呼び出し元で行う場合に使用するクラス</summary>
-	public class SemaphorelessSMemIF : SemaphorelessSMemIF_Preprocessing
+	public class SemaphorelessSMemIF_UNIX : SemaphorelessSMemIF_Preprocessing
 	{
-		MemoryMappedFile? MMF = null;
-		MemoryMappedViewAccessor? MMVA = null;
-
 		const long Capacity_Step = 4096;
 		const long CanWriteInOneTime_Bytes = 4096;
+
+		/// <summary>
+		/// Shared Memory Fileが配置されたディレクトリ
+		/// </summary>
+		public static string DefaultSMemDirectory { get; set; } = Path.Combine(Path.GetTempPath(), "TR.SMemIF.SharedMemory");
+
+		/// <summary>
+		/// Shared Memory Fileへのパス
+		/// </summary>
+		public string PathToSMemFile { get; } = "";
+
+		/// <summary>
+		/// Shared Memoryの読み書きに使用するキャパシティ
+		/// </summary>
+		public override long Capacity { get; }
 
 		static long calcNewCapacity(in long inputCapacity)
 			=> (long)Math.Ceiling((float)inputCapacity / Capacity_Step) * Capacity_Step;
@@ -20,72 +31,25 @@ namespace TR
 		/// <summary>インスタンスを初期化します</summary>
 		/// <param name="smem_name">共有メモリ空間の名前</param>
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
-		public SemaphorelessSMemIF(string smem_name, long capacity)
-			: this(
-					CreateOrOpenMemoryMappedFile(smem_name, calcNewCapacity(capacity), out bool isNewlyCreated),
-					smem_name,
-					capacity,
-					isNewlyCreated
-				)
+		public SemaphorelessSMemIF_UNIX(string smem_name, long capacity) : base(smem_name, capacity)
 		{
-		}
+			Capacity = calcNewCapacity(capacity);
 
-		/// <summary>
-		/// インスタンスを初期化します
-		/// </summary>
-		/// <param name="mmf">使用する<see cref="MemoryMappedFile"/>インスタンス</param>
-		/// <param name="smem_name">共有メモリ名</param>
-		/// <param name="capacity">共有メモリのキャパシティ</param>
-		public SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity) : this(mmf, smem_name, capacity, false)
-		{
-		}
+			if (int.MaxValue < Capacity)
+				throw new ArgumentOutOfRangeException(nameof(capacity), "cannot use more than int.MaxValue");
 
-		private SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity, bool isNewlyCreated) : base(smem_name, capacity)
-		{
-			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-				throw new PlatformNotSupportedException($"The type `{typeof(SemaphorelessSMemIF)}` is supported only on windows.  Please use `{typeof(SemaphorelessSMemIF_UNIX)}` instead.");
+			string dirPath = DefaultSMemDirectory;
+			if (!Directory.Exists(dirPath))
+				Directory.CreateDirectory(dirPath);
 
-			IsNewlyCreated = isNewlyCreated;
+			PathToSMemFile = Path.Combine(dirPath, smem_name);
 
-			MMF = mmf;
-
-			MMVA = MMF.CreateViewAccessor(0, capacity);
-		}
-
-		/// <summary>
-		/// 共有メモリを新規作成し、<see cref="SemaphorelessSMemIF"/>インスタンスを初期化します。
-		/// もしくは、共有メモリが既に存在する場合は、それを開いて<see cref="SemaphorelessSMemIF"/>インスタンスを初期化します。
-		/// </summary>
-		/// <param name="smem_name">共有メモリ名</param>
-		/// <param name="capacity">共有メモリのキャパシティ</param>
-		/// <param name="isNewlyCreated">共有メモリが新規に作成されたかどうか</param>
-		/// <returns></returns>
-		public static SemaphorelessSMemIF CreateOrOpen(string smem_name, long capacity, out bool isNewlyCreated)
-			=> new SemaphorelessSMemIF(
-				CreateOrOpenMemoryMappedFile(smem_name, capacity, out isNewlyCreated),
-				smem_name,
-				capacity,
-				isNewlyCreated
-			);
-
-		private static MemoryMappedFile CreateOrOpenMemoryMappedFile(string smem_name, long capacity, out bool isNewlyCreated)
-		{
-			try
+			if (!File.Exists(PathToSMemFile))
 			{
-				isNewlyCreated = false;
-				return MemoryMappedFile.OpenExisting(smem_name);
-			}
-			catch (FileNotFoundException)
-			{
-				isNewlyCreated = true;
-				return MemoryMappedFile.CreateNew(smem_name, capacity);
+				using var _ = File.Create(PathToSMemFile, (int)Capacity);
+				IsNewlyCreated = true;
 			}
 		}
-
-		/// <summary>共有メモリ空間のキャパシティ</summary>
-		/// <remarks>キャパシティ変更には大きなコストが伴うので注意  (メモリ空間を開き直すため)</remarks>
-		public override long Capacity => MMVA?.Capacity ?? 0;
-
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
 		/// <typeparam name="T">読み込みたい型</typeparam>
@@ -94,10 +58,15 @@ namespace TR
 		/// <returns>読み込みに成功したかどうか  (例外は捕捉されません)</returns>
 		public override bool Read<T>(long pos, out T buf) where T : struct
 		{
-			if (!base.Read(pos, out buf) || MMVA?.CanRead != true)
+			if (!base.Read(pos, out buf))
 				return false;
 
-			MMVA.Read(pos, out buf);
+			using MemoryMappedFile mmf = MemoryMappedFile.CreateFromFile(PathToSMemFile, FileMode.Open, null, Capacity);
+			using MemoryMappedViewAccessor mmva = mmf.CreateViewAccessor(0, Capacity);
+			if (!mmva.CanRead)
+				return false;
+
+			mmva.Read(pos, out buf);
 
 			return true;
 		}
@@ -111,10 +80,16 @@ namespace TR
 		/// <returns>読み取りに成功したかどうか</returns>
 		public override bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			if (!base.ReadArray(pos, buf, offset, count) || MMVA?.CanRead != true)
+			if (!base.ReadArray(pos, buf, offset, count))
 				return false;
 
-			MMVA.ReadArray(pos, buf, offset, count);
+			using MemoryMappedFile mmf = MemoryMappedFile.CreateFromFile(PathToSMemFile, FileMode.Open, null, Capacity);
+			using MemoryMappedViewAccessor mmva = mmf.CreateViewAccessor(0, Capacity);
+			if (!mmva.CanRead)
+				return false;
+
+			mmva.ReadArray(pos, buf, offset, count);
+
 			return true;
 		}
 
@@ -125,10 +100,16 @@ namespace TR
 		/// <returns>書き込みに成功したかどうか</returns>
 		public override bool Write<T>(long pos, ref T buf) where T : struct
 		{
-			if (!base.Write(pos, ref buf) || MMVA?.CanWrite != true)
+			if (!base.Write(pos, ref buf))
 				return false;
 
-			MMVA.Write(pos, ref buf);
+			using MemoryMappedFile mmf = MemoryMappedFile.CreateFromFile(PathToSMemFile, FileMode.Open, null, Capacity);
+			using MemoryMappedViewAccessor mmva = mmf.CreateViewAccessor(0, Capacity);
+			if (!mmva.CanWrite)
+				return false;
+
+			mmva.Write(pos, ref buf);
+
 			return true;
 		}
 
@@ -141,18 +122,23 @@ namespace TR
 		/// <returns>書き込みに成功したかどうか</returns>
 		public override bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			if (!base.WriteArray(pos, buf, offset, count) || MMVA?.CanWrite != true)
+			if (!base.WriteArray(pos, buf, offset, count))
 				return false;
 
 			long elemBytes = getElemSize<T>();
 			int canWriteInOneTime = (int)(CanWriteInOneTime_Bytes / elemBytes);
 			long posStep = elemBytes * canWriteInOneTime;
 
+			using MemoryMappedFile mmf = MemoryMappedFile.CreateFromFile(PathToSMemFile, FileMode.Open, null, Capacity);
+			using MemoryMappedViewAccessor mmva = mmf.CreateViewAccessor(0, Capacity);
+			if (!mmva.CanWrite)
+				return false;
+
 			while (count > 0)
 			{
 				int write_count = count > canWriteInOneTime ? canWriteInOneTime : count;
 
-				MMVA.WriteArray(pos, buf, offset, write_count);
+				mmva.WriteArray(pos, buf, offset, write_count);
 
 				offset += canWriteInOneTime;
 				count -= canWriteInOneTime;
@@ -176,10 +162,6 @@ namespace TR
 			{
 				if (disposing)
 				{
-					MMVA?.Dispose();
-					MMVA = null;
-					MMF?.Dispose();
-					MMF = null;
 				}
 
 				disposedValue = true;
