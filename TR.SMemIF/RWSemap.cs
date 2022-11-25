@@ -30,7 +30,7 @@ namespace TR
 		/// <param name="act">読み取り操作</param>
 		/// <returns>成功したかどうか</returns>
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public void Read(Action<object?> act)//net2.0対応のため, object型引数を指定  処理的には不要
+		public void Read(Action act)
 		{
 			while (Want_to_Write > 0)//Writeロック取得待機
 				Thread.Sleep(WAIT_TICK_TIMESPAN);
@@ -38,7 +38,7 @@ namespace TR
 			try
 			{
 				Interlocked.Increment(ref Reading);
-				act?.Invoke(null);
+				act?.Invoke();
 			}
 			finally
 			{
@@ -50,7 +50,7 @@ namespace TR
 		/// <param name="act">書き込み操作</param>
 		/// <returns>成功したかどうか</returns>
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
-		public void Write(Action<object?> act)//net2.0対応のため, object型引数を指定  処理的には不要
+		public void Write(Action act)
 		{
 			try
 			{
@@ -60,7 +60,7 @@ namespace TR
 
 				lock (LockObj)//Writeロック
 				{
-					act?.Invoke(null);
+					act?.Invoke();
 				}
 			}
 			finally

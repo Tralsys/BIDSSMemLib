@@ -24,7 +24,7 @@ namespace TR
 		{
 			T retT = default;
 
-			Semap.Read((_) => base.Read(pos, out retT) );
+			Semap.Read(() => base.Read(pos, out retT));
 
 			buf = retT;
 			return true;
@@ -39,7 +39,7 @@ namespace TR
 		/// <returns>読み取りに成功したかどうか</returns>
 		public override bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			Semap.Read((_) => base.ReadArray(pos, buf, offset, count));
+			Semap.Read(() => base.ReadArray(pos, buf, offset, count));
 
 			return true;
 		}
@@ -53,7 +53,7 @@ namespace TR
 		{
 			T retT = buf;
 
-			Semap.Write((_) => base.Write(pos, ref retT) );
+			Semap.Write(() => base.Write(pos, ref retT));
 
 			return true;
 		}
@@ -67,7 +67,7 @@ namespace TR
 		/// <returns>書き込みに成功したかどうか</returns>
 		public override bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			Semap.Write((_) => base.WriteArray(pos, buf, offset, count) );
+			Semap.Write(() => base.WriteArray(pos, buf, offset, count));
 
 			return true;
 		}
@@ -89,7 +89,7 @@ namespace TR
 				}
 			}
 		}
-#endregion
+		#endregion
 
 	}
 }
