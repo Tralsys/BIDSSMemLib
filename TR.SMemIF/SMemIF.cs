@@ -5,7 +5,7 @@ namespace TR
 	/// <summary>TargetFramework別にSharedMemoryを提供します.</summary>
 	public class SMemIF : SemaphorelessSMemIF
 	{
-		private RWSemap Semap { get; }
+		private IRWSemaphore Semap { get; }
 
 		/// <summary>インスタンスを初期化する</summary>
 		/// <param name="smem_name">共有メモリ空間の名前</param>

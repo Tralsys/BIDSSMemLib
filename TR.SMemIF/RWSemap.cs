@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 namespace TR
 {
 	/// <summary>await可能なR/Wロックを提供する</summary>
-	public class RWSemap : IDisposable
+	public class RWSemap : IDisposable, IRWSemaphore
 	{
 		private const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
 
