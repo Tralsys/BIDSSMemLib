@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace TR
 {
@@ -20,9 +21,18 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SMemIF(string smem_name, long capacity)
 		{
-			Semap = new RWSemap();
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			{
+				Semap = new RWSemap();
+				BaseSMemIF = new SemaphorelessSMemIF(smem_name, capacity);
+			}
+			else
+			{
+				SemaphorelessSMemIF_UNIX baseSMemIF = new(smem_name, capacity);
 
-			BaseSMemIF = new SemaphorelessSMemIF(smem_name, capacity);
+				Semap = new RWSemap_UNIX(smem_name);
+				BaseSMemIF = baseSMemIF;
+			}
 		}
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
