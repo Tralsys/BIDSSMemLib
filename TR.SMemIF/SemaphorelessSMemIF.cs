@@ -14,10 +14,6 @@ namespace TR
 		const long Capacity_Step = 4096;
 		const long CanWriteInOneTime_Bytes = 4096;
 
-		public static string DefaultSMemDirectoryOnUnixLikeOS { get; set; } = Path.Combine(Path.GetTempPath(), "TR.SMemIF.SharedMemory.bin");
-
-		public string PathToSMemFileOnUnixLikeOS { get; } = "";
-
 		static long calcNewCapacity(in long inputCapacity)
 			=> (long)Math.Ceiling((float)inputCapacity / Capacity_Step) * Capacity_Step;
 
@@ -26,11 +22,10 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SemaphorelessSMemIF(string smem_name, long capacity)
 			: this(
-					CreateOrOpenMemoryMappedFile(smem_name, calcNewCapacity(capacity), out bool isNewlyCreated, out string filePath),
+					CreateOrOpenMemoryMappedFile(smem_name, calcNewCapacity(capacity), out bool isNewlyCreated),
 					smem_name,
 					capacity,
-					isNewlyCreated,
-					filePath
+					isNewlyCreated
 				)
 		{
 		}
@@ -41,17 +36,16 @@ namespace TR
 		/// <param name="mmf">使用する<see cref="MemoryMappedFile"/>インスタンス</param>
 		/// <param name="smem_name">共有メモリ名</param>
 		/// <param name="capacity">共有メモリのキャパシティ</param>
-		public SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity) : base(smem_name, capacity)
+		public SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity) : this(mmf, smem_name, capacity, false)
 		{
-			MMF = mmf;
-
-			MMVA = MMF.CreateViewAccessor(0, capacity);
 		}
 
-		private SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity, bool isNewlyCreated, string filePath) : base(smem_name, capacity)
+		private SemaphorelessSMemIF(MemoryMappedFile mmf, string smem_name, long capacity, bool isNewlyCreated) : base(smem_name, capacity)
 		{
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				throw new PlatformNotSupportedException($"The type `{typeof(SemaphorelessSMemIF)}` is supported only on windows.  Please use `{typeof(SemaphorelessSMemIF_UNIX)}` instead.");
+
 			IsNewlyCreated = isNewlyCreated;
-			PathToSMemFileOnUnixLikeOS = filePath;
 
 			MMF = mmf;
 
@@ -68,22 +62,14 @@ namespace TR
 		/// <returns></returns>
 		public static SemaphorelessSMemIF CreateOrOpen(string smem_name, long capacity, out bool isNewlyCreated)
 			=> new SemaphorelessSMemIF(
-				CreateOrOpenMemoryMappedFile(smem_name, capacity, out isNewlyCreated, out string filePath),
+				CreateOrOpenMemoryMappedFile(smem_name, capacity, out isNewlyCreated),
 				smem_name,
 				capacity,
-				isNewlyCreated,
-				filePath
+				isNewlyCreated
 			);
 
-
-		private static MemoryMappedFile CreateOrOpenMemoryMappedFile(string smem_name, long capacity, out bool isNewlyCreated, out string filePath)
-			=> RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-				? CreateOrOpenMemoryMappedFileOnWindows(smem_name, capacity, out isNewlyCreated, out filePath)
-				: CreateOrOpenMemoryMappedFileOnLinuxOrMac(smem_name, capacity, out isNewlyCreated, out filePath);
-
-		private static MemoryMappedFile CreateOrOpenMemoryMappedFileOnWindows(string smem_name, long capacity, out bool isNewlyCreated, out string filePath)
+		private static MemoryMappedFile CreateOrOpenMemoryMappedFile(string smem_name, long capacity, out bool isNewlyCreated)
 		{
-			filePath = string.Empty;
 			try
 			{
 				isNewlyCreated = false;
@@ -94,30 +80,6 @@ namespace TR
 				isNewlyCreated = true;
 				return MemoryMappedFile.CreateNew(smem_name, capacity);
 			}
-		}
-
-		private static MemoryMappedFile CreateOrOpenMemoryMappedFileOnLinuxOrMac(string smem_name, long capacity, out bool isNewlyCreated, out string filePath)
-		{
-			if (int.MaxValue < capacity)
-				throw new ArgumentOutOfRangeException(nameof(capacity), "argument cannot be more than `int.MaxValue`");
-
-			if (!Directory.Exists(DefaultSMemDirectoryOnUnixLikeOS))
-				Directory.CreateDirectory(DefaultSMemDirectoryOnUnixLikeOS);
-
-			filePath = Path.Combine(DefaultSMemDirectoryOnUnixLikeOS, smem_name);
-
-			// ファイルが存在するなら、作成済みのものを開くことになる
-			// ファイルが存在しないなら、新規に作成することになる
-			isNewlyCreated = !File.Exists(filePath);
-
-			FileStream stream =
-				isNewlyCreated
-				? File.Create(filePath, (int)capacity, FileOptions.RandomAccess)
-				: File.Open(filePath, FileMode.Truncate);
-
-			Console.WriteLine($"isNewlyCreated: {isNewlyCreated}");
-
-			return MemoryMappedFile.CreateFromFile(stream, null, capacity, MemoryMappedFileAccess.ReadWrite, HandleInheritability.None, false);
 		}
 
 		/// <summary>共有メモリ空間のキャパシティ</summary>
