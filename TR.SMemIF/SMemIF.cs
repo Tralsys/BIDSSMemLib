@@ -1,18 +1,28 @@
-﻿
-//ref : https://docs.microsoft.com/ja-jp/dotnet/standard/library-guidance/cross-platform-targeting
+using System;
+
 namespace TR
 {
 	/// <summary>TargetFramework別にSharedMemoryを提供します.</summary>
-	public class SMemIF : SemaphorelessSMemIF
+	public class SMemIF : ISMemIF
 	{
 		private IRWSemaphore Semap { get; }
+
+		private ISMemIF BaseSMemIF { get; }
+
+		public string SMemName => BaseSMemIF.SMemName;
+
+		public long Capacity => BaseSMemIF.Capacity;
+
+		public bool IsNewlyCreated => BaseSMemIF.IsNewlyCreated;
 
 		/// <summary>インスタンスを初期化する</summary>
 		/// <param name="smem_name">共有メモリ空間の名前</param>
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
-		public SMemIF(string smem_name, long capacity) : base(smem_name, capacity)
+		public SMemIF(string smem_name, long capacity)
 		{
 			Semap = new RWSemap();
+
+			BaseSMemIF = new SemaphorelessSMemIF(smem_name, capacity);
 		}
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
@@ -20,11 +30,11 @@ namespace TR
 		/// <param name="pos">読み込む位置 [bytes]</param>
 		/// <param name="buf">読み込むデータ</param>
 		/// <returns>読み込みに成功したかどうか  (例外は捕捉されません)</returns>
-		public override bool Read<T>(long pos, out T buf) where T : struct
+		public bool Read<T>(long pos, out T buf) where T : struct
 		{
 			T retT = default;
 
-			Semap.Read(() => base.Read(pos, out retT));
+			Semap.Read(() => BaseSMemIF.Read(pos, out retT));
 
 			buf = retT;
 			return true;
@@ -37,9 +47,9 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">読み取りを行う数</param>
 		/// <returns>読み取りに成功したかどうか</returns>
-		public override bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
+		public bool ReadArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			Semap.Read(() => base.ReadArray(pos, buf, offset, count));
+			Semap.Read(() => BaseSMemIF.ReadArray(pos, buf, offset, count));
 
 			return true;
 		}
@@ -49,11 +59,11 @@ namespace TR
 		/// <param name="pos">書き込む位置 [bytes]</param>
 		/// <param name="buf">書き込むデータ</param>
 		/// <returns>書き込みに成功したかどうか</returns>
-		public override bool Write<T>(long pos, ref T buf) where T : struct
+		public bool Write<T>(long pos, ref T buf) where T : struct
 		{
 			T retT = buf;
 
-			Semap.Write(() => base.Write(pos, ref retT));
+			Semap.Write(() => BaseSMemIF.Write(pos, ref retT));
 
 			return true;
 		}
@@ -65,29 +75,39 @@ namespace TR
 		/// <param name="offset">配列内で書き込みを開始する位置</param>
 		/// <param name="count">書き込む要素数</param>
 		/// <returns>書き込みに成功したかどうか</returns>
-		public override bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
+		public bool WriteArray<T>(long pos, T[] buf, int offset, int count) where T : struct
 		{
-			Semap.Write(() => base.WriteArray(pos, buf, offset, count));
+			Semap.Write(() => BaseSMemIF.WriteArray(pos, buf, offset, count));
 
 			return true;
 		}
 
 
 		#region IDisposable Support
+		/// <summary>リソースの解放が完了したかどうか</summary>
+		protected bool disposedValue = false;
+
 		/// <summary>保持しているリソースを解放する</summary>
 		/// <param name="disposing">Managedリソースも解放するかどうか</param>
-		protected override void Dispose(bool disposing)
+		protected void Dispose(bool disposing)
 		{
 			disposing = true;
 			if (!disposedValue)
 			{
 				if (disposing)
 				{
+					BaseSMemIF.Dispose();
 					Semap?.Dispose();
 
 					disposedValue = true;
 				}
 			}
+		}
+
+		public void Dispose()
+		{
+			Dispose(disposing: true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion
 
