@@ -23,9 +23,7 @@ jobs:
           - '6.0.x'
         project:
           - BIDSSMemLib.Variable.Tests
-        include:
-          - os: windows-latest
-            project: TR.SMemIF.Tests
+          - TR.SMemIF.Tests
 
     steps:
       - uses: actions/checkout@v3
