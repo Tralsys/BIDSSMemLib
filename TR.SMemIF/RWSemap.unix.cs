@@ -5,9 +5,9 @@ namespace TR;
 
 public class RWSemap_UNIX : IRWSemaphore
 {
-	private Semaphore Semaphore { get; }
-
 	static readonly private TimeSpan TIMEOUT = new(0, 0, 0, 0, 100);
+
+	private Mutex NamedMutex { get; }
 
 	/// <summary>
 	/// インスタンスを初期化する
@@ -15,7 +15,7 @@ public class RWSemap_UNIX : IRWSemaphore
 	/// <param name="name">使用するリソースの名前</param>
 	public RWSemap_UNIX(string name)
 	{
-		Semaphore = new(0, 1, name + nameof(Semaphore));
+		NamedMutex = new(false, name + "Mutex");
 	}
 
 	public void Read(Action act)
@@ -24,7 +24,7 @@ public class RWSemap_UNIX : IRWSemaphore
 
 		try
 		{
-			Semaphore.WaitOne(TIMEOUT);
+			NamedMutex.WaitOne(TIMEOUT);
 
 			actionTried = true;
 
@@ -33,7 +33,7 @@ public class RWSemap_UNIX : IRWSemaphore
 		finally
 		{
 			if (actionTried)
-				Semaphore.Release();
+				NamedMutex.ReleaseMutex();
 		}
 	}
 
@@ -43,7 +43,7 @@ public class RWSemap_UNIX : IRWSemaphore
 
 		try
 		{
-			Semaphore.WaitOne(TIMEOUT);
+			NamedMutex.WaitOne(TIMEOUT);
 
 			actionTried = true;
 
@@ -52,7 +52,7 @@ public class RWSemap_UNIX : IRWSemaphore
 		finally
 		{
 			if (actionTried)
-				Semaphore.Release();
+				NamedMutex.ReleaseMutex();
 		}
 	}
 
@@ -65,7 +65,8 @@ public class RWSemap_UNIX : IRWSemaphore
 		{
 			if (disposing)
 			{
-				Semaphore.Dispose();
+				NamedMutex.Close();
+				NamedMutex.Dispose();
 			}
 
 			disposedValue = true;
