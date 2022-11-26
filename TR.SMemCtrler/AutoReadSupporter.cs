@@ -41,22 +41,20 @@ namespace TR
 		{
 			smemCtrler = _smemCtrler;
 
-			task = AutoReadTask();
+			task = new Task(AutoReadTask);
 		}
 
-		async Task AutoReadTask()
+		async void AutoReadTask()
 		{
 			if (smemCtrler is null)
 				return;
 
 			while (!IsRunning && !disposingValue && !disposedValue)
 			{
-
 				smemCtrler.Read();
 
 				await Task.Delay(Interval);
 			}
-
 		}
 
 
