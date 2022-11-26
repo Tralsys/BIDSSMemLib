@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
 		<LangVersion>10</LangVersion>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -10,5 +10,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
+		<ProjectReference Include="..\BIDSSMemLib.Variable\BIDSSMemLib.Variable.csproj" />
 	</ItemGroup>
 </Project>
