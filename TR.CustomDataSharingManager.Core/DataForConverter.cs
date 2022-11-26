@@ -14,7 +14,7 @@ namespace TR
 		CustomDataSharingManager DataSharingManager { get; }
 	}
 
-	public unsafe interface IDataForConverter_Panel_Sound
+	public interface IDataForConverter_Panel_Sound
 	{
 		UnmanagedArray Panel { get; }
 		UnmanagedArray Sound { get; }
