@@ -10,8 +10,9 @@ namespace TR
 
 		[Parallelizable]
 		[Test]
-		public void IntDataRWTest([Random(10)]int value)
+		public void IntDataRWTest([Range(1, 10)] int randSeed)
 		{
+			int value = new Random(randSeed).Next();
 			string smem_name = $"{nameof(IntDataRWTest)}_{value}";
 
 			RunTest(smem_name, value);
@@ -19,8 +20,9 @@ namespace TR
 
 		[Parallelizable]
 		[Test]
-		public void DoubleDataRWTest([Random(10)] double value)
+		public void DoubleDataRWTest([Range(1, 10)] int randSeed)
 		{
+			double value = new Random(randSeed).NextDouble();
 			string smem_name = $"{nameof(DoubleDataRWTest)}_{value}";
 
 			RunTest(smem_name, value);
@@ -40,8 +42,13 @@ namespace TR
 
 		[Parallelizable]
 		[Test]
-		public void CustomStructDataRWTest([Random(3)] float A, [Random(3)] int B, [Random(3)] double C)
+		public void CustomStructDataRWTest([Range(1, 10)] int randSeed)
 		{
+			Random rand = new Random(randSeed);
+			float A = rand.NextSingle();
+			int B = rand.Next();
+			double C = rand.NextDouble();
+
 			string smem_name = $"{nameof(CustomStructDataRWTest)}_{B}";
 			CustomStruct value = new()
 			{

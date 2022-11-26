@@ -12,14 +12,15 @@ namespace TR
 		const int ARRLEN_CUSTOMSTRUCT_MAX = 0xA9;
 		const int ARRLEN_MANY_CUSTOMSTRUCT_MAX = 0x400;
 		const int TESTCASE_COUNT = 10;
-		static Random random = new();
+		static readonly Random random = new();
 		static int rand_int => random.Next();
 		static double rand_double => random.NextDouble();
 
 		[Parallelizable]
 		[Test]
-		public void IntListRWTest([Random(1, ARRLEN_MAX, TESTCASE_COUNT)] int count)
+		public void IntListRWTest([Range(1, TESTCASE_COUNT)] int randSeed)
 		{
+			int count = new Random(randSeed).Next(ARRLEN_MAX);
 			string smem_name = $"{nameof(IntListRWTest)}_{rand_int}";
 
 			RunTest(smem_name, count, i => i);
@@ -27,8 +28,9 @@ namespace TR
 
 		[Parallelizable]
 		[Test]
-		public void DoubleListRWTest([Random(1, ARRLEN_DOUBLE_MAX, TESTCASE_COUNT)] int count)
+		public void DoubleListRWTest([Range(1, TESTCASE_COUNT)] int randSeed)
 		{
+			int count = new Random(randSeed).Next(ARRLEN_MAX);
 			string smem_name = $"{nameof(DoubleListRWTest)}_{rand_int}";
 
 			RunTest(smem_name, count, i => rand_double);
@@ -47,8 +49,9 @@ namespace TR
 
 		[Parallelizable]
 		[Test]
-		public void CustomStructListRWTest([Random(1, ARRLEN_CUSTOMSTRUCT_MAX, TESTCASE_COUNT)] int count)
+		public void CustomStructListRWTest([Range(1, TESTCASE_COUNT)] int randSeed)
 		{
+			int count = new Random(randSeed).Next(ARRLEN_MAX);
 			string smem_name = $"{nameof(CustomStructListRWTest)}_{count}";
 
 			RunTest(smem_name, count, _ => new CustomStruct()
@@ -62,8 +65,9 @@ namespace TR
 
 #if NET5_0_OR_GREATER || NETCOREAPP
 		[Test, Parallelizable]
-		public void ManyCustomStructListRWTest([Random(1, ARRLEN_MANY_CUSTOMSTRUCT_MAX, TESTCASE_COUNT)] int count)
+		public void ManyCustomStructListRWTest([Range(1, TESTCASE_COUNT)] int randSeed)
 		{
+			int count = new Random(randSeed).Next(ARRLEN_MAX);
 			string smem_name = $"{nameof(ManyCustomStructListRWTest)}_{count}";
 
 			RunTest(smem_name, count, _ => new CustomStruct()
