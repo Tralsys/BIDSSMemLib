@@ -16,7 +16,7 @@ namespace TR
 				if (value is SMemCtrler<T> ret)
 					return ret;
 				else
-					throw new ArgumentException(nameof(SMemName), $"SMemName({SMemName}) was found in the dictionary, but the Type is mismatch");
+					throw new ArgumentException($"SMemName({SMemName}) was found in the dictionary, but the Type is mismatch", nameof(SMemName));
 			}
 
 			SMemCtrler<T> ctrler = new(SMemName, false, false);
@@ -33,7 +33,7 @@ namespace TR
 				if (value is ArrayDataSMemCtrler<T> ret)
 					return ret;
 				else
-					throw new ArgumentException(nameof(SMemName), $"SMemName({SMemName}) was found in the dictionary, but the Type is mismatch");
+					throw new ArgumentException($"SMemName({SMemName}) was found in the dictionary, but the Type is mismatch", nameof(SMemName));
 			}
 
 			ArrayDataSMemCtrler<T> ctrler = new(SMemName, false, false, MaxElemCount);
