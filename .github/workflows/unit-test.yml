@@ -24,6 +24,8 @@ jobs:
           - '6.0.x'
         project:
           - BIDSSMemLib.Variable.Tests
+          - TR.CustomDataSharingManager.Tests
+          - TR.SMemCtrler.Tests
           - TR.SMemIF.Tests
 
     steps:
