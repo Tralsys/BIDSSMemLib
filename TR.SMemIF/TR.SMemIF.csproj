@@ -33,4 +33,7 @@ It is recommended to use through TR.SMemCtrler because this library provides onl
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\TR.ISMemIF\TR.ISMemIF.csproj" />
+	</ItemGroup>
 </Project>

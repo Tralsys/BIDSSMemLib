@@ -36,6 +36,7 @@ published to nuget.org</PackageReleaseNotes>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+	  <ProjectReference Include="..\TR.ISMemCtrler\TR.ISMemCtrler.csproj" />
 	</ItemGroup>
 
 </Project>

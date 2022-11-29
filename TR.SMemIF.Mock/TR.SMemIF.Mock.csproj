@@ -7,6 +7,6 @@
 		<RootNamespace>TR</RootNamespace>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+		<ProjectReference Include="..\TR.ISMemIF\TR.ISMemIF.csproj" />
 	</ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ namespace TR
 	public abstract class SMemCtrlerBase<T> : ISMemCtrler<T>, IContainsSMemIF where T : new()
 	{
 		/// <summary>使用する共有メモリ</summary>
-		public SMemIF? MMF { get; private set; } = null;
+		public ISMemIF? MMF { get; private set; } = null;
 
 		/// <summary>自動読み取り機能を提供するクラスのインスタンス</summary>
 		public IAutoReadSupporter<T> AutoRead { get; }
@@ -27,7 +27,7 @@ namespace TR
 				if (MMF is null && !value)
 				{
 					//一度インスタンスを取得したのであれば, それを解放せずに使いまわす
-					MMF = new(SMem_Name, Capacity);
+					MMF = new SMemIF(SMem_Name, Capacity);
 				}
 			}
 		}

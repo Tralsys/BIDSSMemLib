@@ -12,7 +12,9 @@ on:
           - BIDSSMemLib.rw
           - BIDSSMemLib.structs
           - BIDSSMemLib.Variable
+          - TR.ISMemCtrler
           - TR.SMemCtrler
+          - TR.ISMemIF
           - TR.SMemIF
           - TR.SMemIF.Mock
 
