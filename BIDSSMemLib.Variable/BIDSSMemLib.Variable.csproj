@@ -11,6 +11,8 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+		<ProjectReference Include="..\TR.ISMemCtrler\TR.ISMemCtrler.csproj" />
+		<ProjectReference Include="..\TR.SMemCtrler.AutoReadSupporter\TR.SMemCtrler.AutoReadSupporter.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="BIDS.Parser.Variable" Version="1.2.1" />

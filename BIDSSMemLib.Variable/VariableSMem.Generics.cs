@@ -11,7 +11,7 @@ namespace TR.BIDSSMemLib;
 /// 可変構造(可変長)な共有メモリを使用するためのクラス
 /// </summary>
 /// <typeparam name="T">使用する型</typeparam>
-public class VariableSMem<T> : VariableSMem
+public partial class VariableSMem<T> : VariableSMem
 {
 	Type TargetType { get; } = typeof(T);
 
