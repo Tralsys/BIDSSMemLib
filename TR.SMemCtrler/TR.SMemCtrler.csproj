@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<?xml version="1.0" encoding="UTF-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>preview</LangVersion>
@@ -26,18 +26,15 @@ published to nuget.org</PackageReleaseNotes>
 		<GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 	</PropertyGroup>
-
 	<PropertyGroup>
 		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
-	  <DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
+		<DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
-
 	<ItemGroup>
-	  <ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
-	  <ProjectReference Include="..\TR.ISMemCtrler\TR.ISMemCtrler.csproj" />
-	  <ProjectReference Include="..\TR.SMemCtrler.AutoReadSupporter\TR.SMemCtrler.AutoReadSupporter.csproj" />
+		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+		<ProjectReference Include="..\TR.ISMemCtrler\TR.ISMemCtrler.csproj" />
+		<ProjectReference Include="..\TR.SMemCtrler.AutoReadSupporter\TR.SMemCtrler.AutoReadSupporter.csproj" />
 	</ItemGroup>
-
 </Project>
