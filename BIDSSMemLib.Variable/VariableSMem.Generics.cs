@@ -13,8 +13,6 @@ namespace TR.BIDSSMemLib;
 /// <typeparam name="T">使用する型</typeparam>
 public partial class VariableSMem<T> : VariableSMem
 {
-	Type TargetType { get; } = typeof(T);
-
 	static Dictionary<string, MemberInfo> PropertyAndFields { get; } =
 		typeof(T)
 			.GetMembers(BindingFlags.Instance | BindingFlags.Public)
@@ -25,11 +23,50 @@ public partial class VariableSMem<T> : VariableSMem
 
 	static Dictionary<string, MemberInfo> WritablePropertyAndFields { get; }
 
-	static Dictionary<string, (Action<object?, object?> Setter, bool IsString)> Setters { get; }
+	static Dictionary<string, SetterInfo> Setters { get; }
 	static Dictionary<string, (Func<object?, object?> Getter, Type Type)> Getters { get; }
+
+	class SetterInfo
+	{
+		readonly Func<object?, object?[]?, object?>? PropertySetter = null;
+		readonly FieldInfo? FieldInfo;
+		readonly Type ValueType;
+		public readonly bool IsString;
+
+		public SetterInfo(MemberInfo memberInfo)
+		{
+			if (memberInfo is PropertyInfo propertyInfo)
+			{
+				ValueType = propertyInfo.PropertyType;
+
+				if (propertyInfo.GetGetMethod() is MethodInfo methodInfo)
+					PropertySetter = methodInfo.Invoke;
+			}
+			else if (memberInfo is FieldInfo fieldInfo)
+			{
+				ValueType = fieldInfo.FieldType;
+				this.FieldInfo = fieldInfo;
+			}
+			else
+				throw new ArgumentException("only Property or Field is supported", nameof(memberInfo));
+
+			IsString = (ValueType == typeof(string));
+		}
+
+		public void SetValue(ref T target, in object value)
+		{
+			if (PropertySetter is not null)
+				PropertySetter(target, new object[] { value });
+			else if (FieldInfo is not null)
+				FieldInfo.SetValueDirect(__makeref(target), value);
+		}
+	}
 
 	static VariableSMem()
 	{
+		if (typeof(T).IsPrimitive)
+			throw new ArgumentException($"The primitive type `{typeof(T)}` is not supported.");
+
 		ReadablePropertyAndFields = PropertyAndFields.Values
 			.Where(v => (v is PropertyInfo p && p.CanRead) || v is FieldInfo f)
 			.ToDictionary(v => v.Name);
@@ -49,10 +86,7 @@ public partial class VariableSMem<T> : VariableSMem
 		Setters = new();
 		foreach (MemberInfo member in WritablePropertyAndFields.Values)
 		{
-			if (member is PropertyInfo propertyInfo)
-				Setters.Add(propertyInfo.Name, (propertyInfo.SetValue, propertyInfo.PropertyType == typeof(string)));
-			else if (member is FieldInfo fieldInfo)
-				Setters.Add(fieldInfo.Name, (fieldInfo.SetValue, fieldInfo.FieldType == typeof(string)));
+			Setters.Add(member.Name, new SetterInfo(member));
 		}
 	}
 
@@ -85,7 +119,10 @@ public partial class VariableSMem<T> : VariableSMem
 		foreach (var data in payload.Values)
 		{
 			if (Setters.TryGetValue(data.Name, out var setterInfo))
-				setterInfo.Setter(target, GetValueObjectFromDataRecord(data, setterInfo.IsString));
+			{
+				if (GetValueObjectFromDataRecord(data, setterInfo.IsString) is object v)
+					setterInfo.SetValue(ref target, v);
+			}
 		}
 	}
 
