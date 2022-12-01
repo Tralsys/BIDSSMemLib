@@ -11,7 +11,7 @@ namespace TR.BIDSSMemLib;
 /// <summary>
 /// 可変構造(可変長)な共有メモリを使用するためのクラス
 /// </summary>
-public partial class VariableSMem
+public partial class VariableSMem : IDisposable
 {
 	/// <summary>
 	/// デフォルトで使用されるエンコーディング
@@ -278,4 +278,26 @@ public partial class VariableSMem
 			|| !SMemIF.WriteArray(ContentAreaOffset + sizeof(long), bytes, 0, bytes.Length))
 			throw new AccessViolationException("Write to SMem failed");
 	}
+
+	#region IDisposable
+	private bool disposedValue;
+	protected virtual void Dispose(bool disposing)
+	{
+		if (!disposedValue)
+		{
+			if (disposing)
+			{
+				SMemIF.Dispose();
+			}
+
+			disposedValue = true;
+		}
+	}
+
+	public void Dispose()
+	{
+		Dispose(disposing: true);
+		GC.SuppressFinalize(this);
+	}
+	#endregion
 }

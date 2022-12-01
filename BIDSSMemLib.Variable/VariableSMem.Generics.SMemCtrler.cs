@@ -121,25 +121,4 @@ public partial class VariableSMem<T> : ISMemCtrler<T> where T : new()
 
 		return true;
 	}
-
-	#region IDisposable
-	private bool disposedValue;
-	protected virtual void Dispose(bool disposing)
-	{
-		if (!disposedValue)
-		{
-			if (disposing)
-			{
-			}
-
-			disposedValue = true;
-		}
-	}
-
-	public void Dispose()
-	{
-		Dispose(disposing: true);
-		GC.SuppressFinalize(this);
-	}
-	#endregion
 }
