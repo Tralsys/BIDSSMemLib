@@ -84,7 +84,7 @@
     <DllExportPeCheck>2</DllExportPeCheck>
     <DllExportPatches>0</DllExportPatches>
     <DllExportPreProcType>25</DllExportPreProcType>
-    <DllExportILMerge>IAtsPI.dll TR.BIDSSMemLib.structs.dll TR.BIDSSMemLib.rw.dll TR.BVEConductorChecker.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll</DllExportILMerge>
+    <DllExportILMerge>IAtsPI.dll TR.BIDSSMemLib.structs.dll TR.BIDSSMemLib.rw.dll TR.BVEConductorChecker.dll TR.MyTask.dll TR.SMemCtrler.dll TR.SMemIF.dll TR.ISMemIF.dll TR.ISMemCtrler.dll TR.SMemCtrler.AutoReadSupporter.dll</DllExportILMerge>
     <DllExportPostProcType>0</DllExportPostProcType>
   </PropertyGroup>
   <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
