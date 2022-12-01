@@ -14,10 +14,47 @@ namespace TR.BIDSSMemLib;
 public class VariableSMem<T> : VariableSMem
 {
 	Type TargetType { get; } = typeof(T);
-	Dictionary<string, PropertyInfo> Properties { get; } = typeof(T).GetProperties().ToDictionary(v => v.Name);
-	Dictionary<string, FieldInfo> Fields { get; } = typeof(T).GetFields().ToDictionary(v => v.Name);
 
-	// TODO: VariableStructure.DataRecord等を継承した専用クラスを用意し、そこに`GetValue` / `SetValue`メソッドを記録できるようにする
+	static Dictionary<string, MemberInfo> PropertyAndFields { get; } =
+		typeof(T)
+			.GetMembers(BindingFlags.Instance | BindingFlags.Public)
+			.Where(v => v is PropertyInfo or FieldInfo)
+			.ToDictionary(v => v.Name);
+
+	static Dictionary<string, MemberInfo> ReadablePropertyAndFields { get; }
+
+	static Dictionary<string, MemberInfo> WritablePropertyAndFields { get; }
+
+	static Dictionary<string, (Action<object?, object?> Setter, bool IsString)> Setters { get; }
+	static Dictionary<string, (Func<object?, object?> Getter, Type Type)> Getters { get; }
+
+	static VariableSMem()
+	{
+		ReadablePropertyAndFields = PropertyAndFields.Values
+			.Where(v => (v is PropertyInfo p && p.CanRead) || v is FieldInfo f)
+			.ToDictionary(v => v.Name);
+		WritablePropertyAndFields = PropertyAndFields.Values
+			.Where(v => (v is PropertyInfo p && p.CanWrite) || (v is FieldInfo f && !f.IsInitOnly))
+			.ToDictionary(v => v.Name);
+
+		Getters = new();
+		foreach (MemberInfo member in ReadablePropertyAndFields.Values)
+		{
+			if (member is PropertyInfo propertyInfo)
+				Getters.Add(propertyInfo.Name, (propertyInfo.GetValue, propertyInfo.PropertyType));
+			else if (member is FieldInfo fieldInfo)
+				Getters.Add(fieldInfo.Name, (fieldInfo.GetValue, fieldInfo.FieldType));
+		}
+
+		Setters = new();
+		foreach (MemberInfo member in WritablePropertyAndFields.Values)
+		{
+			if (member is PropertyInfo propertyInfo)
+				Setters.Add(propertyInfo.Name, (propertyInfo.SetValue, propertyInfo.PropertyType == typeof(string)));
+			else if (member is FieldInfo fieldInfo)
+				Setters.Add(fieldInfo.Name, (fieldInfo.SetValue, fieldInfo.FieldType == typeof(string)));
+		}
+	}
 
 	/// <summary>
 	/// インスタンスを初期化する
@@ -47,14 +84,8 @@ public class VariableSMem<T> : VariableSMem
 
 		foreach (var data in payload.Values)
 		{
-			if (Properties.TryGetValue(data.Name, out PropertyInfo? propInfo))
-			{
-				propInfo.SetValue(target, GetValueObjectFromDataRecord(data, propInfo.PropertyType == typeof(string)));
-			}
-			else if (Fields.TryGetValue(data.Name, out FieldInfo? fieldInfo))
-			{
-				fieldInfo.SetValue(target, GetValueObjectFromDataRecord(data, fieldInfo.FieldType == typeof(string)));
-			}
+			if (Setters.TryGetValue(data.Name, out var setterInfo))
+				setterInfo.Setter(target, GetValueObjectFromDataRecord(data, setterInfo.IsString));
 		}
 	}
 
@@ -70,14 +101,9 @@ public class VariableSMem<T> : VariableSMem
 			VariableStructure.IDataRecord iDataRecord = _Members[i];
 
 			string propName = iDataRecord.Name;
-			if (Properties.TryGetValue(propName, out PropertyInfo? propInfo))
-			{
-				_Members[i] = CreateNewRecordWithValue(iDataRecord, propInfo.PropertyType, propInfo.GetValue(data));
-			}
-			else if (Fields.TryGetValue(propName, out FieldInfo? fieldInfo))
-			{
-				_Members[i] = CreateNewRecordWithValue(iDataRecord, fieldInfo.FieldType, fieldInfo.GetValue(data));
-			}
+
+			if (Getters.TryGetValue(propName, out var getterInfo))
+				_Members[i] = CreateNewRecordWithValue(iDataRecord, getterInfo.Type, getterInfo.Getter(data));
 		}
 
 		// DataType IDはStructure側で既に書き込んであるため、Content側には含めない
