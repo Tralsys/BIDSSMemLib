@@ -8,7 +8,7 @@ namespace TR
 	public static class Ats
 	{
 		static string CurrentDllPath { get; } = Assembly.GetExecutingAssembly().Location;
-		static string CurrentDllDirectory { get; } = Path.GetDirectoryName(CurrentDllPath);
+		static string CurrentDllDirectory { get; } = Path.GetDirectoryName(CurrentDllPath) ?? string.Empty;
 		static string CurrentDllFileNameWithoutExtension { get; } = Path.GetFileNameWithoutExtension(CurrentDllPath);
 		static string ScriptsDirectoryName { get; } = "scripts";
 		static string ScriptsDirectoryPath { get; } = Path.Combine(CurrentDllDirectory, CurrentDllFileNameWithoutExtension, ScriptsDirectoryName);
@@ -17,6 +17,9 @@ namespace TR
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += (s, arg) =>
 			{
+				if (arg.Name is null)
+					return null;
+
 				AssemblyName asmName = new(arg.Name);
 
 				string targetDllFileName = asmName.Name + ".dll";
