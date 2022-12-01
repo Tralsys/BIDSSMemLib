@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 const string CustomDataSharing = nameof(CustomDataSharing);
 
-T GetValue<T>(Dictionary<string, object> objectHolder, in string SMemName) where T : struct
+T GetValue<T>(Dictionary<string, object> objectHolder, in string SMemName) where T : new()
 {
 	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
 	{
@@ -25,12 +25,12 @@ T GetValue<T>(Dictionary<string, object> objectHolder, in string SMemName) where
 	}
 
 	if (obj is CustomDataSharingManager manager)
-		return manager.CreateOneDataSharing<T>(SMemName).Read();
+		return manager.CreateDataSharing<T>(SMemName).Read();
 	else
 		return default;
 }
 
-bool TryGetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, out T dst) where T : struct
+bool TryGetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, out T dst) where T : new()
 {
 	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
 	{
@@ -40,12 +40,12 @@ bool TryGetValue<T>(Dictionary<string, object> objectHolder, in string SMemName,
 	}
 
 	if (obj is CustomDataSharingManager manager)
-		return manager.CreateOneDataSharing<T>(SMemName).TryRead(out dst);
+		return manager.CreateDataSharing<T>(SMemName).TryRead(out dst);
 	else
 		return default;
 }
 
-void SetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, in T value) where T : struct
+void SetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, in T value) where T : new()
 {
 	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
 	{
@@ -55,5 +55,5 @@ void SetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, in
 	}
 
 	if (obj is CustomDataSharingManager manager)
-		manager.CreateOneDataSharing<T>(SMemName).Write(value);
+		manager.CreateDataSharing<T>(SMemName).Write(value);
 }

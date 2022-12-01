@@ -19,37 +19,34 @@ DataSharingManager.TrySetValue<TimeSpan>(SMemName, Time);
 
 		const string GetTimeTest_SMemName = "SampleDataSharing";
 
-		[Test]
-		public async Task GetTimeTest()
+		class SampleClass
 		{
-			using CustomDataSharingManager cdsManager = new();
+			public int Value;
 
-			cdsManager.CreateOneDataSharing<TimeSpan>(GetTimeTest_SMemName);
-			for (int i = 0; i < 10; i++)
+			public SampleClass() { }
+			public SampleClass(int Value)
 			{
-				Console.WriteLine(cdsManager.TryGetValue(GetTimeTest_SMemName, out TimeSpan value) ? value.ToString() : "failed");
-				await Task.Delay(250);
+				this.Value = Value;
 			}
-
-			Assert.Pass();
 		}
 
 		[Test]
-		public void SetAndGetTest([Random(10)] int testCase)
+		public void SetAndGetTest([Range(0, 9)] int Seed)
 		{
+			int testCase = new Random(Seed).Next();
 			string smem_name = nameof(SetAndGetTest) + testCase.ToString();
 
 			using CustomDataSharingManager reader = new();
 			using CustomDataSharingManager writer = new();
 
-			reader.CreateOneDataSharing<int>(smem_name);
-			writer.CreateOneDataSharing<int>(smem_name);
+			reader.CreateDataSharing<SampleClass>(smem_name);
+			writer.CreateDataSharing<SampleClass>(smem_name);
 
-			Assert.IsTrue(writer.TrySetValue(smem_name, testCase));
+			Assert.IsTrue(writer.TrySetValue(smem_name, new SampleClass(testCase)));
 
-			Assert.IsTrue(reader.TryGetValue(smem_name, out int result));
+			Assert.IsTrue(reader.TryGetValue(smem_name, out SampleClass result));
 
-			Assert.AreEqual(testCase, result);
+			Assert.AreEqual(testCase, result.Value);
 		}
 	}
 }
