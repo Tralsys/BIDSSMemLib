@@ -31,6 +31,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.ISMemCtrler", "TR.ISMemC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.ISMemIF", "TR.ISMemIF\TR.ISMemIF.csproj", "{51C50917-9A27-440E-84C7-EFF691B79840}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TR.SMemCtrler.AutoReadSupporter", "TR.SMemCtrler.AutoReadSupporter\TR.SMemCtrler.AutoReadSupporter.csproj", "{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,18 @@ Global
 		{51C50917-9A27-440E-84C7-EFF691B79840}.Debug|x86.Build.0 = Debug|Any CPU
 		{51C50917-9A27-440E-84C7-EFF691B79840}.Release|x86.ActiveCfg = Release|Any CPU
 		{51C50917-9A27-440E-84C7-EFF691B79840}.Release|x86.Build.0 = Release|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Debug|x64.Build.0 = Debug|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Release|x64.ActiveCfg = Release|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Release|x64.Build.0 = Release|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Debug|x86.Build.0 = Debug|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Release|x86.ActiveCfg = Release|Any CPU
+		{9477CC07-56B8-470A-ADE6-C5F77FDC57D9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
