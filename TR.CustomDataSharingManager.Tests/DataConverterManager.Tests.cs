@@ -37,21 +37,29 @@ namespace TR
 		[Test]
 		public async Task CreateActionFromScriptStringTest()
 		{
-			Func<DataForConverter, Task> func =  DataConverterManager.CreateActionFromScriptString(TestScript);
+			Func<DataForConverter, Task>? func = DataConverterManager.CreateActionFromScriptString(TestScript);
+			Assert.That(func, Is.Not.Null);
+			if (func is null)
+				return;
 
 			IntPtr panelPtr = Marshal.AllocHGlobal(sizeof(int));
 
-			using CustomDataSharingManager cdsManager = new();
+			try
+			{
+				using CustomDataSharingManager cdsManager = new();
 
-			DataForConverter data = CreateEmptyDataForConverter(cdsManager) with { Panel = new(panelPtr) };
+				DataForConverter data = CreateEmptyDataForConverter(cdsManager) with { Panel = new(panelPtr) };
 
-			await func.Invoke(data);
+				await func.Invoke(data);
 
-			int result = Marshal.ReadInt32(panelPtr);
+				int result = Marshal.ReadInt32(panelPtr);
 
-			Assert.AreEqual(NumberInTestScript, result);
-
-			Marshal.FreeHGlobal(panelPtr);
+				Assert.AreEqual(NumberInTestScript, result);
+			}
+			finally
+			{
+				Marshal.FreeHGlobal(panelPtr);
+			}
 		}
 	}
 
