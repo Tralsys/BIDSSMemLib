@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace TR.BIDSSMemLib;
 
@@ -12,43 +11,33 @@ namespace TR.BIDSSMemLib;
 /// <typeparam name="T">使用する型</typeparam>
 public partial class VariableSMem<T> : ISMemCtrler<T> where T : new()
 {
-	IAutoReadSupporter<T>? AutoRead = null;
-	IAutoReadSupporter<T> ISMemCtrler<T>.AutoRead
+	IAutoReadSupporter<T>? _AutoRead = null;
+	public IAutoReadSupporter<T> AutoRead
 	{
 		get
 		{
-			this.AutoRead ??= new AutoReadSupporter<T>(this);
-			return this.AutoRead;
+			this._AutoRead ??= new AutoReadSupporter<T>(this);
+			return this._AutoRead;
 		}
 	}
 
-	bool ISMemCtrler<T>.No_SMem_Mode { get; set; }
+	public bool No_SMem_Mode { get; set; }
 
-	bool ISMemCtrler<T>.No_Event_Mode { get; set; }
+	public bool No_Event_Mode { get; set; }
 
-	string ISMemCtrler<T>.SMem_Name => SMemIF.SMemName;
+	public string SMem_Name => SMemIF.SMemName;
 
-	uint ISMemCtrler<T>.Elem_Size => (uint)Structure.GetBytes().Count();
+	public uint Elem_Size => (uint)Structure.GetBytes().Count();
 
-	long ISMemCtrler<T>.Capacity => SMemIF.Capacity;
+	public long Capacity => SMemIF.Capacity;
 
-	event EventHandler<ValueChangedEventArgs<T>>? ValueChanged;
-	event EventHandler<ValueChangedEventArgs<T>> ISMemCtrler<T>.ValueChanged
-	{
-		add => this.ValueChanged += value;
-		remove => this.ValueChanged -= value;
-	}
+	public event EventHandler<ValueChangedEventArgs<T>> ValueChanged;
 
-	event PropertyChangedEventHandler? PropertyChanged;
-	event PropertyChangedEventHandler? INotifyPropertyChanged.PropertyChanged
-	{
-		add => this.PropertyChanged += value;
-		remove => this.PropertyChanged -= value;
-	}
+	public event PropertyChangedEventHandler? PropertyChanged;
 
 	T _Value = default(T) ?? new();
 
-	T ISMemCtrler<T>.Value
+	public T Value
 	{
 		get => _Value;
 		set => setValue(value, true);
@@ -67,29 +56,29 @@ public partial class VariableSMem<T> : ISMemCtrler<T> where T : new()
 
 		if (writeToSMem)
 		{
-			(this as ISMemCtrler<T>).Write(value);
+			Write(value);
 		}
 
 		ValueChanged?.Invoke(this, new(oldValue, value));
-		PropertyChanged?.Invoke(this, new(nameof(ISMemCtrler<T>.Value)));
+		PropertyChanged?.Invoke(this, new(nameof(Value)));
 	}
 
-	T ISMemCtrler<T>.Read()
+	public T Read()
 	{
 		T result = default(T) ?? new();
 
-		this.ReadFromSMem(ref result);
+		ReadFromSMem(ref result);
 
 		setValue(result, false);
 
 		return result;
 	}
 
-	bool ISMemCtrler<T>.TryRead(out T value)
+	public bool TryRead(out T value)
 	{
 		try
 		{
-			value = (this as ISMemCtrler<T>).Read();
+			value = Read();
 		}
 		catch (Exception ex)
 		{
@@ -101,17 +90,17 @@ public partial class VariableSMem<T> : ISMemCtrler<T> where T : new()
 		return true;
 	}
 
-	void ISMemCtrler<T>.Write(in T value)
+	public void Write(in T value)
 	{
 		WriteToSMem(value);
 		setValue(value, false);
 	}
 
-	bool ISMemCtrler<T>.TryWrite(in T value)
+	public bool TryWrite(in T value)
 	{
 		try
 		{
-			(this as ISMemCtrler<T>).Write(value);
+			Write(value);
 		}
 		catch (Exception ex)
 		{
