@@ -1,18 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'x86'">
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'x64'">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)' == 'AnyCPU'">
-    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Label="8337224c9ad9e356:PreProc">
     <DebugType Condition="'$(DebugType)'!='full' And '$(DebugType)'!='pdbonly'" Label="8337224c9ad9e356:PreProc">pdbonly</DebugType>
@@ -45,7 +36,7 @@
     <ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
     <ProjectReference Include="..\TR.CustomDataSharingManager.Core\TR.CustomDataSharingManager.Core.csproj" />
   </ItemGroup>
-  <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc" Condition="'$(Platform)' != 'AnyCPU'">
+  <Target Name="DllExportPreProc" BeforeTargets="DllExportMod" Label="8337224c9ad9e356:PreProc">
     <Copy SourceFiles="$(DllExportMetaLibFullPath)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" />
     <Exec Command="$(ILMergeConsolePath)  $(TargetFileName) /out:$(TargetFileName).ilm0.dll" WorkingDirectory="$(TargetDir)" ContinueOnError="true" />
     <Move SourceFiles="$(TargetDir)$(TargetFileName).ilm0.dll" DestinationFiles="$(TargetDir)$(TargetFileName)" OverwriteReadOnlyFiles="true" ContinueOnError="true" />
