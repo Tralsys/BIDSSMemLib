@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.Scripting.Hosting;
 
 using System;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace TR
 				if(ScriptsExtensions.Contains(extension))
 				{
 					using StreamReader reader = new(nPath);
-					var runner = CreateActionFromScriptString(reader.ReadToEnd());
+					var runner = CreateActionFromScriptString(reader.ReadToEnd(), nPath);
 					if (runner is not null)
 						Runners.Add(runner);
 				}
@@ -108,7 +109,10 @@ namespace TR
 			var scriptRunner = CSharpScript.Create(
 				scriptString,
 				options,
-				typeof(DataForConverter));
+				typeof(DataForConverter),
+				new InteractiveAssemblyLoader(new MetadataShadowCopyProvider(
+					Path.GetDirectoryName(options.FilePath)
+				)));
 
 			var compileResults = scriptRunner.Compile();
 			foreach (var i in compileResults)
