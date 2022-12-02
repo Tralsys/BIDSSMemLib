@@ -7,53 +7,22 @@
 // パス指定は 絶対パス OR 実行ファイルからの相対パス
 // => スクリプトファイルからの相対パスにしたい
 #r "System.Collections"
-#r "bin\TR.CustomDataSharingManager.dll"
-#r "bin\TR.SMemCtrler.dll"
+// #r "TR.CustomDataSharingManager.Core.dll"
+#r "TR.BIDSSMemLib.Variable.dll"
 
 using TR;
-using System.Collections.Generic;
 
-const string CustomDataSharing = nameof(CustomDataSharing);
-
-T GetValue<T>(Dictionary<string, object> objectHolder, in string SMemName) where T : new()
+T GetValue<T>(in string SMemName) where T : new()
 {
-	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
-	{
-		//キーが存在しなければ新規に作成する
-		obj = new CustomDataSharingManager();
-		objectHolder[CustomDataSharing] = obj;
-	}
-
-	if (obj is CustomDataSharingManager manager)
-		return manager.CreateDataSharing<T>(SMemName).Read();
-	else
-		return default;
+    return DataSharingManager.CreateDataSharing<T>(SMemName).Read();
 }
 
-bool TryGetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, out T dst) where T : new()
+bool TryGetValue<T>(in string SMemName, out T dst) where T : new()
 {
-	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
-	{
-		//キーが存在しなければ新規に作成する
-		obj = new CustomDataSharingManager();
-		objectHolder[CustomDataSharing] = obj;
-	}
-
-	if (obj is CustomDataSharingManager manager)
-		return manager.CreateDataSharing<T>(SMemName).TryRead(out dst);
-	else
-		return default;
+    return DataSharingManager.CreateDataSharing<T>(SMemName).TryRead(out dst);
 }
 
-void SetValue<T>(Dictionary<string, object> objectHolder, in string SMemName, in T value) where T : new()
+void SetValue<T>(in string SMemName, in T value) where T : new()
 {
-	if (!objectHolder.TryGetValue(CustomDataSharing, out object obj) || obj is null)
-	{
-		//キーが存在しなければ新規に作成する
-		obj = new CustomDataSharingManager();
-		objectHolder[CustomDataSharing] = value;
-	}
-
-	if (obj is CustomDataSharingManager manager)
-		manager.CreateDataSharing<T>(SMemName).Write(value);
+    DataSharingManager.CreateDataSharing<T>(SMemName).Write(in value);
 }
