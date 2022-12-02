@@ -24,7 +24,7 @@
     <DllExportPeCheck>2</DllExportPeCheck>
     <DllExportPatches>0</DllExportPatches>
     <DllExportPreProcType>25</DllExportPreProcType>
-    <DllExportILMerge />
+    <DllExportILMerge>TR.CustomDataSharingManager.Core.dll</DllExportILMerge>
     <DllExportPostProcType>0</DllExportPostProcType>
   </PropertyGroup>
   <ItemGroup>
