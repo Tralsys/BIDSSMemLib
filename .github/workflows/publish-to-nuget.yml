@@ -1,5 +1,5 @@
 name: Publish to nuget
-run-name: Publish ${{ inputs.project }} to nuget
+run-name: Publish `${{ inputs.project }}` to nuget from `${{ github.ref_name }}`
 
 on:
   workflow_dispatch:
@@ -21,8 +21,11 @@ on:
           - TR.SMemIF.Mock
 
 jobs:
-  publish-nuget:
+  build:
     runs-on: windows-latest
+    outputs:
+      ASSEMBLY_NAME: ${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}
+      VERSION: ${{ steps.get-project-info.outputs.VERSION }}
 
     steps:
     - uses: actions/checkout@v3
@@ -30,50 +33,7 @@ jobs:
     - name: Get Project Info
       id: get-project-info
       shell: pwsh
-      run: |
-        $csproj = [xml](Get-Content ./${{ inputs.project }}/${{ inputs.project }}.csproj)
-
-        $Version = $csproj.Project.PropertyGroup.Version
-        if([string]::IsNullOrEmpty($Version))
-        {
-          echo "Default version was set"
-          $Version = '1.0.0'
-        }
-        else
-        {
-          $VersionCore,$PreReleaseEtc = $Version.Split('-', 2)
-          $Major,$Minor,$Build,$Revision = $VersionCore.Split('.', 4)
-
-          If ([string]::IsNullOrEmpty($Major))
-          {
-            Write-Error "Major Version Not Found"
-            exit 1
-          }
-
-          $Minor = [string]::IsNullOrEmpty($Minor) ? 0 : [int]$Minor
-          $Build = [string]::IsNullOrEmpty($Build) ? 0 : [int]$Build
-          $Revision = [string]::IsNullOrEmpty($Revision) ? 0 : [int]$Revision
-
-          If (![string]::IsNullOrEmpty($PreReleaseEtc))
-          {
-            $PreReleaseEtc = "-$PreReleaseEtc"
-          }
-          $Revision = $Revision -le 0 ? '' : ".$Revision"
-          
-          $Version = "$Major.$Minor.$Build$Revision$PreReleaseEtc"
-        }
-
-        echo "Version ... '$Version'"
-        echo "VERSION=$Version" >> $env:GITHUB_OUTPUT
-
-        $AssemblyName = $csproj.Project.PropertyGroup.AssemblyName
-        if([string]::IsNullOrEmpty($AssemblyName))
-        {
-          $AssemblyName = '${{ inputs.project }}'
-        }
-
-        echo "Assembly Name ... '$AssemblyName'"
-        echo "ASSEMBLY_NAME=$Assemblyname" >> $env:GITHUB_OUTPUT
+      run: ./.github/workflows/get-version.ps1 -ProjectName ${{ inputs.project }}
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
@@ -89,16 +49,34 @@ jobs:
     - name: Pack
       run: dotnet pack ${{ inputs.project }} -c Release --no-build -o dst
 
+    - name: Upload nupkg to Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}.${{ steps.get-project-info.outputs.VERSION }}.nupkg
+        path: dst/${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}.${{ steps.get-project-info.outputs.VERSION }}.nupkg
+
+  publish-to-nuget:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+
+    steps:
+    - name: Download nupkg from Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: ${{ needs.build.outputs.ASSEMBLY_NAME }}.${{ needs.build.outputs.VERSION }}.nupkg
+
+
     - name: publish to nuget.org
       run: >
         dotnet nuget push
-        dst/${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}.${{ steps.get-project-info.outputs.VERSION }}.nupkg
+        ${{ needs.build.outputs.ASSEMBLY_NAME }}.${{ needs.build.outputs.VERSION }}.nupkg
         --source https://api.nuget.org/v3/index.json
         --api-key ${{ secrets.NUGET_API_KEY }}
 
     - name: show version to summary
       run: |
         echo "### Publish Success :rocket:" >> $env:GITHUB_STEP_SUMMARY
-        echo "The project ``${{ inputs.project }}`` (version: ``${{ steps.get-project-info.outputs.VERSION }}``) was successfully published to nuget.org" >> $env:GITHUB_STEP_SUMMARY
+        echo "The project \`${{ inputs.project }}\` (version: \`${{ needs.build.outputs.VERSION }}\`) was successfully published to nuget.org" >> $env:GITHUB_STEP_SUMMARY
         echo "" >> $env:GITHUB_STEP_SUMMARY
-        echo "see: https://www.nuget.org/packages/${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}/${{ steps.get-project-info.outputs.VERSION }}" >> $env:GITHUB_STEP_SUMMARY
+        echo "see: https://www.nuget.org/packages/${{ needs.build.outputs.ASSEMBLY_NAME }}/${{ needs.build.outputs.VERSION }}" >> $env:GITHUB_STEP_SUMMARY
