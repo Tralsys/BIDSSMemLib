@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -94,7 +95,7 @@ namespace TR
 			//ファイルが存在しない場合は実行しない
 			if (sarr?.Length > 0)
 			{
-				DataConverterManager = new();
+				DataConverterManager = new DataConverterManager();
 				try
 				{
 					DataConverterManager.LoadScriptsFromFilePathArray(sarr);
@@ -109,7 +110,30 @@ namespace TR
 			else
 				return;
 
-			Data = new(new(), new(IntPtr.Zero), new(IntPtr.Zero), default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default);
+			Data = new DataForConverter(
+				new Dictionary<string, object>(),
+				new CustomDataSharingManager(),
+				new UnmanagedArray(IntPtr.Zero),
+				new UnmanagedArray(IntPtr.Zero),
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default,
+				default
+			);
 		}
 
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
@@ -128,8 +152,8 @@ namespace TR
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
 		public static void SetVehicleSpec(Spec s)
 		{
-			if (Data is not null)
-				Data = Data with { CarBrakeNotchCount = s.B, CarPowerNotchCount = s.P, CarATSCheckPos = s.A, CarB67Pos = s.J, CarCount = s.C };
+			if (Data is DataForConverter v)
+				Data = v with { CarBrakeNotchCount = s.B, CarPowerNotchCount = s.P, CarATSCheckPos = s.A, CarB67Pos = s.J, CarCount = s.C };
 		}
 
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
@@ -140,12 +164,12 @@ namespace TR
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
 		public static Hand Elapse(State s, IntPtr Pa, IntPtr So)
 		{
-			if(Data is not null)
+			if(Data is DataForConverter v)
 			{
-				Data = Data with
+				Data = v with
 				{
-					Panel = new(Pa),
-					Sound = new(So),
+					Panel = new UnmanagedArray(Pa),
+					Sound = new UnmanagedArray(So),
 					BCPressure = s.BC,
 					BPPressure = s.BP,
 					Current = s.I,
@@ -168,8 +192,11 @@ namespace TR
 		{
 			returnHand.P = p;
 
-			if (Data is not null)
-				Data = Data with { CurrentPowerPos = p };
+			if (Data is DataForConverter v)
+				Data = v with
+				{
+					CurrentPowerPos = p
+				};
 		}
 
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
@@ -177,8 +204,11 @@ namespace TR
 		{
 			returnHand.B = b;
 
-			if (Data is not null)
-				Data = Data with { CurrentBrakePos = b };
+			if (Data is DataForConverter v)
+				Data = v with
+				{
+					CurrentBrakePos = b
+				};
 		}
 
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
@@ -186,8 +216,11 @@ namespace TR
 		{
 			returnHand.R = r;
 
-			if (Data is not null)
-				Data = Data with { CurrentReverserPos = r };
+			if (Data is DataForConverter v)
+				Data = v with
+				{
+					CurrentReverserPos = r
+				};
 		}
 
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
@@ -202,15 +235,21 @@ namespace TR
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
 		public static void DoorOpen()
 		{
-			if (Data is not null)
-				Data = Data with { IsDoorClosed = false };
+			if (Data is DataForConverter v)
+				Data = v with
+				{
+					IsDoorClosed = false
+				};
 		}
 
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
 		public static void DoorClose()
 		{
-			if (Data is not null)
-				Data = Data with { IsDoorClosed = true };
+			if (Data is DataForConverter v)
+				Data = v with
+				{
+					IsDoorClosed = true
+				};
 		}
 
 		[DllExport(CallingConvention = CallingConvention.StdCall)]
