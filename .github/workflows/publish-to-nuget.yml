@@ -12,7 +12,11 @@ on:
           - BIDSSMemLib.rw
           - BIDSSMemLib.structs
           - BIDSSMemLib.Variable
+          - TR.CustomDataSharingManager.Core
+          - TR.ISMemCtrler
           - TR.SMemCtrler
+          - TR.SMemCtrler.AutoReadSupporter
+          - TR.ISMemIF
           - TR.SMemIF
           - TR.SMemIF.Mock
 

@@ -10,9 +10,9 @@ using System.Xml.Linq;
 
 namespace TR.BIDSSMemLib
 {
-	#region Constant Values
-	/// <summary>レバーサー位置</summary>
-	public static class Reverser
+  #region Constant Values
+  /// <summary>レバーサー位置</summary>
+  public static class Reverser
   {
     /// <summary>後進</summary>
     public const int B = -1;
@@ -99,30 +99,52 @@ namespace TR.BIDSSMemLib
     /// <summary>ATSKey_L (Default : D0)</summary>
     public const int L = 15;
   }
-	#endregion
+  #endregion
 
 
   /// <summary>処理を実装するクラス</summary>
   static public class Ats
   {
-    static XDocument doc { get; }
+    static string ExecutingAssemblyLocation { get; } = Assembly.GetExecutingAssembly().Location;
+    static string ExecutingAssemblyDirectory { get; } = Path.GetDirectoryName(ExecutingAssemblyLocation);
+    static string ExecutingAssemblyFileNameWithoutExtension { get; } = Path.GetFileNameWithoutExtension(ExecutingAssemblyLocation);
+    static XDocument Doc { get; }
     static Ats()
-		{
+    {
 #if DEBUG
       if (!Debugger.IsAttached)
         Debugger.Launch();
 #endif
+
+      AppDomain.CurrentDomain.AssemblyResolve += (s, e) =>
+      {
+        if (e.RequestingAssembly is null)
+          return null;
+
+        AssemblyName targetAsmName = new(e.Name);
+        string targetAsmLocation = Path.Combine(ExecutingAssemblyDirectory, targetAsmName.Name + ".dll");
+
+        if (File.Exists(targetAsmLocation))
+          return Assembly.LoadFrom(targetAsmLocation);
+
+        targetAsmLocation = Path.Combine(ExecutingAssemblyDirectory, ExecutingAssemblyFileNameWithoutExtension, targetAsmName.Name + ".dll");
+        if (File.Exists(targetAsmLocation))
+          return Assembly.LoadFrom(targetAsmLocation);
+        else
+          return null;
+      };
+
       //Load setting
       try
       {
-        doc = XDocument.Load(Assembly.GetExecutingAssembly().Location + ".xml");
-        Version = int.Parse(doc.Element("AtsPISetting").Element("Version").Value);
-			}
-			catch (Exception e)
-			{
+        Doc = XDocument.Load(ExecutingAssemblyLocation + ".xml");
+        Version = int.Parse(Doc.Element("AtsPISetting").Element("Version").Value);
+      }
+      catch (Exception e)
+      {
         Debug.WriteLine("[BIDSSMemLib AtsPI IF] Exception has occured at Ats.ctor\n" + e.GetType().ToString() + "\n" + e.Message);
-			}
-		}
+      }
+    }
     private static readonly int Version = 0x00020000;
     public const CallingConvention CalCnv = CallingConvention.StdCall;
     const int MaxIndex = 256;
@@ -133,9 +155,9 @@ namespace TR.BIDSSMemLib
     /// <summary>Current Key State</summary>
     public static bool[] IsKeyDown { get; set; } = new bool[16];
 
-    static BIDSSharedMemoryData BSMD = new BIDSSharedMemoryData();
-    static int[] PArr = new int[MaxIndex];
-    static int[] SArr = new int[MaxIndex];
+    static BIDSSharedMemoryData BSMD = new();
+    static readonly int[] PArr = new int[MaxIndex];
+    static readonly int[] SArr = new int[MaxIndex];
     static BVEConductorChecker BVE_CC = null;
     /// <summary>Called when this plugin is loaded</summary>
     [DllExport(CallingConvention = CalCnv)]
@@ -151,28 +173,34 @@ namespace TR.BIDSSMemLib
       if (!Equals(BSMD, StaticSMemLib.ReadBSMD())) MessageBox.Show("BIDSSMemLib DataWriting Failed");
 
       BVE_CC ??= new BVEConductorChecker();
-			BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;
+      BVE_CC.ConductorActioned += BVE_CC_ConductorActioned;
     }
 
     struct ConductorActionLogStruct
-		{
-      public ConductorActionLogStruct(int time, int action) => (Time, Action) = (time, action);
+    {
+      public ConductorActionLogStruct(int time, int action)
+      {
+        Time = time;
+        Action = action;
+      }
+
       public int Time;
       public int Action;
-		}
+    }
     static readonly int ConductorActionLog_MaxCount = 16;
-    static ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog { get; } = new(CustomDataNames.ConductorActionLog, false, true);
-		private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
-		{
+    static readonly int ConductorActionLog_CapacityCount = ConductorActionLog_MaxCount + 4;
+    static ArrayDataSMemCtrler<ConductorActionLogStruct> ConductorActionLog { get; } = new(CustomDataNames.ConductorActionLog, false, true, ConductorActionLog_CapacityCount);
+    private static void BVE_CC_ConductorActioned(object sender, ConductorActionedEventArgs e)
+    {
       ConductorActionLog.Add(new(BSMD.StateData.T, (int)e.ActionType));
 
       while (ConductorActionLog.Count > ConductorActionLog_MaxCount)
         ConductorActionLog.RemoveAt(0);
-		}
+    }
 
 
-		/// <summary>Called when this plugin is unloaded</summary>
-		[DllExport(CallingConvention = CalCnv)]
+    /// <summary>Called when this plugin is unloaded</summary>
+    [DllExport(CallingConvention = CalCnv)]
     public static void Dispose()
     {
       BSMD = new BIDSSharedMemoryData();
@@ -182,7 +210,7 @@ namespace TR.BIDSSMemLib
       StaticSMemLib.WriteSound(in BlankArr);
       ConductorActionLog.Dispose();
       if(BVE_CC is not null)
-			{
+      {
         BVE_CC.ConductorActioned -= BVE_CC_ConductorActioned;
         BVE_CC.Dispose();
         BVE_CC = null;
@@ -200,9 +228,9 @@ namespace TR.BIDSSMemLib
     public static void SetVehicleSpec(Spec s) => BSMD.SpecData = s;
 
     /// <summary>Called when car is put</summary>
-    /// <param name="s">Default Brake Position (Refer to InitialPos class)</param>
+    /// <param name="_">Default Brake Position (Refer to InitialPos class)</param>
     [DllExport(CallingConvention = CalCnv)]
-    public static void Initialize(int s) { }
+    public static void Initialize(int _) { }
 
     /// <summary>Called in every refleshing the display</summary>
     /// <param name="st">State</param>
@@ -255,9 +283,9 @@ namespace TR.BIDSSMemLib
     }
 
     /// <summary>Called when the Horn is Blown</summary>
-    /// <param name="h">Blown Horn Number</param>
+    /// <param name="_">Blown Horn Number</param>
     [DllExport(CallingConvention = CalCnv)]
-    static public void HornBlow(int h) { }
+    static public void HornBlow(int _) { }
 
     /// <summary>Called when Door is opened</summary>
     [DllExport(CallingConvention = CalCnv)]
@@ -270,14 +298,14 @@ namespace TR.BIDSSMemLib
 
 
     /// <summary>Called when the Signal Showing Number is changed</summary>
-    /// <param name="s">Signal Showing Number</param>
+    /// <param name="_">Signal Showing Number</param>
     [DllExport(CallingConvention = CalCnv)]
-    static public void SetSignal(int s) { }
+    static public void SetSignal(int _) { }
 
     /// <summary>Called when passed above the Beacon</summary>
-    /// <param name="b">Beacon info</param>
+    /// <param name="_">Beacon info</param>
     [DllExport(CallingConvention = CalCnv)]
-    static public void SetBeaconData(Beacon b) { }
+    static public void SetBeaconData(Beacon _) { }
 
 
   }

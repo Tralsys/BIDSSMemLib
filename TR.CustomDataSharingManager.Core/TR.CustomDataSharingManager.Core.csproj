@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;netstandard2.1;netstandard2.0</TargetFrameworks>
+		<LangVersion>10</LangVersion>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
+		<ProjectReference Include="..\BIDSSMemLib.Variable\BIDSSMemLib.Variable.csproj" />
+	</ItemGroup>
+</Project>

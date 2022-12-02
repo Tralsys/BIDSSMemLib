@@ -153,7 +153,37 @@ public class VariableSMemNameManager : IDisposable, IEnumerable<VariableSMemName
 				break;
 			}
 
-			pos += sizeof(ushort) + capacityBuf;
+			// 同じ名前かどうかチェック
+			byte[] nameInSMem = new byte[capacityBuf];
+			if (!SMemIF.ReadArray(pos + sizeof(ushort), nameInSMem, 0, nameInSMem.Length))
+				throw new AccessViolationException("Read from SMem Failed");
+
+			bool targetNameWasFoundInSMem = true;
+			// Capacityチェック済みのため、nameBytesよりもnameInSMemの方が長さが同じか長いのは確実
+			for (int i = 0; i < nameInSMem.Length; i++)
+			{
+				// nameBytesとnameInSMemが現時点までで全て一致している、かつnameBytesを全て確認済みである、かつnameInSMemがNULL文字 => 文字列が完全に一致
+				// 違うバイトデータが出てきたら、文字列が一致しないのは当たり前。
+				if ((i == nameBytes.Length && nameInSMem[i] != 0)
+					|| (nameBytes[i] != nameInSMem[i]))
+				{
+					targetNameWasFoundInSMem = false;
+					break;
+				}
+			}
+
+			if (targetNameWasFoundInSMem)
+			{
+				return new(
+					pos,
+					capacityBuf,
+					name
+				);
+			}
+			else
+			{
+				pos += sizeof(ushort) + capacityBuf;
+			}
 		}
 
 		if (capacityBuf == 0)

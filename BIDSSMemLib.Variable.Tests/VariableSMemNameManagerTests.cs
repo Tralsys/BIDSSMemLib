@@ -76,6 +76,25 @@ public class VariableSMemNameManagerTests
 	}
 
 	[Test]
+	public void AddSameNameManyTimesTest()
+	{
+		SMemIFMock SMemIF = new("test", SMemCapacity);
+
+		VariableSMemNameManager manager = new(SMemIF);
+
+		VariableSMemNameManager.SMemName? nameRecord1 = manager.AddName(TEST_STR_1);
+		VariableSMemNameManager.SMemName? nameRecord2 = manager.AddName(TEST_STR_2);
+		VariableSMemNameManager.SMemName? nameRecord3 = manager.AddName(TEST_STR_1);
+
+		Assert.Multiple(() =>
+		{
+			Assert.That(nameRecord1, Is.EqualTo(expected1));
+			Assert.That(nameRecord2, Is.EqualTo(expected2));
+			Assert.That(nameRecord3, Is.EqualTo(expected1));
+		});
+	}
+
+	[Test]
 	public void IEnumerableTest()
 	{
 		SMemIFMock SMemIF = new("test", SMemCapacity);

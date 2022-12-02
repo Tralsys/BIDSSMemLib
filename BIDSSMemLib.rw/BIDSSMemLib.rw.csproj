@@ -1,43 +1,39 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>9.0</LangVersion>
-    <AssemblyName>TR.BIDSSMemLib.rw</AssemblyName>
-    <RootNamespace>TR.BIDSSMemLib</RootNamespace>
-		<Version>2.2.0.0</Version>
-    <Platforms>AnyCPU;x64;x86</Platforms>
-    <Authors>Tetsu Otter</Authors>
-    <Company>Tech Otter</Company>
-    <Product>BIDS Project</Product>
-    <Copyright>Copyright (C) 2020 Tetsu Otter</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <Description>It provides easy access to the BIDS bus.</Description>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
-    <PackageReleaseNotes># 2.1.0
+		<AssemblyName>TR.BIDSSMemLib.rw</AssemblyName>
+		<RootNamespace>TR.BIDSSMemLib</RootNamespace>
+		<Version>2.2.0.1</Version>
+		<Platforms>AnyCPU;x64;x86</Platforms>
+		<Authors>Tetsu Otter</Authors>
+		<Company>Tech Otter</Company>
+		<Product>BIDS Project</Product>
+		<Copyright>Copyright (C) 2020 Tetsu Otter</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<Description>It provides easy access to the BIDS bus.</Description>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
+		<PackageReleaseNotes># 2.1.0
 Functions to non-static
 # 2.0.0
 Add net20/net5.0 Support
 SMemlib change to static class
 # 1.0.2
 published to nuget.org</PackageReleaseNotes>
-  </PropertyGroup>
-
+	</PropertyGroup>
 	<PropertyGroup>
 		<DebugType>pdbonly</DebugType>
 		<DebugSymbols>true</DebugSymbols>
 		<DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
 	</PropertyGroup>
-
-
 	<ItemGroup>
-    <ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
-    <ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
-    <ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
-  </ItemGroup>
-
+		<ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
+		<ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
+		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+	</ItemGroup>
 </Project>
