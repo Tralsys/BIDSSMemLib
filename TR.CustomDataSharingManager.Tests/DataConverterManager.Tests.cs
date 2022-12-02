@@ -10,7 +10,7 @@ namespace TR
 	public class DataConverterManagerTests
 	{
 
-		DataForConverter CreateEmptyDataForConverter(CustomDataSharingManager cdsManager) => new(cdsManager, new(IntPtr.Zero), new(IntPtr.Zero), default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default);
+		DataForConverter CreateEmptyDataForConverter(CustomDataSharingManager cdsManager) => new(new(), cdsManager, new(IntPtr.Zero), new(IntPtr.Zero), default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default, default);
 
 		[Test]
 		public async Task LoadScriptsFromAssemblyTest()
