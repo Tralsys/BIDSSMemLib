@@ -7,9 +7,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.4.0" />
+		<PackageReference Include="TR.BIDSSMemLib.Variable" Version="1.2.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
-		<ProjectReference Include="..\BIDSSMemLib.Variable\BIDSSMemLib.Variable.csproj" />
 	</ItemGroup>
 </Project>
