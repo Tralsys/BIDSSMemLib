@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -13,8 +14,19 @@ namespace TR
 		static string ScriptsDirectoryName { get; } = "scripts";
 		static string ScriptsDirectoryPath { get; } = Path.Combine(CurrentDllDirectory, CurrentDllFileNameWithoutExtension, ScriptsDirectoryName);
 
+		[DllImport("kernel32.dll")]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool AllocConsole();
+
 		static Ats()
 		{
+#if DEBUG
+			if (!Debugger.IsAttached)
+				Debugger.Launch();
+
+			AllocConsole();
+#endif
+
 			AppDomain.CurrentDomain.AssemblyResolve += (s, arg) =>
 			{
 				if (arg.Name is null)
