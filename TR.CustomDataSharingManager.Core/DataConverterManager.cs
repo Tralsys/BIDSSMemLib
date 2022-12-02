@@ -103,6 +103,8 @@ namespace TR
 			=> CreateActionFromScriptString(scriptString, UsingScriptOptions.WithFilePath(scriptFilePath));
 		public static Func<DataForConverter, Task>? CreateActionFromScriptString(in string scriptString, ScriptOptions options)
 		{
+			Console.WriteLine($"{nameof(DataConverterManager)}.{nameof(CreateActionFromScriptString)} : Loading Script from `{options.FilePath}`");
+
 			var scriptRunner = CSharpScript.Create(
 				scriptString,
 				options,
@@ -113,11 +115,18 @@ namespace TR
 				if (i.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
 					return null;
 
-			var createdDelegate = scriptRunner.CreateDelegate();
-			if (createdDelegate is null)
-				return null;
-			else
-				return (value) => createdDelegate(value);
+			try {
+				var createdDelegate = scriptRunner.CreateDelegate();
+				if (createdDelegate is not null)
+					return (value) => createdDelegate(value);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"{nameof(DataConverterManager)}.{nameof(CreateActionFromScriptString)} : Exception has thrown on `CreateDelegate` step");
+				Console.WriteLine(ex);
+			}
+
+			return null;
 		}
 
 		#region IDisposable Support

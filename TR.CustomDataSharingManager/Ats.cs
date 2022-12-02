@@ -95,7 +95,16 @@ namespace TR
 			if (sarr?.Length > 0)
 			{
 				DataConverterManager = new();
-				DataConverterManager.LoadScriptsFromFilePathArray(sarr);
+				try
+				{
+					DataConverterManager.LoadScriptsFromFilePathArray(sarr);
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine($"Exception from {nameof(CustomDataSharingManager)}.{nameof(Load)} Method (Load Scripts from File Path Array)");
+					Console.WriteLine(ex);
+					return;
+				}
 			}
 			else
 				return;
