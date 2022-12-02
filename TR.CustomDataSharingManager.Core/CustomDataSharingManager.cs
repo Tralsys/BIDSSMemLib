@@ -11,7 +11,7 @@ namespace TR
 		Dictionary<string, VariableSMem> SMemCtrlersDic { get; } = new();
 		VariableSMemNameManager NameManager { get; } = new();
 
-		public VariableSMem<T> CreateDataSharing<T>(in string SMemName, in long Capacity = 0x1000) where T : new()
+		public ISMemCtrler<T> CreateDataSharing<T>(in string SMemName, in long Capacity = 0x1000) where T : new()
 		{
 			if (SMemCtrlersDic.TryGetValue(SMemName, out var value))
 			{
@@ -29,7 +29,7 @@ namespace TR
 			return ctrler;
 		}
 
-		public VariableSMem<T>? GetDataSharing<T>(in string SMemName) where T : new()
+		public ISMemCtrler<T>? GetDataSharing<T>(in string SMemName) where T : new()
 		{
 			if (SMemCtrlersDic.TryGetValue(SMemName, out var value))
 				return value as VariableSMem<T>;
