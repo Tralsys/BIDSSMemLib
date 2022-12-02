@@ -114,10 +114,10 @@ namespace TR
 					Path.GetDirectoryName(options.FilePath)
 				)));
 
-			var compileResults = scriptRunner.Compile();
-			foreach (var i in compileResults)
-				if (i.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
-					return null;
+			//var compileResults = scriptRunner.Compile();
+			//foreach (var i in compileResults)
+			//	if (i.Severity == Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
+			//		return null;
 
 			try {
 				var createdDelegate = scriptRunner.CreateDelegate();
