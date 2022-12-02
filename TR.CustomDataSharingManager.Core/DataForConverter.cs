@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ namespace TR
 	}
 
 	public record DataForConverter(
+		Dictionary<string, object> ObjectHolder,
 		CustomDataSharingManager DataSharingManager,
 		UnmanagedArray Panel,
 		UnmanagedArray Sound,
