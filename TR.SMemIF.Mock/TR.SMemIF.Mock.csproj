@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<LangVersion>10</LangVersion>
+		<Version>1.1.0.1</Version>
 		<Nullable>enable</Nullable>
 		<RootNamespace>TR</RootNamespace>
 	</PropertyGroup>
