@@ -36,21 +36,21 @@ class Program : IDisposable
 				case "b":
 				case "bsmd":
 					BIDSSharedMemoryData bsmd = Rand.GetBSMD();
-					SMem.Write(Rand.GetBSMD());
+					SMem.Write(bsmd);
 					Log(bsmd);
 					break;
 
 				case "p":
 				case "panel":
 					int[] panel = Rand.GetIntArray();
-					SMem.WritePanel(Rand.GetIntArray());
+					SMem.WritePanel(panel);
 					Log(panel);
 					break;
 
 				case "s":
 				case "sound":
 					int[] sound = Rand.GetIntArray();
-					SMem.WriteSound(Rand.GetIntArray());
+					SMem.WriteSound(sound);
 					Log(sound);
 					break;
 
