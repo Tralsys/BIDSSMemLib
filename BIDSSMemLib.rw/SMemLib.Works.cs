@@ -15,6 +15,17 @@ namespace TR.BIDSSMemLib
 			PanelD = 6,
 			SoundD = 7
 		};
+
+		[Flags]
+		public enum ARFlags
+		{
+			All = 0b1111,
+
+			OpenD = 0b0001,
+			BSMD = 0b0010,
+			PanelD = 0b0100,
+			SoundD = 0b1000,
+		};
 		private static readonly int ARNum_Len = Enum.GetValues(typeof(ARNum)).Length;
 
 		/// <summary>AutoReadを開始します。</summary>
@@ -26,19 +37,37 @@ namespace TR.BIDSSMemLib
 			switch (ModeNum)
 			{
 				case (int)ARNum.OpenD://OpenD
-					SMC_OpenD?.AutoRead.AR_Start(Interval);
+					ReadStart(ARFlags.OpenD, Interval);
 					break;
 				case (int)ARNum.BSMD://BSMD
-					SMC_BSMD?.AutoRead.AR_Start(Interval);
+					ReadStart(ARFlags.BSMD, Interval);
 					break;
 				case (int)ARNum.PanelD://PanelD
-					SMC_PnlD?.AutoRead.AR_Start(Interval);
+					ReadStart(ARFlags.PanelD, Interval);
 					break;
 				case (int)ARNum.SoundD://Sound D
-					SMC_SndD?.AutoRead.AR_Start(Interval);
+					ReadStart(ARFlags.SoundD, Interval);
+					break;
+
+				case <= 0:
+					ReadStart(ARFlags.All, Interval);
 					break;
 			}
-			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStart(i, Interval);
+		}
+
+		public void ReadStart(in ARFlags flag, in int Interval = 50)
+		{
+			if (flag.HasFlag(ARFlags.OpenD))
+				SMC_OpenD?.AutoRead.AR_Start(Interval);
+
+			if (flag.HasFlag(ARFlags.BSMD))
+				SMC_BSMD?.AutoRead.AR_Start(Interval);
+
+			if (flag.HasFlag(ARFlags.PanelD))
+				SMC_PnlD?.AutoRead.AR_Start(Interval);
+
+			if (flag.HasFlag(ARFlags.SoundD))
+				SMC_SndD?.AutoRead.AR_Start(Interval);
 		}
 
 		/// <summary>AutoReadを開始します。</summary>
@@ -56,19 +85,37 @@ namespace TR.BIDSSMemLib
 			switch (ModeNum)
 			{
 				case (int)ARNum.OpenD://OpenD
-					SMC_OpenD?.AutoRead.AR_Stop();
+					ReadStop(ARFlags.OpenD);
 					break;
 				case (int)ARNum.BSMD://BSMD
-					SMC_BSMD?.AutoRead.AR_Stop();
+					ReadStop(ARFlags.BSMD);
 					break;
 				case (int)ARNum.PanelD://PanelD
-					SMC_PnlD?.AutoRead.AR_Stop();
+					ReadStop(ARFlags.PanelD);
 					break;
 				case (int)ARNum.SoundD://Sound D
-					SMC_SndD?.AutoRead.AR_Stop();
+					ReadStop(ARFlags.SoundD);
+					break;
+
+				case <= 0:
+					ReadStop(ARFlags.All);
 					break;
 			}
-			if (ModeNum <= 0) for (int i = 1; i < ARNum_Len; i++) ReadStop(i);
+		}
+
+		public void ReadStop(in ARFlags flag)
+		{
+			if (flag.HasFlag(ARFlags.OpenD))
+				SMC_OpenD?.AutoRead.AR_Stop();
+
+			if (flag.HasFlag(ARFlags.BSMD))
+				SMC_BSMD?.AutoRead.AR_Stop();
+
+			if (flag.HasFlag(ARFlags.PanelD))
+				SMC_PnlD?.AutoRead.AR_Stop();
+
+			if (flag.HasFlag(ARFlags.SoundD))
+				SMC_SndD?.AutoRead.AR_Stop();
 		}
 
 		/// <summary>AutoReadを終了します。実行中でなくともエラーは返しません。TimeOut:1000ms</summary>
