@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace TR.BIDSSMemLib
 {
@@ -31,5 +32,37 @@ namespace TR.BIDSSMemLib
 		/// <param name="D">書き込む配列</param>
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void WriteSound(in int[] D) => SMC_SndD?.Write(D);
+
+		SemaphoreSlim WriteSemap { get; } = new(0, 1);
+
+		public void Write(in State v)
+		{
+			WriteSemap.Wait();
+			SMC_BSMD.Write(BIDSSMemData with
+			{
+				StateData = v
+			});
+			WriteSemap.Release();
+		}
+
+		public void Write(in Spec v)
+		{
+			WriteSemap.Wait();
+			SMC_BSMD.Write(BIDSSMemData with
+			{
+				SpecData = v
+			});
+			WriteSemap.Release();
+		}
+
+		public void Write(in Hand v)
+		{
+			WriteSemap.Wait();
+			SMC_BSMD.Write(BIDSSMemData with
+			{
+				HandleData = v
+			});
+			WriteSemap.Release();
+		}
 	}
 }
