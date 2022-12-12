@@ -51,9 +51,6 @@ namespace TR
 		/// <returns>自動取得開始時点の値</returns>
 		public T AR_Start(TimeSpan interval)
 		{
-			if (task is null)
-				throw new Exception("Internal Exception (task is null)");
-
 			if (disposingValue || disposedValue)
 				throw new ObjectDisposedException("this");
 
