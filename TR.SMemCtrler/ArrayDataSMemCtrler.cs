@@ -395,5 +395,19 @@ namespace TR
 			return TryWrite(in value);
 		}
 		#endregion
+
+		protected override bool IsValueSame(List<T> v1, List<T> v2)
+		{
+			if (v1.Count != v2.Count)
+				return false;
+
+			for (int i = 0; i < v1.Count; i++)
+			{
+				if (!Equals(v1[i], v2[i]))
+					return false;
+			}
+
+			return true;
+		}
 	}
 }

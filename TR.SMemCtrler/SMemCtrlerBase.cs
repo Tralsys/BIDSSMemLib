@@ -69,7 +69,7 @@ namespace TR
 		/// <param name="doWriteToSMem">共有メモリに書き込みを行うかどうか (No_SMem_Modeであれば書き込みは行われません)</param>
 		protected void CheckAndNotifyPropertyChanged(in T newValue, in bool doWriteToSMem = true)
 		{
-			if (Equals(Value, newValue))
+			if (IsValueSame(Value, newValue))
 				return;
 
 			T oldValue = Value;
@@ -84,6 +84,8 @@ namespace TR
 				PropertyChanged?.Invoke(this, new(nameof(Value)));
 			}
 		}
+
+		protected abstract bool IsValueSame(T v1, T v2);
 
 		/// <summary>インスタンスを初期化する</summary>
 		/// <param name="name">共有メモリの名前</param>

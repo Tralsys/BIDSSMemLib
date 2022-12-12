@@ -15,28 +15,28 @@ namespace TR
 
 		/// <summary>実行間隔</summary>
 		public TimeSpan Interval { get; private set; }
-		Task task { get; }
+		Task? task { get; set; } = null;
 
 		/// <summary>インスタンスを初期化する</summary>
 		/// <param name="_smemCtrler">ターゲットとなるSMemCtrler</param>
 		public AutoReadSupporter(ISMemCtrler<T> _smemCtrler)
 		{
 			smemCtrler = _smemCtrler;
-
-			task = new Task(AutoReadTask);
 		}
 
-		async void AutoReadTask()
+		async Task AutoReadTask()
 		{
 			if (smemCtrler is null)
 				return;
 
-			while (!IsRunning && !disposingValue && !disposedValue)
+			while (IsRunning && !disposingValue && !disposedValue)
 			{
 				smemCtrler.Read();
 
 				await Task.Delay(Interval);
 			}
+
+			IsRunning = false;
 		}
 
 
@@ -51,17 +51,21 @@ namespace TR
 		/// <returns>自動取得開始時点の値</returns>
 		public T AR_Start(TimeSpan interval)
 		{
-			if (task is null)
-				throw new Exception("Internal Exception (task is null)");
+			if (disposingValue || disposedValue)
+				throw new ObjectDisposedException("this");
 
-			if (interval != Interval)
+			if (interval != Interval || !IsRunning)
 			{
-				Interval = interval;
 
 				try
 				{
+					IsRunning = false;
+					if (task?.IsCompleted == false)
+						task.Wait(Interval);
+
+					Interval = interval;
 					IsRunning = true;
-					task.Start();
+					task = AutoReadTask();
 				}
 				catch (Exception e)
 				{
@@ -80,11 +84,11 @@ namespace TR
 			if (task is null)
 				return; //taskがnullなら, そもそも実行できていないはずなので
 
-			if (!IsRunning || task.IsCompleted == true)
+			if (!IsRunning || task?.IsCompleted == true)
 				return; //実行中フラグが立っていないか, あるいはタスク完遂フラグが立っているなら, 実行完了している
 
 			IsRunning = false; //実行中フラグを下ろす
-			task.Wait(1000 + (int)Interval.TotalMilliseconds); //タスクの実行完了を待つ
+			task?.Wait(1000 + (int)Interval.TotalMilliseconds); //タスクの実行完了を待つ
 		}
 		#endregion
 
@@ -96,7 +100,7 @@ namespace TR
 		/// <param name="disposing">マネージドリソースを解放するかどうか</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			disposedValue = true;
+			this.disposingValue = true;
 			if (!disposedValue)
 			{
 				if (disposing)
