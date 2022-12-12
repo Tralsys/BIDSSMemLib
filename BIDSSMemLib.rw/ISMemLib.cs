@@ -25,6 +25,12 @@ namespace TR.BIDSSMemLib
 		BIDSSharedMemoryData ReadBSMD();
 
 		void Write(in BIDSSharedMemoryData D);
+		void Write(in Spec v);
+		void Write(in State v);
+		void Write(in Hand v);
+		void WriteIsDoorClosed(bool isDoorClosed);
+		void WriteVersion(int version);
+		void WriteIsEnabled(bool isEnabled);
 	}
 
 	public interface ISMemLib_OpenD
