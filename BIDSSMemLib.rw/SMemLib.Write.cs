@@ -64,5 +64,35 @@ namespace TR.BIDSSMemLib
 			});
 			WriteSemap.Release();
 		}
+
+		public void WriteIsDoorClosed(bool isDoorClosed)
+		{
+			WriteSemap.Wait();
+			SMC_BSMD.Write(BIDSSMemData with
+			{
+				IsDoorClosed = isDoorClosed
+			});
+			WriteSemap.Release();
+		}
+
+		public void WriteVersion(int version)
+		{
+			WriteSemap.Wait();
+			SMC_BSMD.Write(BIDSSMemData with
+			{
+				VersionNum = version
+			});
+			WriteSemap.Release();
+		}
+
+		public void WriteIsEnabled(bool isEnabled)
+		{
+			WriteSemap.Wait();
+			SMC_BSMD.Write(BIDSSMemData with
+			{
+				IsEnabled = isEnabled
+			});
+			WriteSemap.Release();
+		}
 	}
 }
