@@ -41,7 +41,7 @@ namespace TR
 		{
 			//MMFがnull => SMemに読み書き不可
 			//No_SMem_Mode => SMemから読み込まなくてOK
-			if(MMF is null || No_SMem_Mode)
+			if (MMF is null || No_SMem_Mode)
 			{
 				value = Value;
 				return true;
@@ -73,7 +73,8 @@ namespace TR
 			{
 				Write(value);
 				return true;
-			}catch(Exception ex) //MMFにTry系のIFを用意してないので, 無駄みが強いけどこの実装で
+			}
+			catch (Exception ex) //MMFにTry系のIFを用意してないので, 無駄みが強いけどこの実装で
 			{
 				Debug.WriteLine(ex);
 				return false;
@@ -115,6 +116,9 @@ namespace TR
 		/// <returns>試行結果</returns>
 		public bool TryWriteInObject(in object obj) => TryWrite((T)obj);
 		#endregion
+
+		protected override bool IsValueSame(T v1, T v2)
+			=> Equals(v1, v2);
 	}
 
 }
