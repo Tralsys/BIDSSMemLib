@@ -31,7 +31,7 @@ namespace TR
 			if (smemCtrler is null)
 				return;
 
-			while (!IsRunning && !disposingValue && !disposedValue)
+			while (IsRunning && !disposingValue && !disposedValue)
 			{
 				smemCtrler.Read();
 
