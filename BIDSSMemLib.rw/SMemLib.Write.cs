@@ -33,66 +33,72 @@ namespace TR.BIDSSMemLib
 		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void WriteSound(in int[] D) => SMC_SndD?.Write(D);
 
-		SemaphoreSlim WriteSemap { get; } = new(0, 1);
+		readonly object BSMDLockObj = new();
 
 		public void Write(in State v)
 		{
-			WriteSemap.Wait();
-			SMC_BSMD.Write(BIDSSMemData with
+			lock (BSMDLockObj)
 			{
-				StateData = v
-			});
-			WriteSemap.Release();
+				SMC_BSMD.Write(BIDSSMemData with
+				{
+					StateData = v
+				});
+			}
 		}
 
 		public void Write(in Spec v)
 		{
-			WriteSemap.Wait();
-			SMC_BSMD.Write(BIDSSMemData with
+			lock (BSMDLockObj)
 			{
-				SpecData = v
-			});
-			WriteSemap.Release();
+				SMC_BSMD.Write(BIDSSMemData with
+				{
+					SpecData = v
+				});
+			}
 		}
 
 		public void Write(in Hand v)
 		{
-			WriteSemap.Wait();
-			SMC_BSMD.Write(BIDSSMemData with
+			lock (BSMDLockObj)
 			{
-				HandleData = v
-			});
-			WriteSemap.Release();
+				SMC_BSMD.Write(BIDSSMemData with
+				{
+					HandleData = v
+				});
+			}
 		}
 
 		public void WriteIsDoorClosed(bool isDoorClosed)
 		{
-			WriteSemap.Wait();
-			SMC_BSMD.Write(BIDSSMemData with
+			lock (BSMDLockObj)
 			{
-				IsDoorClosed = isDoorClosed
-			});
-			WriteSemap.Release();
+				SMC_BSMD.Write(BIDSSMemData with
+				{
+					IsDoorClosed = isDoorClosed
+				});
+			}
 		}
 
 		public void WriteVersion(int version)
 		{
-			WriteSemap.Wait();
-			SMC_BSMD.Write(BIDSSMemData with
+			lock (BSMDLockObj)
 			{
-				VersionNum = version
-			});
-			WriteSemap.Release();
+				SMC_BSMD.Write(BIDSSMemData with
+				{
+					VersionNum = version
+				});
+			}
 		}
 
 		public void WriteIsEnabled(bool isEnabled)
 		{
-			WriteSemap.Wait();
-			SMC_BSMD.Write(BIDSSMemData with
+			lock (BSMDLockObj)
 			{
-				IsEnabled = isEnabled
-			});
-			WriteSemap.Release();
+				SMC_BSMD.Write(BIDSSMemData with
+				{
+					IsEnabled = isEnabled
+				});
+			}
 		}
 	}
 }
