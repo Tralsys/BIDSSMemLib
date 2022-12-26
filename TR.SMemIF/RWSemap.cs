@@ -7,8 +7,6 @@ namespace TR
 	/// <summary>await可能なR/Wロックを提供する</summary>
 	public class RWSemap : IDisposable, IRWSemaphore
 	{
-		private const MethodImplOptions MIOpt = (MethodImplOptions)256;//MethodImplOptions.AggressiveInlining;
-
 		/// <summary>別モード動作中に, モード復帰をチェックする間隔[tick]</summary>
 		static private long WAIT_TICK { get; } = 1;
 
@@ -29,7 +27,6 @@ namespace TR
 		/// <summary>Writeロックを行ったうえで, 指定の読み取り操作を行います</summary>
 		/// <param name="act">読み取り操作</param>
 		/// <returns>成功したかどうか</returns>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void Read(Action act)
 		{
 			while (Want_to_Write > 0)//Writeロック取得待機
@@ -49,7 +46,6 @@ namespace TR
 		/// <summary>Readロックを行ったうえで, 指定の書き込み操作を実行します</summary>
 		/// <param name="act">書き込み操作</param>
 		/// <returns>成功したかどうか</returns>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void Write(Action act)
 		{
 			try
