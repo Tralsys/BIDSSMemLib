@@ -21,6 +21,7 @@ namespace TR.BIDSSMemInputTester
 			builder.AppendLine("Each Command is needed to be splitted by the Space Char.");
 			builder.AppendLine("Command Example : \"P6 B7 R-1 D0 U2\" and Press Enter.");
 			builder.AppendLine();
+			builder.AppendLine("If you want to reset the value in SMem, please enter the command \"reset\"");
 			builder.AppendLine("If you want to exit, please enter the command \"exit\"");
 
 			helpString = builder.ToString();
@@ -100,6 +101,10 @@ namespace TR.BIDSSMemInputTester
 				case 'e':
 					return cmd != "exit";
 
+				case 'r' when cmd is "reset":
+					ResetValueInSMem();
+					break;
+
 				case '?' or 'h':
 					Console.WriteLine(helpString);
 					break;
@@ -110,6 +115,20 @@ namespace TR.BIDSSMemInputTester
 			}
 
 			return true;
+		}
+
+		void ResetValueInSMem()
+		{
+			lock (lockObj)
+			{
+				Hands hands = default;
+				bool[] keys = new bool[CtrlInput.KeyArrSizeMax];
+
+				CtrlInput.SetHandD(ref hands);
+				CtrlInput.SetIsKeyPushed(keys);
+			}
+
+			Console.WriteLine("Reset Value in SMem Completed");
 		}
 
 		readonly TimeSpan Interval = new(0, 0, 0, 0, 10);
