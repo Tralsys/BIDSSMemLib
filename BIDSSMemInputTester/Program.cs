@@ -55,8 +55,6 @@ namespace TR.BIDSSMemInputTester
 					}
 				}
 			}
-			Console.WriteLine("Please enter any key to exit...");
-			Console.ReadKey();
 		}
 	}
 }
