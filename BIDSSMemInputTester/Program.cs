@@ -17,11 +17,11 @@ namespace TR.BIDSSMemInputTester
 			StringBuilder builder = new();
 
 			builder.AppendLine(Assembly.GetExecutingAssembly().ToString());
-			builder.AppendLine("P:Power, B:Brake, R:Reverser, D:KeyDown, U:KeyUp, W:WatcherStart");
+			builder.AppendLine("P:Power, B:Brake, R:Reverser, D:KeyDown, U:KeyUp, W:WatcherStart, ?:PrintHelp");
 			builder.AppendLine("Each Command is needed to be splitted by the Space Char.");
 			builder.AppendLine("Command Example : \"P6 B7 R-1 D0 U2\" and Press Enter.");
-
-			builder.Append("If you want to exit, please enter the command \"exit\"");
+			builder.AppendLine();
+			builder.AppendLine("If you want to exit, please enter the command \"exit\"");
 
 			helpString = builder.ToString();
 		}
@@ -99,6 +99,10 @@ namespace TR.BIDSSMemInputTester
 					break;
 				case 'e':
 					return cmd != "exit";
+
+				case '?' or 'h':
+					Console.WriteLine(helpString);
+					break;
 
 				case 'W':
 					Task.Run(Watcher);
