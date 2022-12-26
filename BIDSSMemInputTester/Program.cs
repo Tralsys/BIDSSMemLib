@@ -15,7 +15,7 @@ namespace TR.BIDSSMemInputTester
 			bool IsLooping = true;
 			while (IsLooping)
 			{
-				string s = Console.ReadLine();
+				string? s = Console.ReadLine();
 				if (s != null && s != string.Empty)
 				{
 					string[] sa = s.Split(' ');
