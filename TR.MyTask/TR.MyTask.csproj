@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!--<TargetFrameworks>net20;net40;net45;netstandard1.0;net5.0</TargetFrameworks>-->
-    <TargetFrameworks>net20;net48;netstandard1.0</TargetFrameworks>
-    <RootNamespace>TR</RootNamespace>
+		<TargetFrameworks>netstandard1.0</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(targetFrameworks);net35</TargetFrameworks>
+		<RootNamespace>TR</RootNamespace>
     <Version>1.0.0.1</Version>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <Authors>Tetsu Otter</Authors>
