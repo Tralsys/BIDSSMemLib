@@ -9,6 +9,7 @@ on:
         required: true
         type: choice
         options:
+          - BIDSSMemLib.CtrlInput
           - BIDSSMemLib.rw
           - BIDSSMemLib.structs
           - TR.CustomDataSharingManager.Core
