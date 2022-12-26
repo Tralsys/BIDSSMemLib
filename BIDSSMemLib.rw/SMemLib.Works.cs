@@ -31,7 +31,6 @@ namespace TR.BIDSSMemLib
 		/// <summary>AutoReadを開始します。</summary>
 		/// <param name="ModeNum">自動読み取りを開始する情報種類</param>
 		/// <param name="Interval">読み取り頻度[ms]</param>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void ReadStart(in int ModeNum = 0, in int Interval = 50)
 		{
 			switch (ModeNum)
@@ -73,13 +72,11 @@ namespace TR.BIDSSMemLib
 		/// <summary>AutoReadを開始します。</summary>
 		/// <param name="ModeNum">自動読み取りを開始する情報種類</param>
 		/// <param name="Interval">読み取り頻度[ms]</param>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void ReadStart(in ARNum num, in int Interval = 50) => ReadStart((int)num, Interval);
 
 
 		/// <summary>AutoReadを終了します。実行中でなくともエラーは返しません。TimeOut:1000ms</summary>
 		/// <param name="ModeNum">終了させる情報種類</param>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void ReadStop(in int ModeNum = 0)
 		{
 			switch (ModeNum)
@@ -120,7 +117,6 @@ namespace TR.BIDSSMemLib
 
 		/// <summary>AutoReadを終了します。実行中でなくともエラーは返しません。TimeOut:1000ms</summary>
 		/// <param name="ModeNum">終了させる情報種類</param>
-		[MethodImpl(MIOpt)]//関数のインライン展開を積極的にやってもらう.
 		public void ReadStop(in ARNum num) => ReadStop((int)num);
 	}
 }

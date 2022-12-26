@@ -5,7 +5,7 @@
 		<LangVersion>10.0</LangVersion>
 		<AssemblyName>TR.BIDSSMemLib.rw</AssemblyName>
 		<RootNamespace>TR.BIDSSMemLib</RootNamespace>
-		<Version>2.2.1.4</Version>
+		<Version>2.2.2</Version>
 		<Platforms>AnyCPU;x64;x86</Platforms>
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>

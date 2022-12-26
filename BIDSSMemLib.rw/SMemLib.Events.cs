@@ -5,11 +5,11 @@ namespace TR.BIDSSMemLib
 {
 	internal static partial class UsefulFunc
 	{
-		[MethodImpl(SMemLib.MIOpt)]//関数のインライン展開を積極的にやってもらう.
+
 		static internal double MStoHH(in int ms) => ((double)ms) / 1000 / 60 / 60;
-		[MethodImpl(SMemLib.MIOpt)]//関数のインライン展開を積極的にやってもらう.
+
 		static internal double MtoKM(in double m) => m / 1000;
-		[MethodImpl(SMemLib.MIOpt)]//関数のインライン展開を積極的にやってもらう.
+
 		static internal double MtoKM(in float m) => m / 1000;
 	}
 
