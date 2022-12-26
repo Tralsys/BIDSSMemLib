@@ -21,19 +21,27 @@ namespace TR.BIDSSMemInputTester
 				if (string.IsNullOrEmpty(s))
 					continue;
 
-				foreach (var cmd in s.Split(' '))
+				if (!ParseAndExecCommand(s.Split(' ')))
+					return;
+			}
+		}
+
+		static bool ParseAndExecCommand(in string[] cmdArray)
+		{
+			foreach (var cmd in cmdArray)
+			{
+				try
 				{
-					try
-					{
-						if (!ParseAndExecCommand(cmd[0], cmd))
-							return;
-					}
-					catch (Exception e)
-					{
-						Console.WriteLine(e);
-					}
+					if (!ParseAndExecCommand(cmd[0], cmd))
+						return false;
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine(e);
 				}
 			}
+
+			return true;
 		}
 
 		static bool ParseAndExecCommand(in char cmdType, in string cmd)
