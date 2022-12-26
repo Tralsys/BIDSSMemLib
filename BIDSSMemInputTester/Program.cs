@@ -10,12 +10,25 @@ namespace TR.BIDSSMemInputTester
 {
 	class Program : IDisposable
 	{
+		static readonly string helpString;
+
+		static Program()
+		{
+			StringBuilder builder = new();
+
+			builder.AppendLine(Assembly.GetExecutingAssembly().ToString());
+			builder.AppendLine("P:Power, B:Brake, R:Reverser, D:KeyDown, U:KeyUp, W:WatcherStart");
+			builder.AppendLine("Each Command is needed to be splitted by the Space Char.");
+			builder.AppendLine("Command Example : \"P6 B7 R-1 D0 U2\" and Press Enter.");
+
+			builder.Append("If you want to exit, please enter the command \"exit\"");
+
+			helpString = builder.ToString();
+		}
+
 		static void Main(string[] args)
 		{
-			Console.WriteLine(Assembly.GetExecutingAssembly());
-			Console.WriteLine("P:Power, B:Brake, R:Reverser, D:KeyDown, U:KeyUp, W:WatcherStart\nEach Command is needed to be splitted by the Space Char.");
-			Console.WriteLine("Command Example : \"P6 B7 R-1 D0 U2\" and Press Enter.");
-			Console.WriteLine("If you want to exit, please enter the command \"exit\"");
+			Console.WriteLine(helpString);
 
 			using Program program = new();
 
