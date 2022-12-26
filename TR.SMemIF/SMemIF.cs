@@ -1,5 +1,8 @@
 using System;
+
+#if NETSTANDARD || NETCOREAPP
 using System.Runtime.InteropServices;
+#endif
 
 namespace TR
 {
@@ -21,10 +24,13 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SMemIF(string smem_name, long capacity)
 		{
+#if NETSTANDARD || NETCOREAPP
 			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
+#endif
 				Semap = new RWSemap();
 				BaseSMemIF = new SemaphorelessSMemIF(smem_name, capacity);
+#if NETSTANDARD || NETCOREAPP
 			}
 			else
 			{
@@ -33,6 +39,7 @@ namespace TR
 				Semap = new RWSemap_UNIX(smem_name);
 				BaseSMemIF = baseSMemIF;
 			}
+#endif
 		}
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>

@@ -28,6 +28,18 @@ namespace TR.BIDSSMemLib
 		};
 		private static readonly int ARNum_Len = Enum.GetValues(typeof(ARNum)).Length;
 
+		private static bool HasFlag(in ARFlags target, in ARFlags whichIsRaised)
+		{
+#if NET40_OR_GREATER || NETSTANDARD || NETCOREAPP
+			return target.HasFlag(whichIsRaised);
+#else
+			uint i_target = (uint)target;
+			uint i_whichIsRaised = (uint)whichIsRaised;
+
+			return (i_target & i_whichIsRaised) > 0;
+#endif
+		}
+
 		/// <summary>AutoReadを開始します。</summary>
 		/// <param name="ModeNum">自動読み取りを開始する情報種類</param>
 		/// <param name="Interval">読み取り頻度[ms]</param>
@@ -56,16 +68,16 @@ namespace TR.BIDSSMemLib
 
 		public void ReadStart(in ARFlags flag, in int Interval = 50)
 		{
-			if (flag.HasFlag(ARFlags.OpenD))
+			if (HasFlag(flag, ARFlags.OpenD))
 				SMC_OpenD?.AutoRead.AR_Start(Interval);
 
-			if (flag.HasFlag(ARFlags.BSMD))
+			if (HasFlag(flag, ARFlags.BSMD))
 				SMC_BSMD?.AutoRead.AR_Start(Interval);
 
-			if (flag.HasFlag(ARFlags.PanelD))
+			if (HasFlag(flag, ARFlags.PanelD))
 				SMC_PnlD?.AutoRead.AR_Start(Interval);
 
-			if (flag.HasFlag(ARFlags.SoundD))
+			if (HasFlag(flag, ARFlags.SoundD))
 				SMC_SndD?.AutoRead.AR_Start(Interval);
 		}
 
@@ -102,16 +114,16 @@ namespace TR.BIDSSMemLib
 
 		public void ReadStop(in ARFlags flag)
 		{
-			if (flag.HasFlag(ARFlags.OpenD))
+			if (HasFlag(flag, ARFlags.OpenD))
 				SMC_OpenD?.AutoRead.AR_Stop();
 
-			if (flag.HasFlag(ARFlags.BSMD))
+			if (HasFlag(flag, ARFlags.BSMD))
 				SMC_BSMD?.AutoRead.AR_Stop();
 
-			if (flag.HasFlag(ARFlags.PanelD))
+			if (HasFlag(flag, ARFlags.PanelD))
 				SMC_PnlD?.AutoRead.AR_Stop();
 
-			if (flag.HasFlag(ARFlags.SoundD))
+			if (HasFlag(flag, ARFlags.SoundD))
 				SMC_SndD?.AutoRead.AR_Stop();
 		}
 

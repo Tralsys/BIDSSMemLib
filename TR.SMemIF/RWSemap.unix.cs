@@ -1,3 +1,4 @@
+#if NETSTANDARD || NETCOREAPP
 using System;
 using System.Threading;
 
@@ -80,4 +81,4 @@ public class RWSemap_UNIX : IRWSemaphore
 	}
 	#endregion IDisposable Support
 }
-
+#endif

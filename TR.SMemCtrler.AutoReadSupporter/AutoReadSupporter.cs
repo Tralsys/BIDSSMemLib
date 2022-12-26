@@ -11,12 +11,10 @@ namespace TR
 
 		/// <summary>自動読み取り機能が動作中かどうか</summary>
 		public bool IsRunning { get; set; } = false;
-		public TimeSpan Interval { get; private set; }
-		IMyTask task { get; }
+		IMyTask task { get; set; }
 
 		/// <summary>実行間隔</summary>
 		public TimeSpan Interval { get; private set; }
-		Task? task { get; set; } = null;
 
 		/// <summary>インスタンスを初期化する</summary>
 		/// <param name="_smemCtrler">ターゲットとなるSMemCtrler</param>
@@ -24,28 +22,30 @@ namespace TR
 		{
 			smemCtrler = _smemCtrler;
 
-			task = new MyTask(
+			task = new MyTask(AutoReadTask);
+		}
+
 #if !(NET35 || NET20)
-				async
+		async
 #endif
-				(_) =>
+		void AutoReadTask(object _)
+		{
+			if (smemCtrler is null)
+				return;
+
+			while (!IsRunning && !disposingValue && !disposedValue)
 			{
-				if (smemCtrler is null)
-					return;
 
-					while (!IsRunning && !disposingValue && !disposedValue)
-				{
-
-					smemCtrler.Read();
+				smemCtrler.Read();
 
 #if !(NET35 || NET20)
 					await
 #endif
-					MyTask.Delay((int)Interval.TotalMilliseconds);
-				}
-			});
-		}
+				MyTask.Delay((int)Interval.TotalMilliseconds);
+			}
 
+			return;
+		}
 
 		#region Auto Read Methods
 		/// <summary>自動取得を開始する</summary>
@@ -68,11 +68,11 @@ namespace TR
 				{
 					IsRunning = false;
 					if (task?.IsCompleted == false)
-						task.Wait(Interval);
+						task.Wait(Interval.Milliseconds);
 
 					Interval = interval;
 					IsRunning = true;
-					task = AutoReadTask();
+					task = new MyTask(AutoReadTask);
 				}
 				catch (Exception e)
 				{

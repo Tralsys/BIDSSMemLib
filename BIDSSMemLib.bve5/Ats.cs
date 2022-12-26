@@ -118,16 +118,13 @@ namespace TR.BIDSSMemLib
 
       AppDomain.CurrentDomain.AssemblyResolve += (s, e) =>
       {
-        if (e.RequestingAssembly is null)
-          return null;
-
         AssemblyName targetAsmName = new(e.Name);
         string targetAsmLocation = Path.Combine(ExecutingAssemblyDirectory, targetAsmName.Name + ".dll");
 
         if (File.Exists(targetAsmLocation))
           return Assembly.LoadFrom(targetAsmLocation);
 
-        targetAsmLocation = Path.Combine(ExecutingAssemblyDirectory, ExecutingAssemblyFileNameWithoutExtension, targetAsmName.Name + ".dll");
+        targetAsmLocation = Path.Combine(Path.Combine(ExecutingAssemblyDirectory, ExecutingAssemblyFileNameWithoutExtension), targetAsmName.Name + ".dll");
         if (File.Exists(targetAsmLocation))
           return Assembly.LoadFrom(targetAsmLocation);
         else

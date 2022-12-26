@@ -1,6 +1,8 @@
+using System;
+
 namespace TR;
 
-public class ValueChangedEventArgs<T>
+public class ValueChangedEventArgs<T> : EventArgs
 {
 	/// <summary>更新前の値</summary>
 	public readonly T OldValue;

@@ -1,3 +1,4 @@
+#if NETSTANDARD || NETCOREAPP
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
@@ -178,3 +179,4 @@ namespace TR
 		#endregion
 	}
 }
+#endif
