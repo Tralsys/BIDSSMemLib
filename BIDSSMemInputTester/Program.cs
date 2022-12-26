@@ -41,25 +41,25 @@ namespace TR.BIDSSMemInputTester
 			switch (cmdType)
 			{
 				case 'P':
-					CtrlInput.SetHandD(CtrlInput.HandType.Power, int.Parse(cmd.Remove(0, 1)));
+					CtrlInput.SetHandD(CtrlInput.HandType.Power, int.Parse(cmd[1..]));
 					break;
 				case 'B':
-					CtrlInput.SetHandD(CtrlInput.HandType.Brake, int.Parse(cmd.Remove(0, 1)));
+					CtrlInput.SetHandD(CtrlInput.HandType.Brake, int.Parse(cmd[1..]));
 					break;
 				case 'R':
-					CtrlInput.SetHandD(CtrlInput.HandType.Reverser, int.Parse(cmd.Remove(0, 1)));
+					CtrlInput.SetHandD(CtrlInput.HandType.Reverser, int.Parse(cmd[1..]));
 					break;
 				case 'D':
-					CtrlInput.SetIsKeyPushed(int.Parse(cmd.Remove(0, 1)), true);
+					CtrlInput.SetIsKeyPushed(int.Parse(cmd[1..]), true);
 					break;
 				case 'U':
-					CtrlInput.SetIsKeyPushed(int.Parse(cmd.Remove(0, 1)), false);
+					CtrlInput.SetIsKeyPushed(int.Parse(cmd[1..]), false);
 					break;
 				case 'p':
-					CtrlInput.SetHandD(CtrlInput.HandType.PPos, double.Parse(cmd.Remove(0, 1)));
+					CtrlInput.SetHandD(CtrlInput.HandType.PPos, double.Parse(cmd[1..]));
 					break;
 				case 'b':
-					CtrlInput.SetHandD(CtrlInput.HandType.BPos, double.Parse(cmd.Remove(0, 1)));
+					CtrlInput.SetHandD(CtrlInput.HandType.BPos, double.Parse(cmd[1..]));
 					break;
 				case 'e':
 					return cmd != "exit";
