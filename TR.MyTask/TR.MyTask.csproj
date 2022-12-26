@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!--<TargetFrameworks>net20;net40;net45;netstandard1.0;net5.0</TargetFrameworks>-->
+    <TargetFrameworks>net20;net48;netstandard1.0</TargetFrameworks>
+    <RootNamespace>TR</RootNamespace>
+    <Version>1.0.0.1</Version>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Authors>Tetsu Otter</Authors>
+    <Company>Tech Otter</Company>
+    <Product>BIDS Project</Product>
+    <Copyright>Copyright (C) 2021 Tetsu Otter</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/TetsuOtter/BIDSSMemLib</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes># 1.0.0.1
+Change Framework Version
+# 1.0.0
+published to nuget.org
+    </PackageReleaseNotes>
+    <Description>It contains Custom Task class to use it in net35 or before</Description>
+  </PropertyGroup>
+
+	<PropertyGroup>
+		<DebugType>pdbonly</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<DefineConstants Condition="'$(Configuration)'=='Debug'">DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+
+</Project>

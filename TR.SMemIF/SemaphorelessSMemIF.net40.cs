@@ -1,3 +1,5 @@
+﻿#if NET40_OR_GREATER || NETCOREAPP || NETSTANDARD
+
 using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
@@ -196,3 +198,4 @@ namespace TR
 		#endregion
 	}
 }
+#endif

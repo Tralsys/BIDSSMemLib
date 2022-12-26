@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net20;net35;net48</TargetFrameworks>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
 		<AssemblyName>TR.SMemCtrler</AssemblyName>
@@ -33,6 +33,7 @@ published to nuget.org</PackageReleaseNotes>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\TR.MyTask\TR.MyTask.csproj" />
 		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
 		<ProjectReference Include="..\TR.ISMemCtrler\TR.ISMemCtrler.csproj" />
 		<ProjectReference Include="..\TR.SMemCtrler.AutoReadSupporter\TR.SMemCtrler.AutoReadSupporter.csproj" />

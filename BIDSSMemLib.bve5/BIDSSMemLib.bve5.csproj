@@ -24,7 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)' != 'x86' And '$(Platform)' != 'x64'">
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net5.0</TargetFramework>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
   <PropertyGroup Condition="'$(Platform)' == 'x64'">
@@ -33,7 +33,7 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)' == 'x86'">
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net35</TargetFramework>
     <AssemblyName>TR.BIDSSMemLib.bve5.x86</AssemblyName>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>

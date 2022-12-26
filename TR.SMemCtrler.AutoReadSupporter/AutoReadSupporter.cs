@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace TR
 {
@@ -12,6 +11,8 @@ namespace TR
 
 		/// <summary>自動読み取り機能が動作中かどうか</summary>
 		public bool IsRunning { get; set; } = false;
+		public TimeSpan Interval { get; private set; }
+		IMyTask task { get; }
 
 		/// <summary>実行間隔</summary>
 		public TimeSpan Interval { get; private set; }
@@ -22,21 +23,27 @@ namespace TR
 		public AutoReadSupporter(ISMemCtrler<T> _smemCtrler)
 		{
 			smemCtrler = _smemCtrler;
-		}
 
-		async Task AutoReadTask()
-		{
-			if (smemCtrler is null)
-				return;
-
-			while (IsRunning && !disposingValue && !disposedValue)
+			task = new MyTask(
+#if !(NET35 || NET20)
+				async
+#endif
+				(_) =>
 			{
-				smemCtrler.Read();
+				if (smemCtrler is null)
+					return;
 
-				await Task.Delay(Interval);
-			}
+					while (!IsRunning && !disposingValue && !disposedValue)
+				{
 
-			IsRunning = false;
+					smemCtrler.Read();
+
+#if !(NET35 || NET20)
+					await
+#endif
+					MyTask.Delay((int)Interval.TotalMilliseconds);
+				}
+			});
 		}
 
 

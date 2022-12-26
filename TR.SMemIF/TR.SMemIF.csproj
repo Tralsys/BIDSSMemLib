@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net20;net35;net48</TargetFrameworks>
 		<LangVersion>10.0</LangVersion>
 		<Nullable>enable</Nullable>
 		<AssemblyName>TR.SMemIF</AssemblyName>
@@ -16,9 +16,7 @@
 		<RepositoryUrl>https://github.com/TetsuOtter/BIDSSMemLib</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Platforms>AnyCPU;x64;x86</Platforms>
-		<PackageReleaseNotes># 2.0.0
-Remove supporting net20/net35/net48
-# 1.0.0.3
+		<PackageReleaseNotes># 1.0.0.3
 Fix a bug
 # 1.0.0.2
 Add net20/net50 support
@@ -26,7 +24,7 @@ Add net20/net50 support
 Add net35/net461 support
 # 1.0.0
 published to nuget.org</PackageReleaseNotes>
-		<Description>It provides a interfaced implementation for projects using MemoryMappedFile.
+		<Description>It provides a version-independent unified implementation for projects using MemoryMappedFile.
 
 It is recommended to use through TR.SMemCtrler because this library provides only low-level operations.</Description>
 		<GeneratePackageOnBuild Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">true</GeneratePackageOnBuild>
