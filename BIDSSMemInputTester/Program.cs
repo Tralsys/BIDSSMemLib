@@ -13,8 +13,8 @@ namespace TR.BIDSSMemInputTester
 			Console.WriteLine("P:Power, B:Brake, R:Reverser, D:KeyDown, U:KeyUp\nEach Command is needed to be splitted by the Space Char.");
 			Console.WriteLine("Command Example : \"P6 B7 R-1 D0 U2\" and Press Enter.");
 			Console.WriteLine("If you want to exit, please enter the command \"exit\"");
-			bool IsLooping = true;
-			while (IsLooping)
+
+			while (true)
 			{
 				string? s = Console.ReadLine();
 
