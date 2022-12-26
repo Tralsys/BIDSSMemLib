@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+
 using TR.BIDSSMemLib;
 
 namespace TR.BIDSSMemInputTester
@@ -16,45 +17,55 @@ namespace TR.BIDSSMemInputTester
 			while (IsLooping)
 			{
 				string? s = Console.ReadLine();
-				if (s != null && s != string.Empty)
+
+				if (string.IsNullOrEmpty(s))
+					continue;
+
+				foreach (var cmd in s.Split(' '))
 				{
-					string[] sa = s.Split(' ');
-					for (int i = 0; i < sa.Length; i++)
+					try
 					{
-						try
-						{
-							switch (sa[i].ToCharArray()[0])
-							{
-								case 'P':
-									CtrlInput.SetHandD(CtrlInput.HandType.Power, int.Parse(sa[i].Remove(0, 1)));
-									break;
-								case 'B':
-									CtrlInput.SetHandD(CtrlInput.HandType.Brake, int.Parse(sa[i].Remove(0, 1)));
-									break;
-								case 'R':
-									CtrlInput.SetHandD(CtrlInput.HandType.Reverser, int.Parse(sa[i].Remove(0, 1)));
-									break;
-								case 'D':
-									CtrlInput.SetIsKeyPushed(int.Parse(sa[i].Remove(0, 1)), true);
-									break;
-								case 'U':
-									CtrlInput.SetIsKeyPushed(int.Parse(sa[i].Remove(0, 1)), false);
-									break;
-								case 'p':
-									CtrlInput.SetHandD(CtrlInput.HandType.PPos, double.Parse(sa[i].Remove(0, 1)));
-									break;
-								case 'b':
-									CtrlInput.SetHandD(CtrlInput.HandType.BPos, double.Parse(sa[i].Remove(0, 1)));
-									break;
-								case 'e':
-									IsLooping = sa[i] != "exit";
-									break;
-							}
-						}
-						catch (Exception e) { Console.WriteLine(e); }
+						if (!ParseAndExecCommand(cmd[0], cmd))
+							return;
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine(e);
 					}
 				}
 			}
+		}
+
+		static bool ParseAndExecCommand(in char cmdType, in string cmd)
+		{
+			switch (cmdType)
+			{
+				case 'P':
+					CtrlInput.SetHandD(CtrlInput.HandType.Power, int.Parse(cmd.Remove(0, 1)));
+					break;
+				case 'B':
+					CtrlInput.SetHandD(CtrlInput.HandType.Brake, int.Parse(cmd.Remove(0, 1)));
+					break;
+				case 'R':
+					CtrlInput.SetHandD(CtrlInput.HandType.Reverser, int.Parse(cmd.Remove(0, 1)));
+					break;
+				case 'D':
+					CtrlInput.SetIsKeyPushed(int.Parse(cmd.Remove(0, 1)), true);
+					break;
+				case 'U':
+					CtrlInput.SetIsKeyPushed(int.Parse(cmd.Remove(0, 1)), false);
+					break;
+				case 'p':
+					CtrlInput.SetHandD(CtrlInput.HandType.PPos, double.Parse(cmd.Remove(0, 1)));
+					break;
+				case 'b':
+					CtrlInput.SetHandD(CtrlInput.HandType.BPos, double.Parse(cmd.Remove(0, 1)));
+					break;
+				case 'e':
+					return cmd != "exit";
+			}
+
+			return true;
 		}
 	}
 }
