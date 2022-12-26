@@ -9,6 +9,6 @@
 		<Version>1.1.0.0</Version>
 	</PropertyGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
+		<ProjectReference Include="..\BIDSSMemLib.CtrlInput\BIDSSMemLib.CtrlInput.csproj" />
 	</ItemGroup>
 </Project>
