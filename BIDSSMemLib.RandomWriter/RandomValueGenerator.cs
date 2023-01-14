@@ -46,11 +46,11 @@ public class RandomValueGenerator
 	public Spec GetSpec()
 		=> new()
 		{
-			A = GetInt32(),
-			B = GetInt32(),
-			C = GetInt32(),
-			J = GetInt32(),
-			P = GetInt32(),
+			A = GetInt16(),
+			B = GetInt16(),
+			C = GetInt16(),
+			J = GetInt16(),
+			P = GetInt16(),
 		};
 
 	public State GetState()
