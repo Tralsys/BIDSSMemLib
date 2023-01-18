@@ -21,8 +21,9 @@ namespace TR
 					throw new ArgumentException($"SMemName({SMemName}) was found in the dictionary, but the Type is mismatch (requested:`{typeof(T)} / found:`{value.GetType()}``)", nameof(SMemName));
 			}
 
-			NameManager.AddName(SMemName);
+		// 名前を先に追加しないと、可変構造共有メモリが初期化される前に名前の追加を検出されてしまう可能性がある
 			VariableSMem<T> ctrler = new(SMemName, Capacity);
+			NameManager.AddName(SMemName);
 
 			SMemCtrlersDic.Add(SMemName, ctrler);
 
