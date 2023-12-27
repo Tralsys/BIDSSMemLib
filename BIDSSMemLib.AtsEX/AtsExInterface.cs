@@ -8,7 +8,7 @@ using BveTypes.ClassWrappers;
 namespace TR.BIDSSMemLib;
 
 [PluginType(PluginType.Extension)]
-public partial class AtsExInterface(PluginBuilder builder) : AssemblyPluginBase(builder)
+public partial class AtsExInterface(PluginBuilder builder) : AssemblyPluginBase(builder), IExtension
 {
 	readonly SMemLib smemLib = new(
 		isNoSMemMode: false,
