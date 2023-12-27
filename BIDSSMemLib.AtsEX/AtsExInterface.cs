@@ -37,7 +37,11 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 		BveHacker.ScenarioClosed -= OnScenarioClosed;
 	}
 
-	BIDSSharedMemoryData bsmd = new();
+	BIDSSharedMemoryData bsmd = new()
+	{
+		IsEnabled = false,
+		VersionNum = SMemLib.VersionNumInt,
+	};
 	BveInstanceManager? bveInstanceManager = null;
 	public override TickResult Tick(TimeSpan elapsed)
 	{
