@@ -8,13 +8,22 @@ using BveTypes.ClassWrappers;
 namespace TR.BIDSSMemLib;
 
 [PluginType(PluginType.Extension)]
-public partial class AtsExInterface(PluginBuilder builder) : AssemblyPluginBase(builder), IExtension
+public partial class AtsExInterface : AssemblyPluginBase, IExtension
 {
 	readonly SMemLib smemLib = new(
 		isNoSMemMode: false,
 		isNoEventMode: true,
 		isNoOptionalEventMode: true
 	);
+
+	public AtsExInterface(PluginBuilder builder) : base(builder)
+	{
+		smemLib.Write(bsmd);
+		smemLib.WritePanel(new int[panelArrayLength]);
+		smemLib.WriteSound(new int[soundArrayLength]);
+
+		BveHacker.ScenarioClosed += OnScenarioClosed;
+	}
 
 	nuint panelArrayLength = 256;
 	nuint soundArrayLength = 256;
@@ -24,6 +33,8 @@ public partial class AtsExInterface(PluginBuilder builder) : AssemblyPluginBase(
 		smemLib.WritePanel(new int[panelArrayLength]);
 		smemLib.WriteSound(new int[soundArrayLength]);
 		smemLib.Dispose();
+
+		BveHacker.ScenarioClosed -= OnScenarioClosed;
 	}
 
 	BIDSSharedMemoryData bsmd = new();
@@ -46,20 +57,23 @@ public partial class AtsExInterface(PluginBuilder builder) : AssemblyPluginBase(
 			smemLib.WriteSound(soundArray);
 		}
 		else if (bsmd.IsEnabled)
-		{
-			bsmd = new()
-			{
-				IsEnabled = false,
-				VersionNum = SMemLib.VersionNumInt,
-			};
-			smemLib.Write(bsmd);
-			smemLib.WritePanel(new int[panelArrayLength]);
-			smemLib.WriteSound(new int[soundArrayLength]);
-
-			bveInstanceManager = null;
-		}
+			OnScenarioClosed();
 
 		return new ExtensionTickResult();
+	}
+
+	void OnScenarioClosed(EventArgs? _ = null)
+	{
+		bsmd = new()
+		{
+			IsEnabled = false,
+			VersionNum = SMemLib.VersionNumInt,
+		};
+		smemLib.Write(bsmd);
+		smemLib.WritePanel(new int[panelArrayLength]);
+		smemLib.WriteSound(new int[soundArrayLength]);
+
+		bveInstanceManager = null;
 	}
 
 	class BveInstanceManager
