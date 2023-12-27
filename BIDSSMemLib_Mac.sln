@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.ValueChecker", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.CtrlInput", "BIDSSMemLib.CtrlInput\BIDSSMemLib.CtrlInput.csproj", "{7391C730-6776-4DF1-B645-6FBC85F2C682}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.AtsEX", "BIDSSMemLib.AtsEX\BIDSSMemLib.AtsEX.csproj", "{82EFFCCC-E021-4E39-BC33-4F3D189D7245}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -237,6 +239,18 @@ Global
 		{7391C730-6776-4DF1-B645-6FBC85F2C682}.Debug|x86.Build.0 = Debug|Any CPU
 		{7391C730-6776-4DF1-B645-6FBC85F2C682}.Release|x86.ActiveCfg = Release|Any CPU
 		{7391C730-6776-4DF1-B645-6FBC85F2C682}.Release|x86.Build.0 = Release|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Debug|x64.Build.0 = Debug|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Release|x64.ActiveCfg = Release|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Release|x64.Build.0 = Release|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Debug|x86.Build.0 = Debug|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Release|x86.ActiveCfg = Release|Any CPU
+		{82EFFCCC-E021-4E39-BC33-4F3D189D7245}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
