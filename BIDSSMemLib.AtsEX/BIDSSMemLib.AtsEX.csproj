@@ -20,9 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\BIDSSMemLib.structs\BIDSSMemLib.structs.csproj" />
-		<ProjectReference Include="..\TR.SMemCtrler\TR.SMemCtrler.csproj" />
-		<ProjectReference Include="..\TR.SMemIF\TR.SMemIF.csproj" />
+		<ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
