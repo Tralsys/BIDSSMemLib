@@ -19,6 +19,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 	public AtsExInterface(PluginBuilder builder) : base(builder)
 	{
 		smemLib.Write(bsmd);
+		smemLib.Write(openD);
 		smemLib.WritePanel(new int[panelArrayLength]);
 		smemLib.WriteSound(new int[soundArrayLength]);
 
@@ -30,6 +31,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 	public override void Dispose()
 	{
 		smemLib.Write(new BIDSSharedMemoryData());
+		smemLib.Write(new OpenD());
 		smemLib.WritePanel(new int[panelArrayLength]);
 		smemLib.WriteSound(new int[soundArrayLength]);
 		smemLib.Dispose();
@@ -42,6 +44,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 		IsEnabled = false,
 		VersionNum = SMemLib.VersionNumInt,
 	};
+	OpenD openD = new();
 	BveInstanceManager? bveInstanceManager = null;
 	public override TickResult Tick(TimeSpan elapsed)
 	{
@@ -73,7 +76,9 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 			IsEnabled = false,
 			VersionNum = SMemLib.VersionNumInt,
 		};
+		openD = new();
 		smemLib.Write(bsmd);
+		smemLib.Write(openD);
 		smemLib.WritePanel(new int[panelArrayLength]);
 		smemLib.WriteSound(new int[soundArrayLength]);
 
@@ -160,6 +165,29 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 				C = (int)handles.ConstantSpeedMode,
 			};
 			bsmd.IsDoorClosed = !(leftDoorSet.IsOpen || rightDoorSet.IsOpen);
+		}
+
+		public void setOpenD(
+			ref OpenD openD,
+			in TimeSpan elapsed
+		)
+		{
+			openD = new()
+			{
+				IsEnabled = true,
+				ElapTime = (int)elapsed.TotalMilliseconds,
+
+				// TODO: 実装方法を模索
+				Cant = 0,
+				Pitch = 0,
+				Radius = 0,
+
+				// TODO: 実装方法を模索
+				PreTrain = new()
+				{
+					IsEnabled = false,
+				}
+			};
 		}
 	}
 }
