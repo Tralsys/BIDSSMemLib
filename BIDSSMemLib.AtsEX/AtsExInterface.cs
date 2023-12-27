@@ -45,8 +45,11 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 		VersionNum = SMemLib.VersionNumInt,
 	};
 	OpenD openD = new();
+	Hands hands = new();
+	readonly bool[] keyStateArray = new bool[CtrlInput.KeyArrSizeMax];
 	BveInstanceManager? bveInstanceManager = null;
-	public override TickResult Tick(TimeSpan elapsed)
+
+  public override TickResult Tick(TimeSpan elapsed)
 	{
 		if (BveHacker.IsScenarioCreated)
 		{
@@ -62,12 +65,69 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 			int[] soundArray = bveInstanceManager.atsPlugin.SoundArray;
 			soundArrayLength = (nuint)soundArray.Length;
 			smemLib.WriteSound(soundArray);
+
+			// BVEへの入力処理
+			Hands currentHands = CtrlInput.GetHandD();
+			if (!isHandsEqual(in hands, in currentHands))
+			{
+				hands = currentHands;
+				bveInstanceManager.handles.ReverserPosition = hands.R switch
+				{
+					1 => ReverserPosition.F,
+					0 => ReverserPosition.N,
+					-1 => ReverserPosition.B,
+					_ => ReverserPosition.N,
+				};
+				if (
+					hands.B == 0
+					&& hands.P == 0
+					&& (
+						(!double.IsNaN(hands.BPos) && hands.BPos != 0)
+						|| (double.IsNaN(hands.PPos) && hands.PPos != 0)
+					)
+				)
+				{
+					hands.P = (int)Math.Round(hands.PPos * bsmd.SpecData.P, MidpointRounding.AwayFromZero);
+					hands.B = (int)Math.Round(hands.BPos * bsmd.SpecData.B, MidpointRounding.AwayFromZero);
+				}
+				else
+				{
+					bveInstanceManager.handles.PowerNotch = hands.P;
+					bveInstanceManager.handles.BrakeNotch = hands.B;
+					double.IsNaN(hands.BPos);
+				}
+			}
+
+			bool[] currentKeys = CtrlInput.GetIsKeyPushed();
+			// TODO: ここでキー入力をBVEに反映する
+			for (int i = 0; i < keyStateArray.Length; i++)
+			{
+				if (keyStateArray[i] != currentKeys[i])
+				{
+					keyStateArray[i] = currentKeys[i];
+					if (i < 4)
+					{
+						// Horm / ConstSpeed
+					}
+					else
+					{
+						// ATS Keys
+					}
+				}
+			}
 		}
 		else if (bsmd.IsEnabled)
 			OnScenarioClosed();
 
 		return new ExtensionTickResult();
 	}
+	static bool isHandsEqual(in Hands a, in Hands b)
+		=> (
+			a.S == b.S &&
+			a.B == b.B &&
+			a.P == b.P &&
+			a.R == b.R
+		);
 
 	void OnScenarioClosed(EventArgs? _ = null)
 	{
@@ -93,7 +153,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 		readonly CarInfo motorCarInfo;
 		readonly CarInfo trailerCarInfo;
 		readonly UserVehicleLocationManager locationManager;
-		readonly HandleSet handles;
+		public readonly HandleSet handles;
 		readonly TimeManager timeManager;
 		readonly VehicleStateStore vehicleStateStore;
 		public readonly AtsPlugin atsPlugin;

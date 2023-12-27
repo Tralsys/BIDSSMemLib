@@ -20,6 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\BIDSSMemLib.CtrlInput\BIDSSMemLib.CtrlInput.csproj" />
 		<ProjectReference Include="..\BIDSSMemLib.rw\BIDSSMemLib.rw.csproj" />
 	</ItemGroup>
 
