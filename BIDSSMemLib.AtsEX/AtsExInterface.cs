@@ -235,7 +235,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 					ReverserPosition.B => -1,
 					_ => (int)handles.ReverserPosition,
 				},
-				C = (int)handles.ConstantSpeedMode,
+				C = handles.ConstantSpeedMode == ConstantSpeedMode.Continue ? bsmd.HandleData.C : (int)handles.ConstantSpeedMode,
 			};
 			bsmd.IsDoorClosed = !(leftDoorSet.IsOpen || rightDoorSet.IsOpen);
 		}
