@@ -246,6 +246,11 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 			double preTrainLocation = preTrainObj.GetPreTrainLocation(timeManager.TimeMilliseconds);
 			double preTrainSpeed_mps = (preTrainLocation - preTrainLastLocation) / elapsed.TotalSeconds;
 			double preTrainSpeed_kmph = preTrainSpeed_mps * 3.6;
+			Cant? cant = cants.GoToAndGetCurrent(locationManager.Location) as Cant;
+			Curve? curve = curves.GoToAndGetCurrent(locationManager.Location) as Curve;
+			double curvature = curve?.Curvature ?? 0;
+			double curveRadius = curvature != 0 ? 1 / curvature
+				: openD.Radius < 0 ? double.NegativeInfinity : double.PositiveInfinity;
 
 			openD = new()
 			{
@@ -253,10 +258,10 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 				ElapTime = (int)elapsed.TotalMilliseconds,
 
 				// TODO: 仮でradを入れてる。将来的には別に分離するかも。
-				Cant = (cants[cants.CurrentIndex] as Cant)?.RotationZ ?? 0,
+				Cant = cant?.RotationZ ?? 0,
 				// TODO: GradientがRC4で未実装のため、実装され次第対応する
 				Pitch = 0,
-				Radius = curves.GetValueAt(locationManager.Location),
+				Radius = curveRadius,
 
 				PreTrain = new()
 				{
