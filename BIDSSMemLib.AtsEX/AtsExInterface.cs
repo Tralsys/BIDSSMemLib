@@ -148,6 +148,8 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 	class BveInstanceManager
 	{
 		readonly PreTrainObjectList preTrainObj;
+		readonly CurveList curves;
+		readonly CantList cants;
 		readonly Vehicle vehicle;
 		readonly SideDoorSet leftDoorSet;
 		readonly SideDoorSet rightDoorSet;
@@ -161,7 +163,13 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 
 		public BveInstanceManager(Scenario scenario)
 		{
-			preTrainObj = scenario.Route.PreTrainObjects;
+			Route route = scenario.Route;
+			preTrainObj = route.PreTrainObjects;
+
+			MyTrack track = route.MyTrack;
+			curves = track.Curves;
+			cants = track.Cants;
+
 			vehicle = scenario.Vehicle;
 			locationManager = scenario.LocationManager;
 			timeManager = scenario.TimeManager;
@@ -244,10 +252,11 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 				IsEnabled = true,
 				ElapTime = (int)elapsed.TotalMilliseconds,
 
-				// TODO: 実装方法を模索
-				Cant = 0,
+				// TODO: 仮でradを入れてる。将来的には別に分離するかも。
+				Cant = (cants[cants.CurrentIndex] as Cant)?.RotationZ ?? 0,
+				// TODO: GradientがRC4で未実装のため、実装され次第対応する
 				Pitch = 0,
-				Radius = 0,
+				Radius = curves.GetValueAt(locationManager.Location),
 
 				PreTrain = new()
 				{
