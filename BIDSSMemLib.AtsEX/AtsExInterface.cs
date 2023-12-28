@@ -147,6 +147,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 
 	class BveInstanceManager
 	{
+		readonly PreTrainObjectList preTrainObj;
 		readonly Vehicle vehicle;
 		readonly SideDoorSet leftDoorSet;
 		readonly SideDoorSet rightDoorSet;
@@ -160,6 +161,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 
 		public BveInstanceManager(Scenario scenario)
 		{
+			preTrainObj = scenario.Route.PreTrainObjects;
 			vehicle = scenario.Vehicle;
 			locationManager = scenario.LocationManager;
 			timeManager = scenario.TimeManager;
@@ -232,6 +234,11 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 			in TimeSpan elapsed
 		)
 		{
+			double preTrainLastLocation = preTrainObj.GetPreTrainLocation(timeManager.TimeMilliseconds - (int)elapsed.TotalMilliseconds);
+			double preTrainLocation = preTrainObj.GetPreTrainLocation(timeManager.TimeMilliseconds);
+			double preTrainSpeed_mps = (preTrainLocation - preTrainLastLocation) / elapsed.TotalSeconds;
+			double preTrainSpeed_kmph = preTrainSpeed_mps * 3.6;
+
 			openD = new()
 			{
 				IsEnabled = true,
@@ -242,11 +249,13 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 				Pitch = 0,
 				Radius = 0,
 
-				// TODO: 実装方法を模索
 				PreTrain = new()
 				{
 					IsEnabled = false,
-				}
+					Distance = preTrainLocation - locationManager.Location,
+					Location = preTrainLocation,
+					Speed = preTrainSpeed_kmph,
+				},
 			};
 		}
 	}
