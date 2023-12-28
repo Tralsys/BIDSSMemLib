@@ -58,6 +58,9 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 			bveInstanceManager.setBIDSSharedMemoryData(ref bsmd);
 			smemLib.Write(bsmd);
 
+			bveInstanceManager.setOpenD(ref openD, in elapsed);
+			smemLib.Write(openD);
+
 			int[] panelArray = bveInstanceManager.atsPlugin.PanelArray;
 			panelArrayLength = (nuint)panelArray.Length;
 			smemLib.WritePanel(panelArray);
