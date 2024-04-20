@@ -9,6 +9,19 @@ namespace TR
 	/// <typeparam name="T">使用する型 (struct)</typeparam>
 	public class ArrayDataSMemCtrler<T> : SMemCtrlerBase<List<T>>, IList<T>, IArrayDataSMemCtrler<T>, IReadWriteInObject where T : struct
 	{
+		/// <summary>
+		/// 4096バイト以上になる配列データを扱うための共有メモリ
+		/// 長さ情報は長さ共有専用の共有メモリに保持する
+		/// </summary>
+		private ISMemIF? MMF4Array { get; set; } = null;
+		/// <summary>
+		/// 4096バイト以上になる配列データを扱うための共有メモリの要素数を保持する共有メモリ
+		/// </summary>
+		private ISMemIF? MMF4ArrayLength { get; set; } = null;
+		private string getArraySMemName(in int len) => $"{SMem_Name}_${len}";
+		const uint PAGE_SIZE = 4096;
+		private static readonly uint MMF_ELEM_MAX_COUNT;
+
 		/// <summary>配列に更新があった際に発行されるイベント</summary>
 		public event EventHandler<ValueChangedEventArgs<T[]>>? ArrValueChanged;
 
@@ -28,7 +41,10 @@ namespace TR
 		public bool IsReadOnly { get => false; }
 
 		/// <summary>1要素あたりのサイズ [bytes]</summary>
-		public override uint Elem_Size { get; } = (uint)Marshal.SizeOf(default(T));
+		public override uint Elem_Size { get; } = ELEM_SIZE;
+		private static readonly uint ELEM_SIZE;
+
+		private int MMF4ArrayLengthValue => MMF4ArrayLength?.Read(0, out int value) == true ? value : 0;
 
 		/// <summary>インスタンスを初期化します</summary>
 		/// <param name="name">共有メモリの名前</param>
@@ -38,6 +54,18 @@ namespace TR
 		public ArrayDataSMemCtrler(in string name, in bool no_smem, in bool no_event, in int maxCount) : base(name, no_smem, no_event, sizeof(int) + (Marshal.SizeOf(default(T)) * maxCount))
 		{
 			ValueChanged += (_, e) => ArrValueChanged?.Invoke(this, new(e.OldValue.ToArray(), e.NewValue.ToArray()));
+
+			// 念のためlong分だけ要求しておく
+			MMF4ArrayLength = new SMemIF(SMem_Name + "_length", sizeof(long));
+			MMF4Array = new SMemIF(getArraySMemName(maxCount), maxCount * ELEM_SIZE);
+		}
+
+		static ArrayDataSMemCtrler()
+		{
+			if (typeof(T).IsValueType == false)
+				throw new ArgumentException("T must be a value type");
+			ELEM_SIZE = (uint)Marshal.SizeOf(default(T));
+			MMF_ELEM_MAX_COUNT = (PAGE_SIZE - sizeof(int)) / ELEM_SIZE;
 		}
 
 		void UpdateValueFromSMem() => _ = Read();
@@ -56,19 +84,28 @@ namespace TR
 
 			Value.Add(item);
 
-			if (!No_SMem_Mode)
+			if (No_SMem_Mode)
+				return;
+
+			int newLen = Value.Count;
+			int newLenCompat = Math.Min((int)MMF_ELEM_MAX_COUNT, newLen);
+
+			//コピーの必要が出てはじめてコピーをする
+			T copied_item = item;
+
+			//長さ情報の更新
+			_ = (MMF?.Write(0, ref newLenCompat));
+
+			//配列にデータを追加
+			if (newLen <= MMF_ELEM_MAX_COUNT)
 			{
-				int newLen = Value.Count;
-
-				//コピーの必要が出てはじめてコピーをする
-				T copied_item = item;
-
-				//長さ情報の更新
-				_ = (MMF?.Write(0, ref newLen));
-
-				//配列にデータを追加
-				_ = (MMF?.Write(sizeof(int) + (Elem_Size * (Value.Count - 1)), ref copied_item));
+				_ = (MMF?.Write(sizeof(int) + (ELEM_SIZE * (newLen - 1)), ref copied_item));
 			}
+
+			MMF4ArrayLength?.Write(0, ref newLen);
+			MMF4Array?.Dispose();
+			MMF4Array = new SMemIF(getArraySMemName(newLen), ELEM_SIZE * newLen);
+			_ = MMF4Array.WriteArray(0, Value.ToArray(), 0, newLen);
 		}
 
 		/// <summary>リストを空にします</summary>
@@ -143,11 +180,21 @@ namespace TR
 
 			Value.Insert(index, item);
 
-			if (!No_SMem_Mode)
+			if (No_SMem_Mode)
+				return;
+
+			int newLen = Value.Count;
+			int newLenCompat = Math.Min((int)MMF_ELEM_MAX_COUNT, newLen);
+			_ = (MMF?.Write(0, ref newLenCompat)); //長さ情報の更新
+
+			_ = MMF4ArrayLength?.Write(0, ref newLen); //長さ情報の更新
+			MMF4Array?.Dispose();
+			MMF4Array = new SMemIF(getArraySMemName(newLen), ELEM_SIZE * newLen);
+			_ = MMF4Array.WriteArray(0, Value.ToArray(), 0, newLen); //SMemの内容も更新する
+
+			if (index < MMF_ELEM_MAX_COUNT)
 			{
-				int newLen = Value.Count;
-				_ = (MMF?.Write(0, ref newLen)); //長さ情報の更新
-				_ = (MMF?.WriteArray(sizeof(int) + (Elem_Size * index), Value.ToArray(), index, Value.Count - index)); //SMemの内容も更新する
+				_ = (MMF?.WriteArray(sizeof(int) + (ELEM_SIZE * index), Value.ToArray(), index, newLenCompat - index)); //SMemの内容も更新する
 			}
 		}
 
@@ -188,13 +235,22 @@ namespace TR
 		private void _RemoveAt(in int index)
 		{
 			Value.RemoveAt(index);
+			if (No_SMem_Mode)
+				return;
 
-			if (!No_SMem_Mode)
+			int newLength = Value.Count;
+			int newLengthCompat = Math.Min((int)MMF_ELEM_MAX_COUNT, newLength);
+			_ = (MMF?.Write(0, ref newLengthCompat)); //長さ情報更新
+			_ = MMF4ArrayLength?.Write(0, ref newLength); //長さ情報更新
+
+			MMF4Array?.Dispose();
+			MMF4Array = new SMemIF(getArraySMemName(newLength), ELEM_SIZE * newLength);
+			_ = MMF4Array.WriteArray(0, Value.ToArray(), 0, newLength);
+
+			if (index < MMF_ELEM_MAX_COUNT)
 			{
-				int newLength = Value.Count;
-				_ = (MMF?.Write(0, ref newLength)); //長さ情報更新
-
-				_ = (MMF?.WriteArray(sizeof(int) + (Elem_Size * index), Value.ToArray(), index, Value.Count - index));
+				int moveLenCompat = newLength == newLengthCompat ? newLengthCompat - index : newLengthCompat - index + 1;
+				_ = (MMF?.WriteArray(sizeof(int) + (ELEM_SIZE * index), Value.ToArray(), index, moveLenCompat));
 			}
 		}
 
@@ -211,10 +267,24 @@ namespace TR
 		/// <remarks>指定要素のキャッシュ更新のみ行われ, キャッシュ全体の更新は実行されません</remarks>
 		public T Read(in int index)
 		{
-			if (!No_SMem_Mode && MMF?.Read(sizeof(int) + (Elem_Size * index), out T buf) == true)
+			if (No_SMem_Mode)
+				return Value[index];
+
+			if (index < MMF_ELEM_MAX_COUNT)
 			{
-				_Value[index] = buf; //値を更新
-				return buf;
+				if (MMF?.Read(sizeof(int) + (ELEM_SIZE * index), out T buf) == true)
+				{
+					Value[index] = buf;
+					return buf;
+				}
+			}
+			else
+			{
+				if (MMF4Array?.Read(ELEM_SIZE * index, out T buf) == true)
+				{
+					Value[index] = buf;
+					return buf;
+				}
 			}
 
 			return Value[index];
@@ -233,8 +303,20 @@ namespace TR
 
 			T[] buf = new T[len];
 
-			if (MMF?.ReadArray(sizeof(int), buf, 0, len) == true)
+			int lenCompat = Math.Min((int)MMF_ELEM_MAX_COUNT, len);
+			bool isSuccessCompat = MMF?.ReadArray(sizeof(int), buf, 0, lenCompat) == true;
+			if (isSuccessCompat)
+			{
+				if (len != lenCompat)
+				{
+					_ = MMF4Array?.ReadArray(ELEM_SIZE * lenCompat, buf, lenCompat, len - lenCompat);
+				}
 				Value = new(buf);
+			}
+			else if (MMF4Array?.ReadArray(0, buf, 0, len) == true)
+			{
+				Value = new(buf);
+			}
 
 			return Value;
 		}
@@ -245,10 +327,24 @@ namespace TR
 		/// <returns>試行結果</returns>
 		public bool TryRead(in int index, out T value)
 		{
-			if (!No_SMem_Mode && MMF?.Read(sizeof(int) + (Elem_Size * index), out value) == true)
+			if (No_SMem_Mode)
+			{
+				value = index < Value.Count ? Value[index] : default;
 				return true;
+			}
 
-			value = Value.Count > index ? Value[index] : default;
+			if (index < MMF_ELEM_MAX_COUNT)
+			{
+				if (MMF?.Read(sizeof(int) + (ELEM_SIZE * index), out value) == true)
+					return true;
+			}
+			else
+			{
+				if (MMF4Array?.Read(ELEM_SIZE * index, out value) == true)
+					return true;
+			}
+
+			value = index < Value.Count ? Value[index] : default;
 			return false;
 		}
 
@@ -258,6 +354,8 @@ namespace TR
 		public override bool TryRead(out List<T> value)
 		{
 			value = Value;
+			if (No_SMem_Mode)
+				return true;
 
 			if (TryGetLengthInSMem(out int len) != true)
 				return false;
@@ -270,8 +368,14 @@ namespace TR
 
 			T[] buf = new T[len];
 
-			if (MMF?.ReadArray(sizeof(int), buf, 0, len) == true)
+			int lengthCompat = Math.Min((int)MMF_ELEM_MAX_COUNT, len);
+			if (MMF?.ReadArray(sizeof(int), buf, 0, lengthCompat) == true)
 			{
+				if (len != lengthCompat)
+				{
+					_ = MMF4Array?.ReadArray(ELEM_SIZE * lengthCompat, buf, lengthCompat, len - lengthCompat);
+				}
+
 				Value = new(buf);
 				return true;
 			}
@@ -285,29 +389,76 @@ namespace TR
 		/// <returns>試行結果</returns>
 		public bool TryWrite(in int index, in T value)
 		{
+			if (No_SMem_Mode)
+			{
+				if (Value.Count <= index)
+				{
+					T[] arr = new T[(index - Value.Count) + 1];
+					arr[arr.Length - 1] = value;
+					Value.AddRange(arr);
+				}
+				else
+				{
+					Value[index] = value;
+				}
+				return true;
+			}
+
 			UpdateValueFromSMem();
 
+			T copied_value = value;
 			if (Value.Count <= index)
 			{
 				int last_count = Value.Count;
-				var arr = new T[last_count - index];
+				var arr = new T[(last_count - index) + 1];
+				arr[arr.Length - 1] = value;
 				Value.AddRange(arr);
+				long tailPos = sizeof(int) + (ELEM_SIZE * last_count);
 
-				if (!No_SMem_Mode)
+				int newLength = last_count + arr.Length;
+				int newLenCompat = Math.Min((int)MMF_ELEM_MAX_COUNT, newLength);
+				if (last_count < newLenCompat)
 				{
-					_ = (MMF?.WriteArray(sizeof(int) + (Elem_Size * last_count), arr, 0, arr.Length));
-
-					int newLen = Value.Count;
-					_ = (MMF?.Write(0, ref newLen)); //長さ情報を更新
+					_ = (MMF?.Write(0, ref newLenCompat)); //長さ情報を更新
 				}
+
+				int copyLenCompat = Math.Min((int)MMF_ELEM_MAX_COUNT - last_count, arr.Length);
+				if (0 < copyLenCompat)
+				{
+					_ = (MMF?.WriteArray(tailPos, arr, 0, copyLenCompat));
+				}
+
+				int lastMMF4ArrayLength = MMF4ArrayLengthValue;
+				if (lastMMF4ArrayLength < newLength)
+				{
+					// 長さ情報を更新
+					_ = (MMF4ArrayLength?.Write(0, ref newLength));
+					ISMemIF? oldMMF4Array = MMF4Array;
+					MMF4Array = new SMemIF(getArraySMemName(newLenCompat), ELEM_SIZE * newLenCompat);
+					if (oldMMF4Array is not null)
+					{
+						T[] tmp = new T[lastMMF4ArrayLength];
+						_ = oldMMF4Array.ReadArray(0, tmp, 0, lastMMF4ArrayLength);
+						_ = MMF4Array.WriteArray(0, tmp, 0, lastMMF4ArrayLength);
+						oldMMF4Array.Dispose();
+					}
+					else
+					{
+						_ = MMF4Array.WriteArray(0, Value.ToArray(), 0, Value.Count);
+					}
+				}
+
+				_ = (MMF4Array?.WriteArray(ELEM_SIZE * last_count, arr, 0, arr.Length));
 			}
-
-			Value[index] = value;
-
-			if (!No_SMem_Mode)
+			else
 			{
-				T copied_value = value;
-				_ = (MMF?.Write(sizeof(int) + (Elem_Size * index), ref copied_value));
+				Value[index] = value;
+
+				if (index < MMF_ELEM_MAX_COUNT)
+				{
+					_ = (MMF?.Write(sizeof(int) + (ELEM_SIZE * index), ref copied_value));
+				}
+				_ = (MMF4Array?.Write(ELEM_SIZE * index, ref copied_value));
 			}
 
 			return true;
@@ -319,16 +470,25 @@ namespace TR
 		public override bool TryWrite(in List<T> value)
 		{
 			Value = value;
+			if (No_SMem_Mode)
+				return true;
 
 			int newLen = value.Count;
-			if (!No_SMem_Mode)
-				_ = (MMF?.Write(0, ref newLen));
+			int newLenCompat = Math.Min((int)MMF_ELEM_MAX_COUNT, newLen);
+			_ = (MMF?.Write(0, ref newLenCompat));
+
+			if (MMF4ArrayLengthValue < newLen)
+			{
+				_ = (MMF4ArrayLength?.Write(0, ref newLen));
+				MMF4Array?.Dispose();
+				MMF4Array = new SMemIF(getArraySMemName(newLen), ELEM_SIZE * newLen);
+			}
 
 			if (newLen <= 0)
 				return true;
 
-			if (!No_SMem_Mode)
-				_ = (MMF?.WriteArray(sizeof(int), value.ToArray(), 0, newLen));
+			_ = (MMF?.WriteArray(sizeof(int), value.ToArray(), 0, newLenCompat));
+			_ = (MMF4Array?.WriteArray(0, value.ToArray(), 0, newLen));
 
 			return true;
 		}
@@ -355,7 +515,23 @@ namespace TR
 			if (No_SMem_Mode)
 				return false;
 
-			return MMF?.Read(0, out len) ?? false;
+			int lenCompat = 0;
+			bool isSuccessCompat = MMF?.Read(0, out lenCompat) ?? false;
+			if (!isSuccessCompat)
+				return false;
+			int lenArray = MMF4ArrayLengthValue;
+
+			// 旧仕様の場合、lenArrayが存在しないため、lenCompatを使用する
+			len = lenArray == 0 ? lenCompat : lenArray;
+			string mmf4ArrayName = getArraySMemName(len);
+			if (MMF4Array?.SMemName != mmf4ArrayName)
+			{
+				ISMemIF? oldMMF4Array = MMF4Array;
+				MMF4Array = new SMemIF(mmf4ArrayName, ELEM_SIZE * len);
+				oldMMF4Array?.Dispose();
+			}
+
+			return true;
 		}
 
 		/// <summary>キャッシュのリストを配列に変換して取得する</summary>
@@ -396,6 +572,12 @@ namespace TR
 		}
 		#endregion
 
+		/// <summary>
+		/// 2つのリストが同じ値を持っているかどうかを判定する
+		/// </summary>
+		/// <param name="v1"></param>
+		/// <param name="v2"></param>
+		/// <returns></returns>
 		protected override bool IsValueSame(List<T> v1, List<T> v2)
 		{
 			if (v1.Count != v2.Count)
@@ -408,6 +590,29 @@ namespace TR
 			}
 
 			return true;
+		}
+
+		bool disposedValue = false;
+		/// <summary>
+		/// 保持しているリソースを解放する
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			if (!disposedValue)
+			{
+				if (disposing)
+				{
+					MMF4Array?.Dispose();
+					MMF4Array = null;
+					MMF4ArrayLength?.Dispose();
+					MMF4ArrayLength = null;
+				}
+
+				disposedValue = true;
+			}
 		}
 	}
 }
