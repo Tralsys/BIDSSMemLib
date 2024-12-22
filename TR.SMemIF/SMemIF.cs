@@ -10,10 +10,13 @@ namespace TR
 
 		private ISMemIF BaseSMemIF { get; }
 
+		/// <inheritdoc/>
 		public string SMemName => BaseSMemIF.SMemName;
 
+		/// <inheritdoc/>
 		public long Capacity => BaseSMemIF.Capacity;
 
+		/// <inheritdoc/>
 		public bool IsNewlyCreated => BaseSMemIF.IsNewlyCreated;
 
 		/// <summary>インスタンスを初期化する</summary>
@@ -114,6 +117,7 @@ namespace TR
 			}
 		}
 
+		/// <inheritdoc/>
 		public void Dispose()
 		{
 			Dispose(disposing: true);
