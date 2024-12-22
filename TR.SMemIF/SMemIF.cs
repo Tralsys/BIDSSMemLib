@@ -24,18 +24,14 @@ namespace TR
 		/// <param name="capacity">共有メモリ空間のキャパシティ</param>
 		public SMemIF(string smem_name, long capacity)
 		{
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				Semap = new RWSemap();
+			bool isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+			Semap = isWindows ? new RWSemap() : new RWSemap_UNIX(smem_name);
+			if (capacity <= 0)
+				BaseSMemIF = new SMemIFMock(smem_name, capacity);
+			else if (isWindows)
 				BaseSMemIF = new SemaphorelessSMemIF(smem_name, capacity);
-			}
 			else
-			{
-				SemaphorelessSMemIF_UNIX baseSMemIF = new(smem_name, capacity);
-
-				Semap = new RWSemap_UNIX(smem_name);
-				BaseSMemIF = baseSMemIF;
-			}
+				BaseSMemIF = new SemaphorelessSMemIF_UNIX(smem_name, capacity);
 		}
 
 		/// <summary>共有メモリ空間の指定の位置から, 指定の型のデータを読み込む</summary>
