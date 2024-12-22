@@ -1,14 +1,14 @@
 using System;
 
-using AtsEx.PluginHost.Plugins;
-using AtsEx.PluginHost.Plugins.Extensions;
+using BveEx.PluginHost.Plugins;
+using BveEx.PluginHost.Plugins.Extensions;
 
 using BveTypes.ClassWrappers;
 
 namespace TR.BIDSSMemLib;
 
 [PluginType(PluginType.Extension)]
-public partial class AtsExInterface : AssemblyPluginBase, IExtension
+public partial class BveExInterface : AssemblyPluginBase, IExtension
 {
 	readonly SMemLib smemLib = new(
 		isNoSMemMode: false,
@@ -16,7 +16,7 @@ public partial class AtsExInterface : AssemblyPluginBase, IExtension
 		isNoOptionalEventMode: true
 	);
 
-	public AtsExInterface(PluginBuilder builder) : base(builder)
+	public BveExInterface(PluginBuilder builder) : base(builder)
 	{
 		smemLib.Write(bsmd);
 		smemLib.Write(openD);

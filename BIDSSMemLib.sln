@@ -39,7 +39,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.RandomWriter", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.CtrlInput", "BIDSSMemLib.CtrlInput\BIDSSMemLib.CtrlInput.csproj", "{783FDE97-8558-45DA-BCB1-AD7A245CDB3E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.AtsEX", "BIDSSMemLib.AtsEX\BIDSSMemLib.AtsEX.csproj", "{82EFFCCC-E021-4E39-BC33-4F3D189D7245}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BIDSSMemLib.BveEX", "BIDSSMemLib.BveEX\BIDSSMemLib.BveEX.csproj", "{82EFFCCC-E021-4E39-BC33-4F3D189D7245}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
