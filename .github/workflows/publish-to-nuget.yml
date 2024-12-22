@@ -18,7 +18,6 @@ on:
           - TR.SMemCtrler.AutoReadSupporter
           - TR.ISMemIF
           - TR.SMemIF
-          - TR.SMemIF.Mock
 
 jobs:
   build:
