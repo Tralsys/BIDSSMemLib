@@ -3,6 +3,9 @@ using System.Threading;
 
 namespace TR;
 
+/// <summary>
+/// UNIZ系OS向けのセマフォ機能を提供します。
+/// </summary>
 public class RWSemap_UNIX : IRWSemaphore
 {
 	static readonly private TimeSpan TIMEOUT = new(0, 0, 0, 0, 100);
@@ -18,6 +21,7 @@ public class RWSemap_UNIX : IRWSemaphore
 		NamedMutex = new(false, name + "Mutex");
 	}
 
+	/// <inheritdoc/>
 	public void Read(Action act)
 	{
 		bool actionTried = false;
@@ -37,6 +41,7 @@ public class RWSemap_UNIX : IRWSemaphore
 		}
 	}
 
+	/// <inheritdoc/>
 	public void Write(Action act)
 	{
 		bool actionTried = false;
@@ -59,6 +64,7 @@ public class RWSemap_UNIX : IRWSemaphore
 	#region IDisposable Support
 	private bool disposedValue;
 
+	/// <inheritdoc/>
 	protected virtual void Dispose(bool disposing)
 	{
 		if (!disposedValue)
@@ -73,6 +79,7 @@ public class RWSemap_UNIX : IRWSemaphore
 		}
 	}
 
+	/// <inheritdoc/>
 	public void Dispose()
 	{
 		Dispose(disposing: true);
