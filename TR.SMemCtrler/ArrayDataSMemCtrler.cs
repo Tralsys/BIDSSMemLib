@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -18,7 +18,7 @@ namespace TR
 		/// 4096バイト以上になる配列データを扱うための共有メモリの要素数を保持する共有メモリ
 		/// </summary>
 		private ISMemIF? MMF4ArrayLength { get; set; } = null;
-		private string getArraySMemName(in int len) => $"{SMem_Name}_${len}";
+		private string getArraySMemName(in int len) => $"{SMem_Name}_{len}";
 		const uint PAGE_SIZE = 4096;
 		private static readonly uint MMF_ELEM_MAX_COUNT;
 
