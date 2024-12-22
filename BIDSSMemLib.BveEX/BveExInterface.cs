@@ -7,7 +7,7 @@ using BveTypes.ClassWrappers;
 
 namespace TR.BIDSSMemLib;
 
-[PluginType(PluginType.Extension)]
+[Plugin(PluginType.Extension)]
 public partial class BveExInterface : AssemblyPluginBase, IExtension
 {
 	readonly SMemLib smemLib = new(
@@ -49,7 +49,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 	readonly bool[] keyStateArray = new bool[CtrlInput.KeyArrSizeMax];
 	BveInstanceManager? bveInstanceManager = null;
 
-  public override TickResult Tick(TimeSpan elapsed)
+  public override void Tick(TimeSpan elapsed)
 	{
 		if (BveHacker.IsScenarioCreated)
 		{
@@ -121,8 +121,6 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 		}
 		else if (bsmd.IsEnabled)
 			OnScenarioClosed();
-
-		return new ExtensionTickResult();
 	}
 	static bool isHandsEqual(in Hands a, in Hands b)
 		=> (
@@ -158,7 +156,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 		readonly SideDoorSet rightDoorSet;
 		readonly CarInfo motorCarInfo;
 		readonly CarInfo trailerCarInfo;
-		readonly UserVehicleLocationManager locationManager;
+		readonly VehicleLocation vehicleLocation;
 		public readonly HandleSet handles;
 		readonly TimeManager timeManager;
 		readonly VehicleStateStore vehicleStateStore;
@@ -166,15 +164,15 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 
 		public BveInstanceManager(Scenario scenario)
 		{
-			Route route = scenario.Route;
-			preTrainObj = route.PreTrainObjects;
+			Map map = scenario.Map;
+			preTrainObj = map.PreTrainObjects;
 
-			MyTrack track = route.MyTrack;
+			MyTrack track = map.MyTrack;
 			curves = track.Curves;
 			cants = track.Cants;
 
 			vehicle = scenario.Vehicle;
-			locationManager = scenario.LocationManager;
+			vehicleLocation = scenario.VehicleLocation;
 			timeManager = scenario.TimeManager;
 
 			DoorSet doorSet = vehicle.Doors;
@@ -222,7 +220,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 				I = (float)vehicleStateStore.Current[0],
 				T = (int)timeManager.TimeMilliseconds,
 				V = (float)vehicleStateStore.Speed[0],
-				Z = locationManager.Location,
+				Z = vehicleLocation.Location,
 			};
 			bsmd.HandleData = new()
 			{
@@ -249,8 +247,8 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 			double preTrainLocation = preTrainObj.GetPreTrainLocation(timeManager.TimeMilliseconds);
 			double preTrainSpeed_mps = (preTrainLocation - preTrainLastLocation) / elapsed.TotalSeconds;
 			double preTrainSpeed_kmph = preTrainSpeed_mps * 3.6;
-			Cant? cant = cants.GoToAndGetCurrent(locationManager.Location) as Cant;
-			Curve? curve = curves.GoToAndGetCurrent(locationManager.Location) as Curve;
+			Cant? cant = cants.GoToAndGetCurrent(vehicleLocation.Location) as Cant;
+			Curve? curve = curves.GoToAndGetCurrent(vehicleLocation.Location) as Curve;
 			double curvature = curve?.Curvature ?? 0;
 			double curveRadius = curvature != 0 ? 1 / curvature
 				: openD.Radius < 0 ? double.NegativeInfinity : double.PositiveInfinity;
@@ -269,7 +267,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 				PreTrain = new()
 				{
 					IsEnabled = false,
-					Distance = preTrainLocation - locationManager.Location,
+					Distance = preTrainLocation - vehicleLocation.Location,
 					Location = preTrainLocation,
 					Speed = preTrainSpeed_kmph,
 				},
