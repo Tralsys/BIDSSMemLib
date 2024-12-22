@@ -117,6 +117,7 @@ namespace TR
 		public bool TryWriteInObject(in object obj) => TryWrite((T)obj);
 		#endregion
 
+		/// <inheritdoc/>
 		protected override bool IsValueSame(T v1, T v2)
 			=> Equals(v1, v2);
 	}

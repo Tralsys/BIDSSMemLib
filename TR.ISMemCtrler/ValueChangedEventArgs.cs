@@ -1,5 +1,9 @@
 namespace TR;
 
+/// <summary>
+/// 値に変化があったことを通知するイベントの情報
+/// </summary>
+/// <typeparam name="T">対象の値の型</typeparam>
 public class ValueChangedEventArgs<T>
 {
 	/// <summary>更新前の値</summary>

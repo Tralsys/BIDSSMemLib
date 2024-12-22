@@ -129,7 +129,7 @@ namespace TR
 			}
 
 			CheckAndUpdateMMF4ArrayInstance(newLen);
-			_ = MMF4Array.WriteArray(0, Value.ToArray(), 0, newLen);
+			_ = MMF4Array?.WriteArray(0, Value.ToArray(), 0, newLen);
 		}
 
 		/// <summary>リストを空にします</summary>
