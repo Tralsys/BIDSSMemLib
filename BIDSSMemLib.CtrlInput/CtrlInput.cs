@@ -11,8 +11,8 @@ namespace TR.BIDSSMemLib
 		public static readonly int KeyArrSizeMax = 128;
 		public static bool IsDisposed { get; private set; }
 
-		static SMemIF SMIF_CtrlH = null;
-		static SMemIF SMIF_CtrlK = null;
+		static readonly SMemIF SMIF_CtrlH;
+		static readonly SMemIF SMIF_CtrlK;
 
 		static CtrlInput()
 		{

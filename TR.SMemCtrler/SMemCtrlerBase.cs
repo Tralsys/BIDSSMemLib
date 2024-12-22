@@ -85,6 +85,12 @@ namespace TR
 			}
 		}
 
+		/// <summary>
+		/// 値が同じかどうかを判定します
+		/// </summary>
+		/// <param name="v1">値1</param>
+		/// <param name="v2">値2</param>
+		/// <returns>値が同じかどうか</returns>
 		protected abstract bool IsValueSame(T v1, T v2);
 
 		/// <summary>インスタンスを初期化する</summary>

@@ -27,7 +27,7 @@ jobs:
       VERSION: ${{ steps.get-project-info.outputs.VERSION }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Get Project Info
       id: get-project-info
@@ -35,7 +35,7 @@ jobs:
       run: ./.github/workflows/get-version.ps1 -ProjectName ${{ inputs.project }}
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 6.0.x
 
@@ -49,7 +49,7 @@ jobs:
       run: dotnet pack ${{ inputs.project }} -c Release --no-build -o dst
 
     - name: Upload nupkg to Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}.${{ steps.get-project-info.outputs.VERSION }}.nupkg
         path: dst/${{ steps.get-project-info.outputs.ASSEMBLY_NAME }}.${{ steps.get-project-info.outputs.VERSION }}.nupkg
@@ -61,7 +61,7 @@ jobs:
 
     steps:
     - name: Download nupkg from Artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ${{ needs.build.outputs.ASSEMBLY_NAME }}.${{ needs.build.outputs.VERSION }}.nupkg
 
