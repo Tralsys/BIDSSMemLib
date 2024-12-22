@@ -6,7 +6,7 @@
 		<Nullable>enable</Nullable>
 		<AssemblyName>TR.SMemIF</AssemblyName>
 		<RootNamespace>TR</RootNamespace>
-		<Version>2.0.0.1</Version>
+		<Version>2.1.0</Version>
 		<Authors>Tetsu Otter</Authors>
 		<Company>Tech Otter</Company>
 		<Product>BIDS Project</Product>
