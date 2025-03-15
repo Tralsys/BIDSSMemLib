@@ -25,14 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference
-			Include="BveEx.PluginHost"
-			Version="2.0.0">
+		<PackageReference Include="BveEx.PluginHost" Version="2.0.6">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference
-			Include="TR.BidsWebRtc"
-			Version="0.0.1" />
+		<PackageReference Include="TR.BidsWebRtc" Version="0.0.1" />
 	</ItemGroup>
 
 </Project>
