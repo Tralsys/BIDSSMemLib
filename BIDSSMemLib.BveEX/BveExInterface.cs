@@ -59,7 +59,8 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 
 		string assemblyLocation = assembly.Location;
 		string asmDirectory = Path.GetDirectoryName(assemblyLocation);
-		string tokenFilePath = Path.Combine(asmDirectory, "bids-rtc.token.bin");
+		string asmName = Path.GetFileNameWithoutExtension(assemblyLocation);
+		string tokenFilePath = Path.Combine(asmDirectory, $"{asmName}.bids-rtc.token.bin");
 		if (!File.Exists(tokenFilePath))
 		{
 			return null;
