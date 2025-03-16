@@ -20,6 +20,15 @@ namespace TR.BIDSSMemLib;
 [Plugin(PluginType.Extension)]
 public partial class BveExInterface : AssemblyPluginBase, IExtension
 {
+#if DEBUG
+	[DllImport("kernel32.dll")]
+	private static extern bool AllocConsole();
+	static BveExInterface()
+	{
+		AllocConsole();
+		Console.WriteLine("TR.BIDSSMemLib.BveExInterface loaded");
+	}
+#endif
 	static readonly HttpClient httpClient = new();
 	readonly SMemLib smemLib = new(
 		isNoSMemMode: false,
@@ -127,7 +136,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 					rtcSoundSendList.Remove(e.DataChannel);
 					isSuccess = true;
 					break;
-				// TODO: WATCH / UNWATCH対応
+					// TODO: WATCH / UNWATCH対応
 			}
 
 			//string response = $$"""{"id": "{{id}}"}""";
