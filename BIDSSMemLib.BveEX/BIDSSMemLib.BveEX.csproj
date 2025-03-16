@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>netstandard2.0;net48</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<LangVersion>12.0</LangVersion>
 		<AssemblyName>TR.BIDSSMemLib.BveEX</AssemblyName>
@@ -28,7 +28,7 @@
 		<PackageReference Include="BveEx.PluginHost" Version="2.0.6">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="TR.BidsWebRtc" Version="0.0.1" />
+		<PackageReference Include="TR.BidsWebRtc" Version="0.0.2" />
 	</ItemGroup>
 
 </Project>

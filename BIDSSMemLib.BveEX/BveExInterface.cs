@@ -85,6 +85,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 
 	private void RtcConnection_OnDataGot(object sender, RtcConnectionManager.OnDataGotEventArgs e)
 	{
+		Console.WriteLine($"data from {e.ConnectionInfo.ClientId}: {e.Data.Length} bytes");
 		if (e.DataChannel is null || e.Data.Length <= 2)
 		{
 			return;
@@ -113,33 +114,38 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 			switch (cmd)
 			{
 				case "BEGIN_BSMD":
+					Console.WriteLine($"BEGIN_BSMD from {e.ConnectionInfo.ClientId}");
 					rtcBsmdSendList.Add(e.DataChannel);
 					isSuccess = true;
 					break;
 				case "END_BSMD":
+					Console.WriteLine($"END_BSMD from {e.ConnectionInfo.ClientId}");
 					rtcBsmdSendList.Remove(e.DataChannel);
 					isSuccess = true;
 					break;
 				case "BEGIN_PANEL":
+					Console.WriteLine($"BEGIN_PANEL from {e.ConnectionInfo.ClientId}");
 					rtcPanelSendList.Add(e.DataChannel);
 					isSuccess = true;
 					break;
 				case "END_PANEL":
+					Console.WriteLine($"END_PANEL from {e.ConnectionInfo.ClientId}");
 					rtcPanelSendList.Remove(e.DataChannel);
 					isSuccess = true;
 					break;
 				case "BEGIN_SOUND":
+					Console.WriteLine($"BEGIN_SOUND from {e.ConnectionInfo.ClientId}");
 					rtcSoundSendList.Add(e.DataChannel);
 					isSuccess = true;
 					break;
 				case "END_SOUND":
+					Console.WriteLine($"END_SOUND from {e.ConnectionInfo.ClientId}");
 					rtcSoundSendList.Remove(e.DataChannel);
 					isSuccess = true;
 					break;
 					// TODO: WATCH / UNWATCH対応
 			}
 
-			//string response = $$"""{"id": "{{id}}"}""";
 			using var responseBytes = new MemoryStream();
 			using var response = new System.Text.Json.Utf8JsonWriter(responseBytes);
 			response.WriteStartObject();
@@ -150,7 +156,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"error from {e.ClientId}: {ex}");
+			Console.WriteLine($"error from {e.ConnectionInfo.ClientId}: {ex}");
 		}
 	}
 	private void RtcConnection_OnDataChannelClosed(object sender, RtcConnectionManager.OnDataChannelStateChangedEventArgs e)
@@ -174,7 +180,14 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 		smemLib.WriteSound(new int[soundArrayLength]);
 		smemLib.Dispose();
 
-		rtcConnection?.Dispose();
+		try
+		{
+			rtcConnection?.Dispose();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"error: {ex}");
+		}
 
 		if (bsmdPtr != IntPtr.Zero)
 		{
@@ -300,6 +313,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 		bveInstanceManager = null;
 	}
 
+	const int rtcBsmdHeaderSize = 4;
 	static readonly int specSize = Marshal.SizeOf<Spec>();
 	static readonly int stateSize = Marshal.SizeOf<State>();
 	static readonly int handSize = Marshal.SizeOf<Hand>();
@@ -308,7 +322,7 @@ public partial class BveExInterface : AssemblyPluginBase, IExtension
 	static readonly int stateOffset = specOffset + specSize;
 	static readonly int handleOffset = stateOffset + stateSize;
 	static readonly int doorClosedOffset = handleOffset + handSize;
-	readonly byte[] bsmdBytes = new byte[bsmdSize];
+	readonly byte[] bsmdBytes = new byte[rtcBsmdHeaderSize + bsmdSize];
 	IntPtr bsmdPtr = IntPtr.Zero;
 	void sendRtcBsmd(in BIDSSharedMemoryData bsmd)
 	{
